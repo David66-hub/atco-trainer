@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATCO Trainer v2 // LPS SR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e0c; --panel: #0f1512; --panel-2: #131a16;
+    --border: #1f2a24; --border-bright: #2d3d34;
+    --green: #5dff9e; --green-dim: #2d8556; --green-bg: #5dff9e10;
+    --amber: #ffb84d; --amber-bg: #ffb84d12;
+    --red: #ff5c5c; --red-bg: #ff5c5c12;
+    --text: #c9d6cf; --text-dim: #6a7d72; --text-faint: #3d4a43;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --display: 'Space Grotesk', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 14px; min-height: 100vh; overflow-x: hidden; }
+  body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:1;
+    background: radial-gradient(ellipse at top, #0f2a1f33 0%, transparent 50%),
+                repeating-linear-gradient(0deg, transparent 0px, transparent 2px, #5dff9e03 2px, #5dff9e03 3px); }
+  body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:2;
+    background: radial-gradient(ellipse at center, transparent 60%, #00000080 100%); }
+  .app { position:relative; z-index:3; max-width:1040px; margin:0 auto; padding:24px 20px 80px; }
+  header { display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border); background:var(--panel); padding:14px 18px; margin-bottom:20px; position:relative; }
+  header::before { content:''; position:absolute; top:-1px; left:-1px; width:12px; height:12px; border-top:2px solid var(--green); border-left:2px solid var(--green); }
+  header::after { content:''; position:absolute; bottom:-1px; right:-1px; width:12px; height:12px; border-bottom:2px solid var(--green); border-right:2px solid var(--green); }
+  .brand { display:flex; align-items:baseline; gap:12px; }
+  .brand-mark { color:var(--green); font-weight:800; letter-spacing:0.18em; font-size:13px; text-shadow:0 0 12px #5dff9e80; }
+  .brand-sub { color:var(--text-faint); font-size:11px; letter-spacing:0.2em; }
+  .clock { color:var(--green-dim); font-size:12px; letter-spacing:0.15em; }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px; }
+  .tab { background:var(--panel); border:1px solid var(--border); color:var(--text-dim); padding:14px 12px; cursor:pointer; text-align:left; font-family:var(--mono); font-size:12px; letter-spacing:0.12em; transition:all 0.15s; }
+  .tab:hover { border-color:var(--border-bright); color:var(--text); }
+  .tab.active { background:var(--green-bg); border-color:var(--green); color:var(--green); text-shadow:0 0 8px #5dff9e60; }
+  .tab .tab-num { display:block; font-size:10px; color:var(--text-faint); margin-bottom:4px; }
+  .tab.active .tab-num { color:var(--green-dim); }
+  .tab .tab-label { font-weight:700; }
+  .panel { background:var(--panel); border:1px solid var(--border); }
+  .panel-head { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--panel-2); font-size:11px; letter-spacing:0.18em; color:var(--text-faint); }
+  .stats { display:flex; gap:18px; }
+  .stat { display:flex; gap:6px; align-items:baseline; }
+  .stat-label { color:var(--text-faint); font-size:10px; }
+  .stat-val { color:var(--green); font-weight:700; }
+  .stat-val.amber { color:var(--amber); }
+  .stat-val.red { color:var(--red); }
+  .qcard { padding:28px; min-height:340px; }
+  .qmeta { font-size:10px; letter-spacing:0.25em; color:var(--text-faint); margin-bottom:18px; }
+  .qmeta .sep { margin:0 10px; }
+  .aircraft-display { display:grid; grid-template-columns:380px 1fr; gap:24px; align-items:stretch; margin-bottom:18px; }
+  .aircraft-photo { background:#050807; border:1px solid var(--border); position:relative; aspect-ratio:16/10; overflow:hidden; }
+  .aircraft-photo img { width:100%; height:100%; object-fit:cover; filter:grayscale(0.1) contrast(1.05) brightness(0.95); }
+  .aircraft-photo::after { content:''; position:absolute; inset:0; pointer-events:none;
+    background: linear-gradient(180deg, transparent 70%, #050807cc 100%),
+                repeating-linear-gradient(0deg, transparent 0px, transparent 3px, #5dff9e08 3px, #5dff9e08 4px); }
+  .photo-corner { position:absolute; bottom:8px; left:10px; right:10px; z-index:2; color:var(--green-dim); font-size:9px; letter-spacing:0.15em; display:flex; justify-content:space-between; }
+  .photo-loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--green-dim); font-size:11px; letter-spacing:0.2em; animation:pulse-loading 1.4s infinite; }
+  .aircraft-info-side { display:flex; flex-direction:column; gap:10px; }
+  .ac-target { font-family:var(--display); font-size:18px; color:var(--text); font-weight:700; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:4px; }
+  .ac-target small { display:block; font-family:var(--mono); font-size:10px; color:var(--text-faint); letter-spacing:0.15em; font-weight:400; margin-bottom:4px; }
+  .ac-row { display:flex; gap:8px; flex-wrap:wrap; font-size:11px; }
+  .ac-chip { background:#0b110e; border:1px solid var(--border); padding:6px 10px; letter-spacing:0.08em; color:var(--text-dim); }
+  .ac-chip strong { color:var(--green); margin-right:6px; font-weight:700; }
+  .hint-row { margin:14px 0 6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 14px; background:var(--amber-bg); border-left:3px solid var(--amber); min-height:48px; }
+  .hint-row.empty { background:transparent; border-color:var(--border); }
+  .hint-label { color:var(--amber); font-size:10px; letter-spacing:0.18em; font-weight:700; }
+  .hint-row.empty .hint-label { color:var(--text-faint); }
+  .hint-text { color:var(--text); font-size:12px; flex:1; }
+  .hint-row.empty .hint-text { color:var(--text-faint); font-style:italic; }
+  .btn-hint { background:transparent; border:1px solid var(--amber); color:var(--amber); padding:6px 14px; font-family:var(--mono); font-size:11px; letter-spacing:0.15em; cursor:pointer; font-weight:700; }
+  .btn-hint:hover { background:var(--amber); color:#050807; }
+  .btn-hint:disabled { opacity:0.3; cursor:not-allowed; border-color:var(--border); color:var(--text-faint); }
+  .big-prompt { font-family:var(--display); font-size:64px; font-weight:700; color:var(--green); letter-spacing:0.04em; text-align:center; margin:32px 0 14px; text-shadow:0 0 24px #5dff9e30; line-height:1; }
+  .big-prompt.small { font-size:38px; }
+  .prompt-hint { text-align:center; color:var(--text-faint); font-size:11px; letter-spacing:0.2em; margin-bottom:14px; }
+  .input-row { display:flex; gap:10px; margin-top:18px; }
+  .input-row input { flex:1; background:#050807; border:1px solid var(--border-bright); color:var(--green); padding:16px 18px; font-family:var(--mono); font-size:18px; letter-spacing:0.08em; outline:none; text-transform:uppercase; }
+  .input-row input:focus { border-color:var(--green); box-shadow:0 0 0 1px #5dff9e30, inset 0 0 20px #5dff9e08; }
+  .input-row input::placeholder { color:var(--text-faint); text-transform:none; letter-spacing:0.1em; }
+  .btn { background:var(--green-bg); border:1px solid var(--green); color:var(--green); padding:0 22px; font-family:var(--mono); font-size:12px; letter-spacing:0.18em; font-weight:700; cursor:pointer; transition:all 0.1s; }
+  .btn:hover { background:var(--green); color:#050807; text-shadow:none; }
+  .btn.ghost { background:transparent; border-color:var(--border-bright); color:var(--text-dim); }
+  .btn.ghost:hover { background:var(--border); color:var(--text); }
+  .feedback { margin-top:16px; padding:0; display:none; }
+  .feedback.show { display:block; }
+  .feedback-banner { padding:12px 16px; border-left:3px solid; font-size:13px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .feedback.ok .feedback-banner { background:var(--green-bg); border-color:var(--green); color:var(--green); }
+  .feedback.no .feedback-banner { background:var(--red-bg); border-color:var(--red); color:var(--red); }
+  .feedback .answer { font-family:var(--display); font-size:16px; font-weight:700; }
+  .reveal { background:var(--panel-2); border:1px solid var(--border); border-top:none; padding:18px 20px; }
+  .reveal-title { font-family:var(--display); font-size:22px; color:var(--green); font-weight:700; margin-bottom:4px; letter-spacing:0.01em; }
+  .reveal-sub { font-size:11px; letter-spacing:0.15em; color:var(--text-faint); margin-bottom:14px; }
+  .reveal-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:8px 14px; font-size:12px; }
+  .reveal-grid .item { display:flex; flex-direction:column; gap:2px; padding:7px 0; border-bottom:1px dashed var(--border); }
+  .reveal-grid .item-label { font-size:9px; letter-spacing:0.18em; color:var(--text-faint); }
+  .reveal-grid .item-val { color:var(--text); }
+  .reveal-grid .item-val strong { color:var(--green); font-weight:700; }
+  .reveal-ops { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); font-size:11px; color:var(--text-dim); line-height:1.6; }
+  .reveal-ops strong { color:var(--amber); display:block; font-size:9px; letter-spacing:0.2em; margin-bottom:4px; }
+  .controls { display:flex; gap:8px; padding:12px 18px; border-top:1px solid var(--border); background:var(--panel-2); justify-content:space-between; align-items:center; }
+  .controls-left { display:flex; gap:8px; flex-wrap:wrap; }
+  .controls-right { display:flex; gap:8px; }
+  .filter-chip { background:transparent; border:1px solid var(--border); color:var(--text-dim); padding:6px 10px; font-family:var(--mono); font-size:10px; letter-spacing:0.12em; cursor:pointer; white-space:nowrap; }
+  .filter-chip.on { border-color:var(--green-dim); color:var(--green); background:var(--green-bg); }
+  .filter-chip:hover { border-color:var(--border-bright); }
+  .weak-section { margin-top:20px; background:var(--panel); border:1px solid var(--border); padding:14px 18px; }
+  .weak-title { font-size:11px; letter-spacing:0.2em; color:var(--amber); margin-bottom:10px; display:flex; gap:10px; align-items:center; }
+  .weak-title::before { content:'!'; display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border:1px solid var(--amber); color:var(--amber); font-weight:700; }
+  .weak-list { display:flex; flex-wrap:wrap; gap:6px; }
+  .weak-item { font-size:11px; padding:4px 8px; background:var(--amber-bg); border:1px solid var(--amber); color:var(--amber); letter-spacing:0.05em; }
+  .weak-empty { color:var(--text-faint); font-size:11px; }
+  .session-done { padding:40px 28px; text-align:center; }
+  .session-done h2 { font-family:var(--display); font-size:28px; color:var(--green); margin-bottom:8px; letter-spacing:0.02em; }
+  .session-done p { color:var(--text-dim); margin-bottom:24px; }
+  .score-big { font-size:72px; color:var(--green); font-weight:800; font-family:var(--mono); text-shadow:0 0 20px #5dff9e40; }
+  @media (max-width:760px) {
+    .aircraft-display { grid-template-columns:1fr; }
+    .big-prompt { font-size:44px; }
+    .big-prompt.small { font-size:28px; }
+    .tab .tab-label { font-size:11px; }
+    .qcard { padding:20px 16px; }
+  }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+  .blink { animation:blink 1.4s infinite; }
+  @keyframes pulse-loading { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <span class="brand-mark">▲ ATCO TRAINER</span>
+      <span class="brand-sub">LPS SR // TRAINING MODULE v2</span>
+    </div>
+    <div class="clock"><span class="blink">●</span> <span id="clock">--:--:-- UTC</span></div>
+  </header>
+  <div class="tabs">
+    <button class="tab active" data-mode="aircraft"><span class="tab-num">MOD 01</span><span class="tab-label">AIRCRAFT TYPE</span></button>
+    <button class="tab" data-mode="airport"><span class="tab-num">MOD 02</span><span class="tab-label">AIRPORTS / ICAO</span></button>
+    <button class="tab" data-mode="callsign"><span class="tab-num">MOD 03</span><span class="tab-label">CALLSIGNS</span></button>
+  </div>
+  <div class="panel">
+    <div class="panel-head">
+      <div><span id="mode-label">AIRCRAFT TYPE</span> <span style="margin-left:10px;color:var(--text-faint)">QUESTION <span id="qnum">1</span> / <span id="qtotal">--</span></span></div>
+      <div class="stats">
+        <div class="stat"><span class="stat-label">CORRECT</span><span class="stat-val" id="stat-correct">0</span></div>
+        <div class="stat"><span class="stat-label">WRONG</span><span class="stat-val red" id="stat-wrong">0</span></div>
+        <div class="stat"><span class="stat-label">STREAK</span><span class="stat-val amber" id="stat-streak">0</span></div>
+      </div>
+    </div>
+    <div id="qcard" class="qcard"></div>
+    <div class="controls">
+      <div class="controls-left" id="filters"></div>
+      <div class="controls-right">
+        <button class="btn ghost" id="btn-skip">SKIP →</button>
+        <button class="btn ghost" id="btn-reset">RESET</button>
+      </div>
+    </div>
+  </div>
+  <div class="weak-section">
+    <div class="weak-title">WEAK SPOTS (3+ wrong attempts)</div>
+    <div class="weak-list" id="weak-list"><span class="weak-empty">— no weak spots yet —</span></div>
+  </div>
+</div>
+<script>
+/* ============================================================
+   AIRCRAFT DATA - Wikipedia article title is used to fetch real photos
+   via Wikipedia REST API (CORS-enabled, returns infobox thumbnail)
+   ============================================================ */
+
+const AIRCRAFT = [
+  {
+    icao: 'B738', name: 'Boeing 737-800', mfr: 'Boeing',
+    wiki: 'Boeing_737_Next_Generation',
+    wake: 'M', engines: '2× CFM56-7B turbofan', enginesCount: 2,
+    cruise: '447 kt (M0.785)', mmo: 'M0.82', vne: '340 kt IAS',
+    stall: '~108 kt (clean, MTOW)', ceiling: 'FL410',
+    mtow: '79 t', length: '39.5 m', wingspan: '35.8 m',
+    range: '5,400 km', pax: '~189',
+    role: 'Workhorse narrowbody, short/medium-haul',
+    operators: 'Ryanair, SmartWings, Jet2, Delta, AA, KLM, TUI fly',
+    accept: ['B738','737-800','737 800','737800','737','b737','737NG'],
+    hints: [
+      'Most popular narrowbody twinjet in service. Two engines under wings.',
+      'CFM56-7B engines — common workhorse engine type.',
+      'Ryanair operates over 400 of these — you will hear them at LZIB daily.',
+      'Boeing. 737 family. "Next Generation" (NG).',
+    ],
+  },
+  {
+    icao: 'B38M', name: 'Boeing 737 MAX 8', mfr: 'Boeing',
+    wiki: 'Boeing_737_MAX',
+    wake: 'M', engines: '2× CFM LEAP-1B turbofan', enginesCount: 2,
+    cruise: '450 kt (M0.79)', mmo: 'M0.82', vne: '340 kt IAS',
+    stall: '~115 kt (clean, MTOW)', ceiling: 'FL410',
+    mtow: '82 t', length: '39.5 m', wingspan: '35.9 m',
+    range: '6,500 km', pax: '~189-200',
+    role: 'Re-engined NG successor, more efficient',
+    operators: 'Ryanair (200-seat high density), SmartWings, AA, United, Southwest',
+    accept: ['B38M','737 MAX 8','737 MAX','737MAX','MAX 8','MAX8','B737MAX','737-8'],
+    hints: [
+      'Newer generation Boeing narrowbody, twin LEAP engines.',
+      'Distinguishable by SPLIT-TIP (AT) winglets — look at the wingtips.',
+      'Same fuselage as 737-800 but new engines, new winglets.',
+      'Boeing. 737 family. Latest "MAX" generation.',
+    ],
+  },
+  {
+    icao: 'B752', name: 'Boeing 757-200', mfr: 'Boeing',
+    wiki: 'Boeing_757',
+    wake: 'M', engines: '2× RR RB211 or P&W PW2000 turbofan', enginesCount: 2,
+    cruise: '470 kt (M0.80)', mmo: 'M0.86', vne: '350 kt IAS',
+    stall: '~117 kt (clean)', ceiling: 'FL420',
+    mtow: '116 t', length: '47.3 m', wingspan: '38.1 m',
+    range: '7,200 km', pax: '~200',
+    role: 'Long thin narrowbody, transatlantic-capable',
+    operators: 'DHL Air (cargo), FedEx, Icelandair, Delta, United',
+    accept: ['B752','757-200','757','b757'],
+    hints: [
+      'Long, slender narrowbody — often mistaken for a widebody from afar.',
+      'Notorious for HEAVY wake turbulence despite being MEDIUM WTC.',
+      'DHL operates a big freighter fleet — night cargo ops.',
+      'Boeing. 757 family. Out of production since 2005.',
+    ],
+  },
+  {
+    icao: 'B763', name: 'Boeing 767-300', mfr: 'Boeing',
+    wiki: 'Boeing_767',
+    wake: 'H', engines: '2× GE CF6 / PW4000 / RB211 turbofan', enginesCount: 2,
+    cruise: '470 kt (M0.80)', mmo: 'M0.86', vne: '360 kt IAS',
+    stall: '~135 kt (clean, MTOW)', ceiling: 'FL430',
+    mtow: '186 t', length: '54.9 m', wingspan: '47.6 m',
+    range: '11,000 km (ER)', pax: '~269',
+    role: 'Mid-size widebody twin, often cargo',
+    operators: 'UPS, FedEx, Delta, ANA, JAL',
+    accept: ['B763','767-300','767','b767'],
+    hints: [
+      'Twin-aisle WIDEBODY, twin engines under wings.',
+      'Big cargo platform — UPS and FedEx have huge fleets.',
+      'Smaller than 777, larger than 757.',
+      'Boeing. 767 family.',
+    ],
+  },
+  {
+    icao: 'B772', name: 'Boeing 777-200', mfr: 'Boeing',
+    wiki: 'Boeing_777',
+    wake: 'H', engines: '2× GE90 / PW4000 / RR Trent 800 turbofan', enginesCount: 2,
+    cruise: '480 kt (M0.84)', mmo: 'M0.89', vne: '370 kt IAS',
+    stall: '~145 kt (clean, MTOW)', ceiling: 'FL431',
+    mtow: '247 t', length: '63.7 m', wingspan: '60.9 m',
+    range: '15,800 km (LR)', pax: '~314',
+    role: 'Long-haul widebody twin',
+    operators: 'United, AA, BA, Emirates, Air France',
+    accept: ['B772','777-200','777','b777'],
+    hints: [
+      'Biggest twin-engine widebody in production.',
+      'Engines are enormous — GE90 is one of the largest jet engines ever made.',
+      'Long-range twin, twin aisle.',
+      'Boeing. 777 family.',
+    ],
+  },
+  {
+    icao: 'B77W', name: 'Boeing 777-300ER', mfr: 'Boeing',
+    wiki: 'Boeing_777',
+    wake: 'H', engines: '2× GE90-115B turbofan', enginesCount: 2,
+    cruise: '490 kt (M0.84)', mmo: 'M0.89', vne: '370 kt IAS',
+    stall: '~150 kt (clean, MTOW)', ceiling: 'FL431',
+    mtow: '352 t', length: '73.9 m', wingspan: '64.8 m',
+    range: '13,650 km', pax: '~396',
+    role: 'Long-haul widebody twin (largest twin)',
+    operators: 'Emirates (largest fleet ~130), Air France, BA, Qatar, Cathay',
+    accept: ['B77W','777-300','777-300ER','777ER','77W'],
+    hints: [
+      'Stretched version of B772 — same family, longer body.',
+      'Longest twinjet in service — over 73 metres long.',
+      'Emirates flies the largest fleet in the world.',
+      'Boeing. 777 family, extended range stretch (ER).',
+    ],
+  },
+  {
+    icao: 'B788', name: 'Boeing 787-8 Dreamliner', mfr: 'Boeing',
+    wiki: 'Boeing_787_Dreamliner',
+    wake: 'H', engines: '2× GEnx-1B / RR Trent 1000 turbofan', enginesCount: 2,
+    cruise: '485 kt (M0.85)', mmo: 'M0.90', vne: '370 kt IAS',
+    stall: '~140 kt (clean, MTOW)', ceiling: 'FL430',
+    mtow: '228 t', length: '56.7 m', wingspan: '60.1 m',
+    range: '13,620 km', pax: '~242',
+    role: 'Composite long-haul widebody',
+    operators: 'ANA, JAL, United, Norwegian, Air India',
+    accept: ['B788','787-8','787','dreamliner','b787'],
+    hints: [
+      'Composite (carbon fibre) fuselage, scalloped engine nacelle trailing edges, raked wingtips.',
+      'Twin engines, widebody, very long range.',
+      'Same family as B789 — but shorter baseline.',
+      'Boeing. 787 Dreamliner family.',
+    ],
+  },
+  {
+    icao: 'B789', name: 'Boeing 787-9 Dreamliner', mfr: 'Boeing',
+    wiki: 'Boeing_787_Dreamliner',
+    wake: 'H', engines: '2× GEnx-1B / RR Trent 1000 turbofan', enginesCount: 2,
+    cruise: '485 kt (M0.85)', mmo: 'M0.90', vne: '370 kt IAS',
+    stall: '~145 kt (clean, MTOW)', ceiling: 'FL430',
+    mtow: '254 t', length: '62.8 m', wingspan: '60.1 m',
+    range: '14,800 km', pax: '~290',
+    role: 'Composite long-haul widebody (stretched)',
+    operators: 'Lufthansa, BA, KLM, ANA, Qatar, Etihad',
+    accept: ['B789','787-9'],
+    hints: [
+      'Stretched composite long-hauler with raked wingtips and scalloped nacelles.',
+      'Twin engines, widebody.',
+      'Same family as B788 but longer.',
+      'Boeing. 787 family, stretched variant.',
+    ],
+  },
+  {
+    icao: 'B748', name: 'Boeing 747-8', mfr: 'Boeing',
+    wiki: 'Boeing_747-8',
+    wake: 'H', engines: '4× GEnx-2B67 turbofan', enginesCount: 4,
+    cruise: '500 kt (M0.86)', mmo: 'M0.90', vne: '365 kt IAS',
+    stall: '~160 kt (clean, MTOW)', ceiling: 'FL431',
+    mtow: '447 t', length: '76.3 m', wingspan: '68.4 m',
+    range: '14,300 km', pax: '~410',
+    role: 'Last passenger 747 generation, mostly cargo now',
+    operators: 'Lufthansa (only major pax operator), Cargolux, Atlas Air, UPS',
+    accept: ['B748','747-8','7478','747'],
+    hints: [
+      'Iconic upper-deck "hump", FOUR engines, widebody.',
+      'Lufthansa is the last major passenger operator.',
+      'Cargo version is everywhere — Cargolux, Atlas Air, UPS.',
+      'Boeing. 747 family, final generation.',
+    ],
+  },
+  {
+    icao: 'A320', name: 'Airbus A320-200', mfr: 'Airbus',
+    wiki: 'Airbus_A320_family',
+    wake: 'M', engines: '2× CFM56-5B / IAE V2500 turbofan', enginesCount: 2,
+    cruise: '447 kt (M0.78)', mmo: 'M0.82', vne: '350 kt IAS',
+    stall: '~107 kt (clean, MTOW)', ceiling: 'FL390',
+    mtow: '78 t', length: '37.6 m', wingspan: '35.8 m (with sharklets)',
+    range: '6,150 km', pax: '~180',
+    role: 'Airbus workhorse narrowbody',
+    operators: 'Wizz Air, easyJet, Lufthansa, AF, Delta, AA',
+    accept: ['A320','a 320','a-320','320'],
+    hints: [
+      'Airbus narrowbody, fly-by-wire. Twin engines under wings.',
+      'Main competitor to Boeing 737.',
+      'Sharklets at wingtips on newer aircraft.',
+      'Airbus. A320 family, baseline variant.',
+    ],
+  },
+  {
+    icao: 'A21N', name: 'Airbus A321neo', mfr: 'Airbus',
+    wiki: 'Airbus_A321neo',
+    wake: 'M', engines: '2× CFM LEAP-1A / PW1100G turbofan', enginesCount: 2,
+    cruise: '455 kt (M0.78)', mmo: 'M0.82', vne: '350 kt IAS',
+    stall: '~115 kt (clean, MTOW)', ceiling: 'FL390',
+    mtow: '97 t', length: '44.5 m', wingspan: '35.8 m',
+    range: '7,400 km', pax: '~244 (Wizz high-density)',
+    role: 'Stretched re-engined narrowbody',
+    operators: 'Wizz Air (huge fleet), Lufthansa, AA, Delta, Aer Lingus',
+    accept: ['A21N','A321NEO','A321 NEO','A321-NEO'],
+    hints: [
+      'Re-engined stretched Airbus narrowbody, twin engines.',
+      'Wizz Air operates this almost exclusively — most common A21N around here.',
+      '"neo" = new engine option. Sharklets at wingtips.',
+      'Airbus. A320 family, stretched + re-engined.',
+    ],
+  },
+  {
+    icao: 'A319', name: 'Airbus A319', mfr: 'Airbus',
+    wiki: 'Airbus_A319',
+    wake: 'M', engines: '2× CFM56-5B / IAE V2500 turbofan', enginesCount: 2,
+    cruise: '447 kt (M0.78)', mmo: 'M0.82', vne: '350 kt IAS',
+    stall: '~105 kt (clean)', ceiling: 'FL390',
+    mtow: '75.5 t', length: '33.8 m', wingspan: '35.8 m',
+    range: '6,650 km', pax: '~156',
+    role: 'Shortened A320 family member',
+    operators: 'BA, Austrian, Lufthansa, AF',
+    accept: ['A319','a 319','319'],
+    hints: [
+      'Shortest member of the A320 family.',
+      'Twin engines, Airbus narrowbody.',
+      'Austrian Airlines uses these at LOWW for short-haul.',
+      'Airbus. A320 family, shrunk variant.',
+    ],
+  },
+  {
+    icao: 'A333', name: 'Airbus A330-300', mfr: 'Airbus',
+    wiki: 'Airbus_A330',
+    wake: 'H', engines: '2× GE CF6 / PW4000 / RR Trent 700 turbofan', enginesCount: 2,
+    cruise: '470 kt (M0.82)', mmo: 'M0.86', vne: '360 kt IAS',
+    stall: '~145 kt (clean, MTOW)', ceiling: 'FL410',
+    mtow: '242 t', length: '63.7 m', wingspan: '60.3 m',
+    range: '11,750 km', pax: '~277',
+    role: 'Long-haul widebody twin',
+    operators: 'Lufthansa, Turkish, Delta, KLM, Cathay',
+    accept: ['A333','A330-300','A330','333'],
+    hints: [
+      'Twin-engine widebody, twin aisle.',
+      'Looks like A340 but with TWO engines instead of four.',
+      'Common European long-haul twin.',
+      'Airbus. A330 family, stretched variant.',
+    ],
+  },
+  {
+    icao: 'A359', name: 'Airbus A350-900', mfr: 'Airbus',
+    wiki: 'Airbus_A350',
+    wake: 'H', engines: '2× RR Trent XWB turbofan', enginesCount: 2,
+    cruise: '488 kt (M0.85)', mmo: 'M0.89', vne: '365 kt IAS',
+    stall: '~145 kt (clean)', ceiling: 'FL430',
+    mtow: '280 t', length: '66.8 m', wingspan: '64.8 m',
+    range: '15,000 km', pax: '~315',
+    role: 'Composite long-haul widebody',
+    operators: 'Qatar, Lufthansa, SIA, Cathay, Air France',
+    accept: ['A359','A350-900','A350','350'],
+    hints: [
+      'Composite widebody, distinctive "black mask" cockpit window paint.',
+      'Curved blended wingtips (not winglets), no scallops on engine nacelles.',
+      'Twin Rolls-Royce engines only — no other option.',
+      'Airbus. A350 family, baseline variant.',
+    ],
+  },
+  {
+    icao: 'A388', name: 'Airbus A380-800', mfr: 'Airbus',
+    wiki: 'Airbus_A380',
+    wake: 'J', engines: '4× RR Trent 900 / GP7200 turbofan', enginesCount: 4,
+    cruise: '490 kt (M0.85)', mmo: 'M0.89', vne: '340 kt IAS',
+    stall: '~150 kt (clean)', ceiling: 'FL431',
+    mtow: '575 t', length: '72.7 m', wingspan: '79.8 m',
+    range: '15,200 km', pax: '~525 (3-class)',
+    role: 'Largest passenger aircraft ever built',
+    operators: 'Emirates (largest fleet ~120), BA, Lufthansa, Qantas, SIA',
+    accept: ['A388','A380','superjumbo','a380-800','388'],
+    hints: [
+      'FULL double-decker, four engines, biggest passenger aircraft in service.',
+      'WTC = SUPER (the only category J / Super aircraft).',
+      'Emirates flies the largest fleet — over 100 of these.',
+      'Airbus. The flagship.',
+    ],
+  },
+  {
+    icao: 'E190', name: 'Embraer E190', mfr: 'Embraer',
+    wiki: 'Embraer_E-Jet_family',
+    wake: 'M', engines: '2× GE CF34-10E turbofan', enginesCount: 2,
+    cruise: '440 kt (M0.78)', mmo: 'M0.82', vne: '320 kt IAS',
+    stall: '~110 kt (clean)', ceiling: 'FL410',
+    mtow: '51 t', length: '36.2 m', wingspan: '28.7 m',
+    range: '4,500 km', pax: '~100',
+    role: 'Regional jet (twin, under-wing engines)',
+    operators: 'KLM Cityhopper, LH CityLine, BA CityFlyer, Helvetic',
+    accept: ['E190','EMB190','ERJ190','190'],
+    hints: [
+      'Regional jet from Brazilian manufacturer.',
+      'Twin engines UNDER wings (not rear-mounted).',
+      'KLM Cityhopper operates a big fleet.',
+      'Embraer. E-Jet family.',
+    ],
+  },
+  {
+    icao: 'CRJ9', name: 'Bombardier CRJ-900', mfr: 'Bombardier',
+    wiki: 'Bombardier_CRJ700_series',
+    wake: 'M', engines: '2× GE CF34-8C5 turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '447 kt (M0.78)', mmo: 'M0.85', vne: '320 kt IAS',
+    stall: '~125 kt (clean)', ceiling: 'FL410',
+    mtow: '38 t', length: '36.2 m', wingspan: '24.9 m',
+    range: '2,950 km', pax: '~90',
+    role: 'Regional jet, rear-mounted engines, T-tail',
+    operators: 'LH CityLine, Air Canada Express, Delta Connection',
+    accept: ['CRJ9','CRJ-900','CRJ900','CRJ','crj 900'],
+    hints: [
+      'T-TAIL, fuselage-mounted engines at the REAR (not under wings).',
+      'Slim regional jet from Canadian maker.',
+      'LH CityLine operates these at LOWW.',
+      'Bombardier. CRJ family, stretched variant.',
+    ],
+  },
+  {
+    icao: 'AT76', name: 'ATR 72-600', mfr: 'ATR',
+    wiki: 'ATR_72',
+    wake: 'M', engines: '2× PW127M turboprop', enginesCount: 2,
+    cruise: '275 kt', mmo: '250 kt VMO', vne: '286 kt',
+    stall: '~85 kt (clean)', ceiling: 'FL250',
+    mtow: '23 t', length: '27.2 m', wingspan: '27.1 m',
+    range: '1,500 km', pax: '~72',
+    role: 'Regional turboprop, high-wing',
+    operators: 'CSA, Air Baltic (older), Wings of Lebanon, Iberia Regional',
+    accept: ['AT76','ATR 72-600','ATR72-600','ATR72','ATR 72','ATR-72','AT72'],
+    hints: [
+      'High-wing TURBOPROP regional. Two propellers.',
+      'Very common European regional aircraft.',
+      'Made by Airbus/Leonardo joint venture (France/Italy).',
+      'ATR family. 72-seat variant.',
+    ],
+  },
+  {
+    icao: 'DH8D', name: 'Bombardier Dash 8 Q400', mfr: 'Bombardier (De Havilland Canada)',
+    wiki: 'De_Havilland_Canada_Dash_8',
+    wake: 'M', engines: '2× PW150A turboprop', enginesCount: 2,
+    cruise: '360 kt', mmo: '286 kt VMO', vne: '320 kt',
+    stall: '~90 kt (clean)', ceiling: 'FL250',
+    mtow: '29.6 t', length: '32.8 m', wingspan: '28.4 m',
+    range: '2,040 km', pax: '~78',
+    role: 'Fast regional turboprop, high-wing',
+    operators: 'LOT, Croatia Airlines, Austrian (historical), WestJet',
+    accept: ['DH8D','DASH 8','DASH8','Q400','DHC-8','DHC8','Dash8'],
+    hints: [
+      'High-wing TURBOPROP, very tall main gear, six-bladed props.',
+      'Fastest turboprop in commercial service.',
+      'LOT Polish Airlines operates these on regional routes.',
+      'De Havilland Canada / Bombardier. Dash 8 family, Q400.',
+    ],
+  },
+  {
+    icao: 'C56X', name: 'Cessna Citation Excel/XLS', mfr: 'Cessna (Textron)',
+    wiki: 'Cessna_Citation_Excel',
+    wake: 'L', engines: '2× PW545 turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '430 kt (M0.75)', mmo: 'M0.78', vne: '305 kt IAS',
+    stall: '~92 kt (clean)', ceiling: 'FL450',
+    mtow: '9.2 t', length: '15.9 m', wingspan: '17.2 m',
+    range: '3,700 km', pax: '~8',
+    role: 'Mid-size business jet',
+    operators: 'NetJets, VistaJet, private owners',
+    accept: ['C56X','CITATION EXCEL','EXCEL','XLS','Citation XLS','C560'],
+    hints: [
+      'Mid-size BIZJET, T-tail, rear-mounted engines.',
+      'Common executive transport — NetJets has many.',
+      'Cessna. Citation Excel/XLS family.',
+      'Light WTC — small jet.',
+    ],
+  },
+  {
+    icao: 'GLF6', name: 'Gulfstream G650', mfr: 'Gulfstream',
+    wiki: 'Gulfstream_G650',
+    wake: 'M', engines: '2× BR725 turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '488 kt (M0.85)', mmo: 'M0.925', vne: '340 kt IAS',
+    stall: '~110 kt (clean)', ceiling: 'FL510',
+    mtow: '45.4 t', length: '30.4 m', wingspan: '30.4 m',
+    range: '13,000 km', pax: '~18',
+    role: 'Ultra-long-range bizjet (top of market)',
+    operators: 'Billionaires, heads of state, Qatar Executive, NetJets',
+    accept: ['GLF6','G650','GULFSTREAM 650','GULFSTREAM G650','G-VI'],
+    hints: [
+      'Long-range BIZJET, T-tail, rear engines, big oval windows.',
+      'Can fly almost any city pair non-stop.',
+      'M0.925 — among fastest civilian jets in widespread service.',
+      'Gulfstream. G650 / G-VI.',
+    ],
+  },
+  {
+    icao: 'C172', name: 'Cessna 172 Skyhawk', mfr: 'Cessna',
+    wiki: 'Cessna_172',
+    wake: 'L', engines: '1× Lycoming IO-360 piston (180 hp)', enginesCount: 1,
+    cruise: '122 kt', mmo: 'N/A (piston)', vne: '163 kt IAS',
+    stall: '~47 kt clean / 40 kt full flaps', ceiling: '13,500 ft',
+    mtow: '1.16 t', length: '8.28 m', wingspan: '11.0 m',
+    range: '1,272 km', pax: '4 seats',
+    role: 'World\'s most popular flight trainer',
+    operators: 'Every flight school on the planet',
+    accept: ['C172','CESSNA 172','SKYHAWK','172'],
+    hints: [
+      'HIGH-WING single piston engine, fixed tricycle gear.',
+      'World\'s most-produced general aviation aircraft.',
+      'You will see these doing circuits at LZIB constantly.',
+      'Cessna. 172 family.',
+    ],
+  },
+  {
+    icao: 'C152', name: 'Cessna 152', mfr: 'Cessna',
+    wiki: 'Cessna_152',
+    wake: 'L', engines: '1× Lycoming O-235 piston (110 hp)', enginesCount: 1,
+    cruise: '107 kt', mmo: 'N/A', vne: '149 kt IAS',
+    stall: '~43 kt (clean)', ceiling: '14,700 ft',
+    mtow: '0.76 t', length: '7.34 m', wingspan: '10.2 m',
+    range: '768 km', pax: '2 seats',
+    role: 'Two-seat basic trainer',
+    operators: 'Flying clubs worldwide',
+    accept: ['C152','CESSNA 152','152'],
+    hints: [
+      'Two-seat HIGH-WING trainer, smaller sibling of C172.',
+      'Single piston engine, fixed gear.',
+      'Basic flying school workhorse.',
+      'Cessna. 152 family.',
+    ],
+  },
+  {
+    icao: 'P28A', name: 'Piper PA-28 Cherokee/Warrior/Archer', mfr: 'Piper',
+    wiki: 'Piper_PA-28_Cherokee',
+    wake: 'L', engines: '1× Lycoming O-320/O-360 piston (160-180 hp)', enginesCount: 1,
+    cruise: '125 kt', mmo: 'N/A', vne: '160 kt IAS',
+    stall: '~50 kt (clean)', ceiling: '13,500 ft',
+    mtow: '1.16 t', length: '7.32 m', wingspan: '10.7 m',
+    range: '1,100 km', pax: '4 seats',
+    role: 'Low-wing trainer / tourer',
+    operators: 'Flying schools, private owners',
+    accept: ['P28A','PA-28','PA28','PIPER PA-28','CHEROKEE','WARRIOR','ARCHER'],
+    hints: [
+      'LOW-WING single piston, fixed gear, four-seat.',
+      'Direct competitor to C172 but with wings BELOW the fuselage.',
+      'Piper. PA-28 family (Cherokee / Warrior / Archer).',
+      'Single propeller, single engine.',
+    ],
+  },
+  {
+    icao: 'DA40', name: 'Diamond DA40 Diamond Star', mfr: 'Diamond Aircraft',
+    wiki: 'Diamond_DA40_Diamond_Star',
+    wake: 'L', engines: '1× Lycoming IO-360 or Austro AE300 diesel', enginesCount: 1,
+    cruise: '150 kt', mmo: 'N/A', vne: '178 kt IAS',
+    stall: '~49 kt (clean)', ceiling: '16,400 ft',
+    mtow: '1.28 t', length: '8.06 m', wingspan: '11.94 m',
+    range: '1,650 km', pax: '4 seats',
+    role: 'Modern composite trainer',
+    operators: 'European flight schools, Austrian flying clubs',
+    accept: ['DA40','DIAMOND DA40','DA 40','Diamond Star'],
+    hints: [
+      'LOW-WING composite trainer, single piston engine, fixed gear.',
+      'Austrian-made. Very popular at European flight schools.',
+      'T-tail makes it look modern compared to PA-28.',
+      'Diamond Aircraft. DA40 family.',
+    ],
+  },
+  {
+    icao: 'DA42', name: 'Diamond DA42 Twin Star', mfr: 'Diamond Aircraft',
+    wiki: 'Diamond_DA42',
+    wake: 'L', engines: '2× Austro AE300 diesel (turbocharged)', enginesCount: 2,
+    cruise: '170 kt', mmo: 'N/A', vne: '194 kt IAS',
+    stall: '~64 kt (clean)', ceiling: '18,000 ft',
+    mtow: '1.99 t', length: '8.56 m', wingspan: '13.55 m',
+    range: '2,250 km', pax: '4 seats',
+    role: 'Composite twin trainer (multi-engine rating)',
+    operators: 'Multi-engine flight schools, surveillance ops',
+    accept: ['DA42','DIAMOND DA42','TWIN STAR','DA 42','Diamond Twin'],
+    hints: [
+      'TWIN-engine composite trainer, low wing, T-tail.',
+      'Same maker as DA40 but with TWO engines.',
+      'Diesel engines burning JET-A — unique in this class.',
+      'Diamond Aircraft. DA42 / Twin Star.',
+    ],
+  },
+  {
+    icao: 'VSD4', name: 'Tomark Viper SD-4', mfr: 'Tomark Aero (Slovakia)',
+    wiki: 'Tomark_SD-4_Viper',
+    wake: 'L', engines: '1× Rotax 912 ULS piston (100 hp)', enginesCount: 1,
+    cruise: '120 kt', mmo: 'N/A', vne: '145 kt IAS',
+    stall: '~37 kt', ceiling: '13,000 ft',
+    mtow: '0.6 t (UL)', length: '6.5 m', wingspan: '9.0 m',
+    range: '850 km', pax: '2 seats',
+    role: 'Slovak ultralight / LSA',
+    operators: 'Slovak / Czech flying clubs, private owners',
+    accept: ['VSD4','VIPER SD-4','VIPER SD4','VIPER','SD-4','SD4','TOMARK VIPER'],
+    hints: [
+      'SLOVAK-made ultralight (LSA category).',
+      'Low-wing, single Rotax engine, two-seat.',
+      'Common at Slovak GA airfields.',
+      'Tomark Aero (Prešov, Slovakia). Viper family.',
+    ],
+  },
+  {
+    icao: 'PC12', name: 'Pilatus PC-12', mfr: 'Pilatus Aircraft',
+    wiki: 'Pilatus_PC-12',
+    wake: 'L', engines: '1× PT6A-67 turboprop', enginesCount: 1,
+    cruise: '280 kt', mmo: '236 kt VMO', vne: '280 kt',
+    stall: '~67 kt (clean)', ceiling: 'FL300',
+    mtow: '4.74 t', length: '14.4 m', wingspan: '16.3 m',
+    range: '3,400 km', pax: '~9',
+    role: 'Single-engine business turboprop',
+    operators: 'PlaneSense, owner-operators, medevac, surveyors',
+    accept: ['PC12','PILATUS','PILATUS PC-12','PC-12'],
+    hints: [
+      'SINGLE turboprop business aircraft, low wing, big four-blade propeller.',
+      'Swiss-made — Pilatus is from Switzerland.',
+      'Used for executive transport, medevac, freight.',
+      'Pilatus. PC-12 family.',
+    ],
+  },
+  {
+    icao: 'L410', name: 'Let L-410 Turbolet', mfr: 'Aircraft Industries (Czech Republic)',
+    wiki: 'Let_L-410_Turbolet',
+    wake: 'L', engines: '2× Walter M601 / GE H80 turboprop', enginesCount: 2,
+    cruise: '195 kt', mmo: '200 kt VMO', vne: '230 kt',
+    stall: '~80 kt (clean)', ceiling: 'FL200',
+    mtow: '6.6 t', length: '14.4 m', wingspan: '19.5 m',
+    range: '1,500 km', pax: '~19',
+    role: 'Czech twin-turboprop commuter',
+    operators: 'Aeroklub operators, parachuting, Russian regional airlines',
+    accept: ['L410','L-410','LET 410','TURBOLET','LET L-410'],
+    hints: [
+      'CZECH-built twin-turboprop, HIGH-WING, 19 passengers.',
+      'Very common parachute jump aircraft in Slovakia and Czechia.',
+      'Made in Kunovice, Czech Republic.',
+      'Aircraft Industries (Let). L-410 family.',
+    ],
+  },
+  {
+    icao: 'EC35', name: 'Airbus H135 (EC135)', mfr: 'Airbus Helicopters',
+    wiki: 'Eurocopter_EC135',
+    wake: 'L', engines: '2× Turbomeca Arrius 2B / PW206 turboshaft', enginesCount: 2,
+    cruise: '135 kt', mmo: 'N/A', vne: '155 kt',
+    stall: 'N/A (rotorcraft)', ceiling: '20,000 ft',
+    mtow: '2.95 t', length: '12.1 m', wingspan: 'rotor diameter 10.2 m',
+    range: '635 km', pax: '~6-7',
+    role: 'Light twin helicopter (HEMS, police)',
+    operators: 'ADAC Luftrettung, ÖAMTC, Slovak police, HEMS operators',
+    accept: ['EC35','H135','EC135','EUROCOPTER 135'],
+    hints: [
+      'TWIN-engine light helicopter with FENESTRON (ducted) tail rotor.',
+      'Air ambulance and police across central Europe.',
+      'Made by Airbus Helicopters (formerly Eurocopter).',
+      'No exposed tail rotor blades — fenestron design.',
+    ],
+  },
+
+  // === MORE BOEING ===
+  {
+    icao: 'B737', name: 'Boeing 737-700', mfr: 'Boeing',
+    wiki: 'Boeing_737_Next_Generation',
+    wake: 'M', engines: '2× CFM56-7B turbofan', enginesCount: 2,
+    cruise: '447 kt (M0.785)', mmo: 'M0.82', vne: '340 kt IAS',
+    stall: '~105 kt (clean)', ceiling: 'FL410',
+    mtow: '70 t', length: '33.6 m', wingspan: '35.8 m',
+    range: '6,230 km', pax: '~149',
+    role: 'Shorter NG variant',
+    operators: 'Southwest, United, WestJet',
+    accept: ['B737','737-700','737NG','7377'],
+    hints: ['Shorter 737 NG variant, twin CFM56.','Southwest USA fleet backbone.','Twin engines, narrowbody.','Boeing. 737 NG family, short variant.'],
+  },
+  {
+    icao: 'B739', name: 'Boeing 737-900', mfr: 'Boeing',
+    wiki: 'Boeing_737_Next_Generation',
+    wake: 'M', engines: '2× CFM56-7B turbofan', enginesCount: 2,
+    cruise: '447 kt (M0.785)', mmo: 'M0.82', vne: '340 kt IAS',
+    stall: '~115 kt (clean)', ceiling: 'FL410',
+    mtow: '85 t', length: '42.1 m', wingspan: '35.8 m',
+    range: '5,925 km', pax: '~215',
+    role: 'Stretched 737 NG',
+    operators: 'Alaska Airlines, Delta, Lion Air, United',
+    accept: ['B739','737-900','7379'],
+    hints: ['Longest 737 NG variant.','Twin CFM56 engines.','US carriers heavy users.','Boeing. 737 NG family, stretched.'],
+  },
+  {
+    icao: 'B39M', name: 'Boeing 737 MAX 9', mfr: 'Boeing',
+    wiki: 'Boeing_737_MAX',
+    wake: 'M', engines: '2× CFM LEAP-1B turbofan', enginesCount: 2,
+    cruise: '450 kt (M0.79)', mmo: 'M0.82', vne: '340 kt IAS',
+    stall: '~118 kt (clean)', ceiling: 'FL410',
+    mtow: '88 t', length: '42.2 m', wingspan: '35.9 m',
+    range: '6,570 km', pax: '~220',
+    role: 'Stretched MAX variant',
+    operators: 'United, Alaska, Copa, Lion Air',
+    accept: ['B39M','737 MAX 9','MAX 9','MAX9','737-9'],
+    hints: ['Stretched MAX, split-tip winglets.','LEAP engines.','Same family as MAX 8 but longer.','Boeing. 737 MAX family.'],
+  },
+  {
+    icao: 'B764', name: 'Boeing 767-400ER', mfr: 'Boeing',
+    wiki: 'Boeing_767',
+    wake: 'H', engines: '2× GE CF6 / PW4000 turbofan', enginesCount: 2,
+    cruise: '470 kt (M0.80)', mmo: 'M0.86', vne: '360 kt IAS',
+    stall: '~140 kt (clean)', ceiling: 'FL430',
+    mtow: '204 t', length: '61.4 m', wingspan: '51.9 m',
+    range: '10,400 km', pax: '~304',
+    role: 'Stretched 767 widebody',
+    operators: 'Delta, United (cargo)',
+    accept: ['B764','767-400','767-400ER','764'],
+    hints: ['Stretched 767 with raked wingtips.','Widebody twin.','Less common than 767-300.','Boeing. 767 family, longest variant.'],
+  },
+  {
+    icao: 'B78X', name: 'Boeing 787-10 Dreamliner', mfr: 'Boeing',
+    wiki: 'Boeing_787_Dreamliner',
+    wake: 'H', engines: '2× GEnx-1B / RR Trent 1000 turbofan', enginesCount: 2,
+    cruise: '485 kt (M0.85)', mmo: 'M0.90', vne: '370 kt IAS',
+    stall: '~150 kt (clean)', ceiling: 'FL430',
+    mtow: '254 t', length: '68.3 m', wingspan: '60.1 m',
+    range: '11,910 km', pax: '~330',
+    role: 'Largest 787 variant',
+    operators: 'Singapore, Etihad, United, KLM',
+    accept: ['B78X','787-10','78X'],
+    hints: ['Longest Dreamliner variant.','Composite widebody, raked wingtips.','Two engines, scalloped nacelles.','Boeing. 787 family, biggest stretch.'],
+  },
+
+  // === MORE AIRBUS ===
+  {
+    icao: 'A20N', name: 'Airbus A320neo', mfr: 'Airbus',
+    wiki: 'Airbus_A320neo_family',
+    wake: 'M', engines: '2× CFM LEAP-1A / PW1100G turbofan', enginesCount: 2,
+    cruise: '455 kt (M0.78)', mmo: 'M0.82', vne: '350 kt IAS',
+    stall: '~107 kt (clean)', ceiling: 'FL390',
+    mtow: '79 t', length: '37.6 m', wingspan: '35.8 m',
+    range: '6,500 km', pax: '~180',
+    role: 'Re-engined A320',
+    operators: 'IndiGo, Lufthansa, easyJet, JetBlue',
+    accept: ['A20N','A320NEO','A320 NEO','A320-NEO'],
+    hints: ['Re-engined Airbus narrowbody (new engine option).','Sharklets at wingtips, larger engines than ceo.','Same fuselage as classic A320.','Airbus. A320 family, neo generation.'],
+  },
+  {
+    icao: 'A332', name: 'Airbus A330-200', mfr: 'Airbus',
+    wiki: 'Airbus_A330',
+    wake: 'H', engines: '2× GE CF6 / PW4000 / RR Trent 700 turbofan', enginesCount: 2,
+    cruise: '470 kt (M0.82)', mmo: 'M0.86', vne: '360 kt IAS',
+    stall: '~140 kt (clean)', ceiling: 'FL410',
+    mtow: '233 t', length: '58.8 m', wingspan: '60.3 m',
+    range: '13,450 km', pax: '~247',
+    role: 'Long-range A330 variant',
+    operators: 'Aer Lingus, Air Transat, Lufthansa Cargo',
+    accept: ['A332','A330-200','332'],
+    hints: ['Shorter A330 variant with longer range than -300.','Twin widebody.','Two engines.','Airbus. A330 family, shorter long-range variant.'],
+  },
+  {
+    icao: 'A35K', name: 'Airbus A350-1000', mfr: 'Airbus',
+    wiki: 'Airbus_A350',
+    wake: 'H', engines: '2× RR Trent XWB-97 turbofan', enginesCount: 2,
+    cruise: '488 kt (M0.85)', mmo: 'M0.89', vne: '365 kt IAS',
+    stall: '~150 kt (clean)', ceiling: 'FL430',
+    mtow: '316 t', length: '73.8 m', wingspan: '64.8 m',
+    range: '16,100 km', pax: '~369',
+    role: 'Stretched composite long-haul',
+    operators: 'Qatar, Cathay, BA, Virgin Atlantic',
+    accept: ['A35K','A350-1000','35K','A3501000'],
+    hints: ['Stretched A350.','Composite widebody, 6-wheel main gear.','Black-mask cockpit, Trent XWB.','Airbus. A350 family, biggest variant.'],
+  },
+  {
+    icao: 'A346', name: 'Airbus A340-600', mfr: 'Airbus',
+    wiki: 'Airbus_A340',
+    wake: 'H', engines: '4× RR Trent 500 turbofan', enginesCount: 4,
+    cruise: '480 kt (M0.83)', mmo: 'M0.86', vne: '365 kt IAS',
+    stall: '~150 kt (clean)', ceiling: 'FL410',
+    mtow: '380 t', length: '75.4 m', wingspan: '63.5 m',
+    range: '14,450 km', pax: '~320',
+    role: 'Four-engine long-haul widebody (legacy)',
+    operators: 'Lufthansa (retiring), Mahan Air, charter ops',
+    accept: ['A346','A340-600','346'],
+    hints: ['FOUR engines under wings, very long fuselage.','Looks like A330 but with 4 engines instead of 2.','Largely retired.','Airbus. A340 family, longest variant.'],
+  },
+
+  // === REGIONAL & TURBOPROPS ===
+  {
+    icao: 'E195', name: 'Embraer E195', mfr: 'Embraer',
+    wiki: 'Embraer_E-Jet_family',
+    wake: 'M', engines: '2× GE CF34-10E turbofan', enginesCount: 2,
+    cruise: '440 kt (M0.78)', mmo: 'M0.82', vne: '320 kt IAS',
+    stall: '~115 kt (clean)', ceiling: 'FL410',
+    mtow: '52.3 t', length: '38.7 m', wingspan: '28.7 m',
+    range: '4,260 km', pax: '~122',
+    role: 'Stretched E-Jet',
+    operators: 'Azul, LOT, Air Europa, Helvetic',
+    accept: ['E195','EMB195','ERJ195','195'],
+    hints: ['Longest E-Jet first generation.','Twin engines under wings.','Brazilian regional.','Embraer. E-Jet family, biggest first gen.'],
+  },
+  {
+    icao: 'E170', name: 'Embraer E170', mfr: 'Embraer',
+    wiki: 'Embraer_E-Jet_family',
+    wake: 'M', engines: '2× GE CF34-8E turbofan', enginesCount: 2,
+    cruise: '440 kt (M0.78)', mmo: 'M0.82', vne: '320 kt IAS',
+    stall: '~100 kt (clean)', ceiling: 'FL410',
+    mtow: '37.2 t', length: '29.9 m', wingspan: '26.0 m',
+    range: '3,889 km', pax: '~78',
+    role: 'Small regional jet',
+    operators: 'Saudia, Egyptair Express, regional carriers',
+    accept: ['E170','EMB170','ERJ170','170'],
+    hints: ['Smallest E-Jet variant.','Twin under-wing engines.','Brazilian regional.','Embraer. E-Jet family, smallest first gen.'],
+  },
+  {
+    icao: 'E290', name: 'Embraer E190-E2', mfr: 'Embraer',
+    wiki: 'Embraer_E-Jet_E2_family',
+    wake: 'M', engines: '2× PW1900G turbofan', enginesCount: 2,
+    cruise: '450 kt (M0.78)', mmo: 'M0.82', vne: '320 kt IAS',
+    stall: '~110 kt (clean)', ceiling: 'FL410',
+    mtow: '56.4 t', length: '36.2 m', wingspan: '33.7 m',
+    range: '5,278 km', pax: '~106',
+    role: 'New-gen regional jet',
+    operators: 'Helvetic, Air Astana, Binter Canarias',
+    accept: ['E290','E190-E2','E2','190E2'],
+    hints: ['New-engine E-Jet, geared turbofan PW1900.','Bigger wing than original E190.','Brazilian.','Embraer. E2 family.'],
+  },
+  {
+    icao: 'AT72', name: 'ATR 72-500', mfr: 'ATR',
+    wiki: 'ATR_72',
+    wake: 'M', engines: '2× PW127F turboprop', enginesCount: 2,
+    cruise: '275 kt', mmo: '250 kt VMO', vne: '286 kt',
+    stall: '~85 kt (clean)', ceiling: 'FL250',
+    mtow: '22.8 t', length: '27.2 m', wingspan: '27.1 m',
+    range: '1,500 km', pax: '~70',
+    role: 'Older ATR72 generation',
+    operators: 'Many regional carriers worldwide',
+    accept: ['AT72','ATR 72-500','ATR72-500','ATR72-202'],
+    hints: ['High-wing twin TURBOPROP, older variant.','Two big propellers.','European regional.','ATR family. 72-500 variant.'],
+  },
+  {
+    icao: 'AT45', name: 'ATR 42-500', mfr: 'ATR',
+    wiki: 'ATR_42',
+    wake: 'M', engines: '2× PW127E turboprop', enginesCount: 2,
+    cruise: '300 kt', mmo: '250 kt VMO', vne: '286 kt',
+    stall: '~85 kt (clean)', ceiling: 'FL250',
+    mtow: '18.6 t', length: '22.7 m', wingspan: '24.6 m',
+    range: '1,500 km', pax: '~48',
+    role: 'Smaller ATR turboprop',
+    operators: 'Regional carriers',
+    accept: ['AT45','ATR 42','ATR-42','ATR42','ATR42-500'],
+    hints: ['Shorter sibling of ATR 72.','High-wing twin turboprop.','~48 pax.','ATR family. 42 model.'],
+  },
+
+  // === BIZJETS - more variety ===
+  {
+    icao: 'C25A', name: 'Cessna Citation CJ2', mfr: 'Cessna',
+    wiki: 'Cessna_CitationJet/M2',
+    wake: 'L', engines: '2× Williams FJ44 turbofan', enginesCount: 2,
+    cruise: '413 kt', mmo: 'M0.737', vne: '278 kt IAS',
+    stall: '~90 kt', ceiling: 'FL450',
+    mtow: '5.7 t', length: '14.0 m', wingspan: '15.2 m',
+    range: '3,500 km', pax: '~7',
+    role: 'Light bizjet',
+    operators: 'Owner-pilots, fractional ops',
+    accept: ['C25A','CJ2','CITATION CJ2','C525'],
+    hints: ['Light bizjet, rear-mounted Williams engines.','Straight wing, no T-tail.','CJ family.','Cessna. CitationJet family.'],
+  },
+  {
+    icao: 'C68A', name: 'Cessna Citation Latitude', mfr: 'Cessna',
+    wiki: 'Cessna_Citation_Latitude',
+    wake: 'L', engines: '2× PW306D1 turbofan', enginesCount: 2,
+    cruise: '446 kt (M0.80)', mmo: 'M0.80', vne: '305 kt',
+    stall: '~95 kt', ceiling: 'FL450',
+    mtow: '13.4 t', length: '18.0 m', wingspan: '22.6 m',
+    range: '5,300 km', pax: '~9',
+    role: 'Mid-size bizjet',
+    operators: 'NetJets, private owners',
+    accept: ['C68A','LATITUDE','CITATION LATITUDE','C680A'],
+    hints: ['Mid-size bizjet with stand-up cabin.','T-tail, rear engines.','NetJets buys these.','Cessna. Citation Latitude.'],
+  },
+  {
+    icao: 'CL35', name: 'Bombardier Challenger 350', mfr: 'Bombardier',
+    wiki: 'Bombardier_Challenger_300',
+    wake: 'L', engines: '2× Honeywell HTF7350 turbofan', enginesCount: 2,
+    cruise: '470 kt (M0.83)', mmo: 'M0.83', vne: '320 kt',
+    stall: '~105 kt', ceiling: 'FL450',
+    mtow: '18.4 t', length: '20.9 m', wingspan: '21.0 m',
+    range: '6,300 km', pax: '~9',
+    role: 'Super-midsize bizjet',
+    operators: 'NetJets, VistaJet',
+    accept: ['CL35','CHALLENGER 350','CL350','BD-100'],
+    hints: ['Super-midsize bizjet, rear engines, T-tail.','Winglets, wide cabin.','Bombardier Canadian-made.','Bombardier. Challenger 300/350.'],
+  },
+  {
+    icao: 'GLEX', name: 'Bombardier Global Express', mfr: 'Bombardier',
+    wiki: 'Bombardier_Global_Express',
+    wake: 'L', engines: '2× RR BR710 turbofan', enginesCount: 2,
+    cruise: '488 kt (M0.85)', mmo: 'M0.89', vne: '340 kt',
+    stall: '~108 kt', ceiling: 'FL510',
+    mtow: '42.4 t', length: '30.3 m', wingspan: '28.7 m',
+    range: '11,500 km', pax: '~13',
+    role: 'Ultra-long-range bizjet',
+    operators: 'Heads of state, billionaires',
+    accept: ['GLEX','GLOBAL EXPRESS','GLOBAL 6000','GL6T'],
+    hints: ['Ultra-long-range Canadian bizjet.','T-tail, rear engines, swept wings.','Direct competitor to Gulfstream G650.','Bombardier. Global Express / 6000.'],
+  },
+  {
+    icao: 'F2TH', name: 'Dassault Falcon 2000', mfr: 'Dassault',
+    wiki: 'Dassault_Falcon_2000',
+    wake: 'L', engines: '2× PW308C turbofan', enginesCount: 2,
+    cruise: '440 kt (M0.80)', mmo: 'M0.862', vne: '325 kt',
+    stall: '~95 kt', ceiling: 'FL470',
+    mtow: '19.4 t', length: '20.2 m', wingspan: '21.4 m',
+    range: '6,000 km', pax: '~10',
+    role: 'Mid-size French bizjet',
+    operators: 'Dassault owners, military VIP',
+    accept: ['F2TH','FALCON 2000','F2000'],
+    hints: ['French mid-size bizjet, T-tail, two rear engines.','Twin engine Falcon.','Dassault.','Dassault. Falcon 2000 family.'],
+  },
+  {
+    icao: 'FA7X', name: 'Dassault Falcon 7X', mfr: 'Dassault',
+    wiki: 'Dassault_Falcon_7X',
+    wake: 'L', engines: '3× PW307A turbofan', enginesCount: 3,
+    cruise: '488 kt (M0.85)', mmo: 'M0.90', vne: '340 kt',
+    stall: '~108 kt', ceiling: 'FL510',
+    mtow: '32.6 t', length: '23.4 m', wingspan: '26.2 m',
+    range: '11,000 km', pax: '~14',
+    role: 'Long-range French bizjet, TRIJET',
+    operators: 'Heads of state, executive ops',
+    accept: ['FA7X','FALCON 7X','F7X'],
+    hints: ['THREE engines! Trijet bizjet — rare configuration.','S-duct middle engine like 727.','French.','Dassault. Falcon 7X.'],
+  },
+  {
+    icao: 'LJ45', name: 'Bombardier Learjet 45', mfr: 'Bombardier (Learjet)',
+    wiki: 'Bombardier_Learjet_45',
+    wake: 'L', engines: '2× Honeywell TFE731 turbofan', enginesCount: 2,
+    cruise: '457 kt (M0.81)', mmo: 'M0.81', vne: '330 kt',
+    stall: '~95 kt', ceiling: 'FL510',
+    mtow: '9.5 t', length: '17.7 m', wingspan: '14.6 m',
+    range: '3,700 km', pax: '~9',
+    role: 'Light bizjet',
+    operators: 'Charter ops, private owners',
+    accept: ['LJ45','LEARJET 45','LJ-45','LEAR45'],
+    hints: ['Light bizjet, distinctive winglets, T-tail.','Rear-mounted engines.','Classic Learjet shape.','Bombardier. Learjet family.'],
+  },
+  {
+    icao: 'HDJT', name: 'HondaJet HA-420', mfr: 'Honda Aircraft',
+    wiki: 'HondaJet',
+    wake: 'L', engines: '2× GE Honda HF120 turbofan (over-wing!)', enginesCount: 2,
+    cruise: '420 kt (M0.72)', mmo: 'M0.72', vne: '270 kt',
+    stall: '~85 kt', ceiling: 'FL430',
+    mtow: '4.85 t', length: '12.99 m', wingspan: '12.12 m',
+    range: '2,300 km', pax: '~6',
+    role: 'Very-light bizjet',
+    operators: 'Owner-flyers',
+    accept: ['HDJT','HONDA JET','HONDAJET','HA420','HA-420'],
+    hints: ['UNIQUE: engines mounted ON TOP of wings, not under or rear.','Very small bizjet, T-tail.','Made by Honda (the car company).','Honda Aircraft. HondaJet HA-420.'],
+  },
+  {
+    icao: 'PRM1', name: 'Hawker Premier I', mfr: 'Hawker Beechcraft',
+    wiki: 'Beechcraft_Premier_I',
+    wake: 'L', engines: '2× Williams FJ44 turbofan', enginesCount: 2,
+    cruise: '451 kt (M0.80)', mmo: 'M0.80', vne: '293 kt',
+    stall: '~95 kt', ceiling: 'FL410',
+    mtow: '5.7 t', length: '14.0 m', wingspan: '13.6 m',
+    range: '2,700 km', pax: '~7',
+    role: 'Very-light bizjet, composite fuselage',
+    operators: 'Owner-flyers, charter',
+    accept: ['PRM1','PREMIER 1','PREMIER I','HAWKER PREMIER'],
+    hints: ['Composite fuselage VLJ, T-tail, rear engines.','Hawker Beechcraft.','Compact bizjet.','Hawker. Premier I.'],
+  },
+
+  // === MORE GA / TRAINING ===
+  {
+    icao: 'PA34', name: 'Piper Seneca', mfr: 'Piper',
+    wiki: 'Piper_PA-34_Seneca',
+    wake: 'L', engines: '2× Continental TSIO-360 piston', enginesCount: 2,
+    cruise: '180 kt', mmo: 'N/A', vne: '208 kt',
+    stall: '~61 kt', ceiling: '25,000 ft',
+    mtow: '2.07 t', length: '8.7 m', wingspan: '11.9 m',
+    range: '1,500 km', pax: '6 seats',
+    role: 'Twin-piston trainer / tourer',
+    operators: 'Multi-engine flight schools',
+    accept: ['PA34','SENECA','PIPER SENECA','PA-34'],
+    hints: ['Twin-piston low-wing, fixed or retract gear.','Multi-engine trainer alternative to DA42.','American.','Piper. PA-34 Seneca family.'],
+  },
+  {
+    icao: 'BE36', name: 'Beechcraft Bonanza A36', mfr: 'Beechcraft',
+    wiki: 'Beechcraft_Bonanza',
+    wake: 'L', engines: '1× Continental IO-550 piston', enginesCount: 1,
+    cruise: '174 kt', mmo: 'N/A', vne: '205 kt',
+    stall: '~55 kt', ceiling: '18,500 ft',
+    mtow: '1.66 t', length: '8.4 m', wingspan: '10.2 m',
+    range: '1,700 km', pax: '6 seats',
+    role: 'Premium single-piston tourer',
+    operators: 'Private owners',
+    accept: ['BE36','BONANZA','BEECH BONANZA','BEECHCRAFT 36','A36'],
+    hints: ['Low-wing single piston, RETRACTABLE gear.','Iconic American GA aircraft (used to have V-tail).','Premium tourer.','Beechcraft. Bonanza family.'],
+  },
+  {
+    icao: 'SR22', name: 'Cirrus SR22', mfr: 'Cirrus Aircraft',
+    wiki: 'Cirrus_SR22',
+    wake: 'L', engines: '1× Continental IO-550 piston (310 hp)', enginesCount: 1,
+    cruise: '180 kt', mmo: 'N/A', vne: '205 kt',
+    stall: '~60 kt', ceiling: '17,500 ft',
+    mtow: '1.54 t', length: '7.92 m', wingspan: '11.68 m',
+    range: '2,100 km', pax: '5 seats',
+    role: 'Composite GA aircraft with whole-airframe parachute (CAPS)',
+    operators: 'Owner-pilots',
+    accept: ['SR22','CIRRUS','CIRRUS SR22'],
+    hints: ['Composite low-wing single piston, fixed gear.','Famous for CAPS — whole-airframe parachute.','Best-selling GA aircraft.','Cirrus. SR22 family.'],
+  },
+  {
+    icao: 'TBM9', name: 'Daher TBM 900', mfr: 'Daher',
+    wiki: 'Daher_TBM',
+    wake: 'L', engines: '1× PT6A-66D turboprop', enginesCount: 1,
+    cruise: '330 kt', mmo: '266 kt VMO', vne: '266 kt',
+    stall: '~65 kt', ceiling: 'FL310',
+    mtow: '3.35 t', length: '10.7 m', wingspan: '12.7 m',
+    range: '3,300 km', pax: '~6',
+    role: 'Fast single-engine turboprop',
+    operators: 'Owner-pilots, charter',
+    accept: ['TBM9','TBM 900','TBM-900','TBM930','TBM940'],
+    hints: ['Sleek single turboprop, retract gear, low wing.','Fastest single turboprop in production.','French-made (Daher).','Daher. TBM family.'],
+  },
+  {
+    icao: 'PC24', name: 'Pilatus PC-24', mfr: 'Pilatus',
+    wiki: 'Pilatus_PC-24',
+    wake: 'L', engines: '2× Williams FJ44-4A turbofan', enginesCount: 2,
+    cruise: '440 kt (M0.74)', mmo: 'M0.78', vne: '290 kt',
+    stall: '~85 kt', ceiling: 'FL450',
+    mtow: '8.3 t', length: '16.85 m', wingspan: '17.0 m',
+    range: '3,700 km', pax: '~8',
+    role: 'Swiss VLJ, can land on grass strips',
+    operators: 'PlaneSense, Royal Flying Doctors AU',
+    accept: ['PC24','PC-24','PILATUS PC-24'],
+    hints: ['Swiss-made TWIN-jet, rough-field capable.','Rear-mounted engines, T-tail.','Same maker as PC-12.','Pilatus. PC-24.'],
+  },
+
+  // === HELICOPTERS ===
+  {
+    icao: 'AS50', name: 'Airbus AS350 / H125', mfr: 'Airbus Helicopters',
+    wiki: 'Aérospatiale_AS350_Écureuil',
+    wake: 'L', engines: '1× Arriel 2D turboshaft', enginesCount: 1,
+    cruise: '130 kt', mmo: 'N/A', vne: '155 kt',
+    stall: 'N/A', ceiling: '7,000 ft (high)',
+    mtow: '2.25 t', length: '12.94 m', wingspan: 'rotor 10.7 m',
+    range: '662 km', pax: '~6',
+    role: 'Light single-engine utility helicopter',
+    operators: 'Police, ENG, utility, sightseeing',
+    accept: ['AS50','H125','AS350','ECUREUIL','Squirrel'],
+    hints: ['Single-engine light helicopter, "Squirrel".','Common in police/utility roles.','Airbus Helicopters.','Airbus. AS350/H125 family.'],
+  },
+  {
+    icao: 'B407', name: 'Bell 407', mfr: 'Bell',
+    wiki: 'Bell_407',
+    wake: 'L', engines: '1× Rolls-Royce M250 turboshaft', enginesCount: 1,
+    cruise: '133 kt', mmo: 'N/A', vne: '140 kt',
+    stall: 'N/A', ceiling: '18,690 ft',
+    mtow: '2.27 t', length: '12.7 m', wingspan: 'rotor 10.7 m',
+    range: '611 km', pax: '~6',
+    role: 'Light single-engine utility helicopter',
+    operators: 'Police, charter, corporate, EMS',
+    accept: ['B407','BELL 407','BELL407'],
+    hints: ['Single-engine American helicopter.','Four-blade main rotor.','Bell.','Bell. 407.'],
+  },
+
+  // === RARE / EXOTIC ===
+  {
+    icao: 'SU95', name: 'Sukhoi Superjet 100', mfr: 'Sukhoi',
+    wiki: 'Sukhoi_Superjet_100',
+    wake: 'M', engines: '2× PowerJet SaM146 turbofan', enginesCount: 2,
+    cruise: '442 kt (M0.78)', mmo: 'M0.81', vne: '320 kt',
+    stall: '~115 kt', ceiling: 'FL400',
+    mtow: '49 t', length: '29.94 m', wingspan: '27.8 m',
+    range: '4,578 km', pax: '~100',
+    role: 'Russian regional jet',
+    operators: 'Aeroflot, Rossiya, Russian carriers',
+    accept: ['SU95','SSJ100','SUPERJET 100','RRJ95'],
+    hints: ['Russian regional jet, twin engines under wings.','Mostly operated in Russia.','Looks like an E190.','Sukhoi. Superjet 100.'],
+  },
+  {
+    icao: 'BCS3', name: 'Airbus A220-300', mfr: 'Airbus (originally Bombardier CSeries)',
+    wiki: 'Airbus_A220',
+    wake: 'M', engines: '2× PW1500G turbofan', enginesCount: 2,
+    cruise: '470 kt (M0.78)', mmo: 'M0.82', vne: '335 kt',
+    stall: '~110 kt', ceiling: 'FL410',
+    mtow: '70 t', length: '38.7 m', wingspan: '35.1 m',
+    range: '6,300 km', pax: '~150',
+    role: 'New-gen small narrowbody',
+    operators: 'airBaltic, Delta, SWISS, Air France',
+    accept: ['BCS3','A220-300','A220','CS300','BCS-3'],
+    hints: ['Originally Bombardier CSeries, now Airbus A220.','airBaltic operates this exclusively.','Twin geared turbofan engines.','Airbus. A220 family.'],
+  },
+  {
+    icao: 'B463', name: 'BAe 146-300 / Avro RJ100', mfr: 'British Aerospace',
+    wiki: 'British_Aerospace_146',
+    wake: 'M', engines: '4× Lycoming ALF502 turbofan', enginesCount: 4,
+    cruise: '380 kt (M0.66)', mmo: 'M0.70', vne: '300 kt',
+    stall: '~95 kt', ceiling: 'FL350',
+    mtow: '44.2 t', length: '30.99 m', wingspan: '26.21 m',
+    range: '2,000 km', pax: '~112',
+    role: 'High-wing FOUR-engine regional jet',
+    operators: 'Largely retired, some cargo/charter',
+    accept: ['B463','BAE 146','BAE146','RJ100','AVRO RJ'],
+    hints: ['FOUR engines on HIGH wing — very unusual!','T-tail, quiet operations, short-field.','British-made.','BAe. 146 / Avro RJ family.'],
+  },
+  {
+    icao: 'AN26', name: 'Antonov An-26', mfr: 'Antonov',
+    wiki: 'Antonov_An-26',
+    wake: 'M', engines: '2× Ivchenko AI-24VT turboprop', enginesCount: 2,
+    cruise: '237 kt', mmo: 'N/A', vne: '290 kt',
+    stall: '~95 kt', ceiling: '24,600 ft',
+    mtow: '24 t', length: '23.8 m', wingspan: '29.2 m',
+    range: '2,550 km', pax: '~40 / cargo',
+    role: 'Soviet military/cargo turboprop',
+    operators: 'Cargo ops, Eastern European militaries',
+    accept: ['AN26','AN-26','ANTONOV 26','AN 26'],
+    hints: ['Soviet HIGH-WING twin-turboprop with REAR LOADING RAMP.','Military/cargo workhorse.','Made in Ukraine.','Antonov. An-26.'],
+  },
+  {
+    icao: 'C130', name: 'Lockheed C-130 Hercules', mfr: 'Lockheed Martin',
+    wiki: 'Lockheed_C-130_Hercules',
+    wake: 'H', engines: '4× Allison T56 / RR AE 2100 turboprop', enginesCount: 4,
+    cruise: '292 kt', mmo: 'N/A', vne: '348 kt',
+    stall: '~95 kt', ceiling: '33,000 ft',
+    mtow: '70 t', length: '29.79 m', wingspan: '40.4 m',
+    range: '3,800 km', pax: '~92 troops / cargo',
+    role: 'Military transport',
+    operators: 'USAF, NATO countries, Slovak Air Force (other types)',
+    accept: ['C130','C-130','HERCULES','HERC','LOCKHEED C-130'],
+    hints: ['Military FOUR-engine high-wing TURBOPROP with rear ramp.','Slovak airspace overflights regular.','Hercules.','Lockheed. C-130 family.'],
+  },
+];
+
+
+/* ============================================================
+   AIRPORTS - SK + neighbours + EU + world hubs
+   ============================================================ */
+const AIRPORTS = [
+  // === SLOVAK AIRPORTS (cat: 'sk') ===
+  { cat:'sk', icao:'LZIB', city:'Bratislava', country:'SK', name:'M. R. Štefánik', region:'Bratislava', hint:'Hlavné mesto SR.' },
+  { cat:'sk', icao:'LZKZ', city:'Košice', country:'SK', name:'Košice International', region:'Východ', hint:'Druhé najväčšie mesto SR.' },
+  { cat:'sk', icao:'LZTT', city:'Poprad', country:'SK', name:'Poprad-Tatry', region:'Tatry', hint:'Pod Vysokými Tatrami.' },
+  { cat:'sk', icao:'LZSL', city:'Sliač', country:'SK', name:'Sliač', region:'Stred', hint:'Stredné SR, blízko BB.' },
+  { cat:'sk', icao:'LZZI', city:'Žilina', country:'SK', name:'Žilina (Dolný Hričov)', region:'SZ', hint:'Severozápad, krajské mesto.' },
+  { cat:'sk', icao:'LZPP', city:'Piešťany', country:'SK', name:'Piešťany', region:'Západ', hint:'Kúpeľné mesto, západ SR.' },
+  { cat:'sk', icao:'LZNI', city:'Nitra', country:'SK', name:'Nitra-Janíkovce', region:'JZ', hint:'Juhozápad SR.' },
+  { cat:'sk', icao:'LZLU', city:'Lučenec', country:'SK', name:'Lučenec-Boľkovce', region:'Juh stred', hint:'Juh stredného SR.' },
+  { cat:'sk', icao:'LZSK', city:'Svidník', country:'SK', name:'Svidník', region:'SV', hint:'Severovýchod SR.' },
+  { cat:'sk', icao:'LZPW', city:'Prievidza', country:'SK', name:'Prievidza', region:'Horná Nitra', hint:'Hornonitrianska kotlina.' },
+  { cat:'sk', icao:'LZMC', city:'Malacky', country:'SK', name:'Malacky-Kuchyňa (mil.)', region:'Záhorie', hint:'Vojenské letisko, Záhorie.' },
+  { cat:'sk', icao:'LZTN', city:'Trenčín', country:'SK', name:'Trenčín (mil./GA)', region:'Považie', hint:'Považie.' },
+  { cat:'sk', icao:'LZBL', city:'Boleráz', country:'SK', name:'Boleráz', region:'Trnava', hint:'Trnavský okres.' },
+  { cat:'sk', icao:'LZSE', city:'Senica', country:'SK', name:'Senica', region:'Záhorie', hint:'Záhorie.' },
+  { cat:'sk', icao:'LZJS', city:'Jasná', country:'SK', name:'Jasná heliport', region:'Nízke Tatry', hint:'Lyžiarske stredisko v Nízkych Tatrách.' },
+  { cat:'sk', icao:'LZSB', city:'Spišská Nová Ves', country:'SK', name:'Spišská Nová Ves', region:'Spiš', hint:'Spiš.' },
+  { cat:'sk', icao:'LZDB', city:'Dubnica nad Váhom', country:'SK', name:'Dubnica', region:'Považie', hint:'Považie.' },
+  { cat:'sk', icao:'LZRO', city:'Rožňava', country:'SK', name:'Rožňava', region:'Gemer', hint:'Gemer, juh SR.' },
+  { cat:'sk', icao:'LZKM', city:'Kremnica', country:'SK', name:'Kremnica', region:'Stred', hint:'Banská Bystrica oblasť.' },
+  { cat:'sk', icao:'LZOC', city:'Očová', country:'SK', name:'Očová', region:'Zvolen', hint:'Pri Zvolene.' },
+
+  // === NEIGHBOURING STATES (cat: 'neigh') — CZ, AT, HU, PL, UA ===
+  // CZ
+  { cat:'neigh', icao:'LKPR', city:'Praha', country:'CZ', name:'Václav Havel Prague', hint:'Hlavné mesto ČR.' },
+  { cat:'neigh', icao:'LKTB', city:'Brno', country:'CZ', name:'Brno-Tuřany', hint:'Moravská metropola.' },
+  { cat:'neigh', icao:'LKMT', city:'Ostrava', country:'CZ', name:'Leoš Janáček Ostrava', hint:'Severná Morava / Sliezsko.' },
+  { cat:'neigh', icao:'LKKV', city:'Karlovy Vary', country:'CZ', name:'Karlovy Vary', hint:'Kúpeľné mesto v ČR.' },
+  { cat:'neigh', icao:'LKPD', city:'Pardubice', country:'CZ', name:'Pardubice', hint:'Východné Čechy.' },
+  // AT
+  { cat:'neigh', icao:'LOWW', city:'Viedeň', country:'AT', name:'Vienna Schwechat', hint:'Hlavné mesto Rakúska, ~50 km od BA.' },
+  { cat:'neigh', icao:'LOWS', city:'Salzburg', country:'AT', name:'Salzburg', hint:'Mozartovo mesto.' },
+  { cat:'neigh', icao:'LOWG', city:'Graz', country:'AT', name:'Graz', hint:'Druhé najväčšie mesto AT.' },
+  { cat:'neigh', icao:'LOWL', city:'Linz', country:'AT', name:'Linz', hint:'Horné Rakúsko.' },
+  { cat:'neigh', icao:'LOWI', city:'Innsbruck', country:'AT', name:'Innsbruck', hint:'Tirolské Alpy, ski.' },
+  { cat:'neigh', icao:'LOWK', city:'Klagenfurt', country:'AT', name:'Klagenfurt', hint:'Korutánsko.' },
+  // HU
+  { cat:'neigh', icao:'LHBP', city:'Budapešť', country:'HU', name:'Liszt Ferenc Budapest', hint:'Hlavné mesto Maďarska.' },
+  { cat:'neigh', icao:'LHDC', city:'Debrecín', country:'HU', name:'Debrecen', hint:'Východné Maďarsko.' },
+  { cat:'neigh', icao:'LHPP', city:'Pécs', country:'HU', name:'Pécs-Pogány', hint:'Južné Maďarsko.' },
+  { cat:'neigh', icao:'LHSM', city:'Sármellék', country:'HU', name:'Hévíz-Balaton', hint:'Pri Balatone.' },
+  { cat:'neigh', icao:'LHBC', city:'Miškovec', country:'HU', name:'Miskolc', hint:'Severovýchodné Maďarsko.' },
+  // PL
+  { cat:'neigh', icao:'EPWA', city:'Varšava', country:'PL', name:'Warsaw Chopin', hint:'Hlavné mesto Poľska.' },
+  { cat:'neigh', icao:'EPKK', city:'Krakov', country:'PL', name:'Kraków-Balice', hint:'Bývalé hlavné mesto Poľska.' },
+  { cat:'neigh', icao:'EPKT', city:'Katovice', country:'PL', name:'Katowice-Pyrzowice', hint:'Sliezsko, blízko SK.' },
+  { cat:'neigh', icao:'EPRZ', city:'Rzeszów', country:'PL', name:'Rzeszów-Jasionka', hint:'JV Poľsko, blízko UA.' },
+  { cat:'neigh', icao:'EPGD', city:'Gdaňsk', country:'PL', name:'Gdańsk Lech Wałęsa', hint:'Pobaltie, sever PL.' },
+  { cat:'neigh', icao:'EPPO', city:'Poznaň', country:'PL', name:'Poznań-Ławica', hint:'Veľkopoľsko.' },
+  { cat:'neigh', icao:'EPWR', city:'Vroclav', country:'PL', name:'Wrocław', hint:'Dolné Sliezsko.' },
+  { cat:'neigh', icao:'EPLB', city:'Lublin', country:'PL', name:'Lublin', hint:'Východné Poľsko.' },
+  // UA
+  { cat:'neigh', icao:'UKLL', city:'Ľvov', country:'UA', name:'Lviv Danylo Halytskyi', hint:'Západná Ukrajina.' },
+  { cat:'neigh', icao:'UKBB', city:'Kyjev', country:'UA', name:'Kyiv Boryspil', hint:'Hlavné mesto Ukrajiny.' },
+  { cat:'neigh', icao:'UKKK', city:'Kyjev', country:'UA', name:'Kyiv Zhuliany', hint:'Druhé letisko Kyjeva.' },
+  { cat:'neigh', icao:'UKOO', city:'Odesa', country:'UA', name:'Odesa', hint:'Juh Ukrajiny pri Čiernom mori.' },
+
+  // === OTHER WORLD (cat: 'other') ===
+  // DE
+  { cat:'other', icao:'EDDF', city:'Frankfurt', country:'DE', name:'Frankfurt Main', hint:'Lufthansa hub, najväčšie DE letisko.' },
+  { cat:'other', icao:'EDDM', city:'Mníchov', country:'DE', name:'München FJS', hint:'Bavorsko.' },
+  { cat:'other', icao:'EDDB', city:'Berlín', country:'DE', name:'Berlin Brandenburg', hint:'Hlavné mesto Nemecka.' },
+  { cat:'other', icao:'EDDL', city:'Düsseldorf', country:'DE', name:'Düsseldorf', hint:'Severné Porýnie.' },
+  { cat:'other', icao:'EDDH', city:'Hamburg', country:'DE', name:'Hamburg', hint:'Severné Nemecko.' },
+  { cat:'other', icao:'EDDK', city:'Kolín', country:'DE', name:'Köln/Bonn', hint:'Porýnie.' },
+  { cat:'other', icao:'EDDS', city:'Stuttgart', country:'DE', name:'Stuttgart', hint:'Bádensko-Württembersko.' },
+  { cat:'other', icao:'EDDN', city:'Norimberg', country:'DE', name:'Nürnberg', hint:'Severné Bavorsko.' },
+  // EU west
+  { cat:'other', icao:'EHAM', city:'Amsterdam', country:'NL', name:'Schiphol', hint:'KLM hub.' },
+  { cat:'other', icao:'EGLL', city:'Londýn', country:'UK', name:'Heathrow', hint:'BA hub, najväčšie UK letisko.' },
+  { cat:'other', icao:'EGKK', city:'Londýn', country:'UK', name:'Gatwick', hint:'Druhé londýnske letisko.' },
+  { cat:'other', icao:'EGSS', city:'Londýn', country:'UK', name:'Stansted', hint:'Ryanair hub v UK.' },
+  { cat:'other', icao:'EGCC', city:'Manchester', country:'UK', name:'Manchester', hint:'Severné Anglicko.' },
+  { cat:'other', icao:'EGGD', city:'Bristol', country:'UK', name:'Bristol', hint:'JZ Anglicko.' },
+  { cat:'other', icao:'EIDW', city:'Dublin', country:'IE', name:'Dublin', hint:'Hlavné mesto Írska, Ryanair hub.' },
+  { cat:'other', icao:'LFPG', city:'Paríž', country:'FR', name:'Charles de Gaulle', hint:'Air France hub.' },
+  { cat:'other', icao:'LFPO', city:'Paríž', country:'FR', name:'Orly', hint:'Druhé parížske letisko.' },
+  { cat:'other', icao:'LFMN', city:'Nice', country:'FR', name:'Côte d\'Azur', hint:'Francúzska riviéra.' },
+  { cat:'other', icao:'LIRF', city:'Rím', country:'IT', name:'Fiumicino', hint:'Hlavné mesto Talianska.' },
+  { cat:'other', icao:'LIMC', city:'Miláno', country:'IT', name:'Malpensa', hint:'Lombardia.' },
+  { cat:'other', icao:'LIPZ', city:'Benátky', country:'IT', name:'Marco Polo', hint:'Lagúna, sever IT.' },
+  { cat:'other', icao:'LIRN', city:'Neapol', country:'IT', name:'Napoli', hint:'Južné Taliansko.' },
+  { cat:'other', icao:'LEMD', city:'Madrid', country:'ES', name:'Barajas', hint:'Hlavné mesto ES.' },
+  { cat:'other', icao:'LEBL', city:'Barcelona', country:'ES', name:'El Prat', hint:'Katalánsko.' },
+  { cat:'other', icao:'LEPA', city:'Palma de Mallorca', country:'ES', name:'Palma', hint:'Baleárske ostrovy.' },
+  { cat:'other', icao:'LPPT', city:'Lisabon', country:'PT', name:'Lisbon Portela', hint:'Hlavné mesto Portugalska.' },
+  { cat:'other', icao:'LSZH', city:'Zürich', country:'CH', name:'Zürich Kloten', hint:'Najväčšie CH letisko.' },
+  { cat:'other', icao:'LSGG', city:'Ženeva', country:'CH', name:'Genève', hint:'CH, pri FR hraniciach.' },
+  { cat:'other', icao:'EBBR', city:'Brusel', country:'BE', name:'Brussels', hint:'EÚ centrum.' },
+  { cat:'other', icao:'EKCH', city:'Kodaň', country:'DK', name:'Copenhagen Kastrup', hint:'Hlavné mesto Dánska.' },
+  { cat:'other', icao:'ESSA', city:'Štokholm', country:'SE', name:'Stockholm Arlanda', hint:'Hlavné mesto Švédska.' },
+  { cat:'other', icao:'ENGM', city:'Oslo', country:'NO', name:'Oslo Gardermoen', hint:'Hlavné mesto Nórska.' },
+  { cat:'other', icao:'EFHK', city:'Helsinki', country:'FI', name:'Helsinki Vantaa', hint:'Hlavné mesto Fínska.' },
+  { cat:'other', icao:'LGAV', city:'Atény', country:'GR', name:'Athens', hint:'Hlavné mesto Grécka.' },
+  { cat:'other', icao:'LROP', city:'Bukurešť', country:'RO', name:'Otopeni', hint:'Hlavné mesto Rumunska.' },
+  // TR / ME
+  { cat:'other', icao:'LTBA', city:'Istanbul', country:'TR', name:'Istanbul Atatürk (CL)', hint:'Pôvodné letisko, dnes zatvorené pre pax.' },
+  { cat:'other', icao:'LTFM', city:'Istanbul', country:'TR', name:'Istanbul New', hint:'Nové letisko Istanbul, Turkish hub.' },
+  { cat:'other', icao:'LTFJ', city:'Istanbul', country:'TR', name:'Sabiha Gökçen', hint:'Druhé istanbulské, Pegasus hub.' },
+  { cat:'other', icao:'OMDB', city:'Dubaj', country:'AE', name:'Dubai International', hint:'Emirates hub.' },
+  { cat:'other', icao:'OMAA', city:'Abú Zabí', country:'AE', name:'Abu Dhabi', hint:'Etihad hub.' },
+  { cat:'other', icao:'OTHH', city:'Dauha', country:'QA', name:'Hamad International', hint:'Qatar Airways hub.' },
+  { cat:'other', icao:'OERK', city:'Rijád', country:'SA', name:'King Khalid', hint:'Hlavné mesto Saudskej Arábie.' },
+  // ASIA
+  { cat:'other', icao:'VHHH', city:'Hong Kong', country:'HK', name:'Hong Kong Int.', hint:'Cathay Pacific hub.' },
+  { cat:'other', icao:'WSSS', city:'Singapur', country:'SG', name:'Changi', hint:'Singapore Airlines hub.' },
+  { cat:'other', icao:'RJTT', city:'Tokio', country:'JP', name:'Haneda', hint:'Hlavné mesto Japonska, mestské letisko.' },
+  { cat:'other', icao:'RJAA', city:'Tokio', country:'JP', name:'Narita', hint:'Druhé tokijské, medzinárodné.' },
+  { cat:'other', icao:'RKSI', city:'Soul', country:'KR', name:'Incheon', hint:'Hlavné mesto Južnej Kórey.' },
+  { cat:'other', icao:'ZBAA', city:'Peking', country:'CN', name:'Beijing Capital', hint:'Hlavné mesto Číny.' },
+  // US
+  { cat:'other', icao:'KJFK', city:'New York', country:'US', name:'JFK', hint:'NYC main international.' },
+  { cat:'other', icao:'KEWR', city:'New York', country:'US', name:'Newark', hint:'Druhé NYC letisko (NJ).' },
+  { cat:'other', icao:'KLGA', city:'New York', country:'US', name:'LaGuardia', hint:'NYC domestic.' },
+  { cat:'other', icao:'KLAX', city:'Los Angeles', country:'US', name:'LAX', hint:'Kalifornia, hlavné Pacific.' },
+  { cat:'other', icao:'KORD', city:'Chicago', country:'US', name:"O'Hare", hint:'United/AA Midwest hub.' },
+  { cat:'other', icao:'KATL', city:'Atlanta', country:'US', name:'Hartsfield-Jackson', hint:'Delta hub, najrušnejšie letisko sveta.' },
+  { cat:'other', icao:'KMIA', city:'Miami', country:'US', name:'Miami International', hint:'Florida, brána do LatAm.' },
+  { cat:'other', icao:'KSFO', city:'San Francisco', country:'US', name:'SFO', hint:'Bay Area, United hub.' },
+  { cat:'other', icao:'KDFW', city:'Dallas', country:'US', name:'Dallas/Fort Worth', hint:'Texas, American Airlines hub.' },
+  { cat:'other', icao:'CYYZ', city:'Toronto', country:'CA', name:'Pearson', hint:'Najväčšie kanadské letisko.' },
+];
+
+/* ============================================================
+   CALLSIGNS - ICAO 3-letter <-> telephony
+   ============================================================ */
+const CALLSIGNS = [
+  // === SK-RELEVANT (cat: 'sk') — fly through Slovak airspace regularly ===
+  { cat:'sk', icao:'RYR', call:'Ryanair', airline:'Ryanair', country:'IE', type:'LCC', hint:'Írsky low-cost gigant, lieta z BTS denne.' },
+  { cat:'sk', icao:'RUK', call:'Bluemax', airline:'Ryanair UK', country:'UK', type:'LCC', hint:'UK divízia Ryanair-u.' },
+  { cat:'sk', icao:'WZZ', call:'Wizz Air', airline:'Wizz Air', country:'HU', type:'LCC', hint:'Maďarský low-cost, ružové livery, lieta z VIE/BUD/KSC.' },
+  { cat:'sk', icao:'WMT', call:'Wizz Go', airline:'Wizz Air Malta', country:'MT', type:'LCC', hint:'Maltská divízia Wizz Air-u.' },
+  { cat:'sk', icao:'EZY', call:'Easy', airline:'easyJet', country:'UK', type:'LCC', hint:'Oranžový britský low-cost.' },
+  { cat:'sk', icao:'EJU', call:'Alpine', airline:'easyJet Europe', country:'AT', type:'LCC', hint:'Rakúska dcéra EZY (AOC pre EÚ).' },
+  { cat:'sk', icao:'TVS', call:'Skytravel', airline:'SmartWings', country:'CZ', type:'Leisure', hint:'Český charter operátor, lieta často cez SK.' },
+  { cat:'sk', icao:'TVL', call:'Slovaktravel', airline:'SmartWings Slovakia', country:'SK', type:'Leisure', hint:'Slovenská dcéra SmartWings.' },
+  { cat:'sk', icao:'EWG', call:'Eurowings', airline:'Eurowings', country:'DE', type:'LCC', hint:'Lufthansa Group LCC.' },
+  { cat:'sk', icao:'PGT', call:'Sunturk', airline:'Pegasus', country:'TR', type:'LCC', hint:'Turecký LCC, lieta z BTS/KSC.' },
+  { cat:'sk', icao:'DLH', call:'Lufthansa', airline:'Lufthansa', country:'DE', type:'Legacy', hint:'Nemecký vlajkový dopravca, cez SK denne.' },
+  { cat:'sk', icao:'CLH', call:'Hansaline', airline:'Lufthansa CityLine', country:'DE', type:'Regional', hint:'Regionálna dcéra DLH (CRJ, E-Jets).' },
+  { cat:'sk', icao:'AUA', call:'Austrian', airline:'Austrian Airlines', country:'AT', type:'Legacy', hint:'Rakúsky vlajkový dopravca, hneď za hranicou (LOWW).' },
+  { cat:'sk', icao:'SWR', call:'Swiss', airline:'Swiss International', country:'CH', type:'Legacy', hint:'Švajčiarsky vlajkový dopravca.' },
+  { cat:'sk', icao:'CSA', call:'CSA Lines', airline:'Czech Airlines', country:'CZ', type:'Legacy', hint:'Český vlajkový dopravca.' },
+  { cat:'sk', icao:'LOT', call:'Pollot', airline:'LOT Polish Airlines', country:'PL', type:'Legacy', hint:'Poľský vlajkový dopravca, susedný štát.' },
+  { cat:'sk', icao:'KLM', call:'KLM', airline:'KLM Royal Dutch', country:'NL', type:'Legacy', hint:'Holandský vlajkový dopravca, lieta cez SK.' },
+  { cat:'sk', icao:'AFR', call:'Airfrans', airline:'Air France', country:'FR', type:'Legacy', hint:'Francúzsky vlajkový dopravca.' },
+  { cat:'sk', icao:'BAW', call:'Speedbird', airline:'British Airways', country:'UK', type:'Legacy', hint:'Britský vlajkový dopravca, slávny callsign.' },
+  { cat:'sk', icao:'THY', call:'Turkish', airline:'Turkish Airlines', country:'TR', type:'Legacy', hint:'Turecký dopravca, najviac destinácií na svete, cez SK denne.' },
+  { cat:'sk', icao:'UAE', call:'Emirates', airline:'Emirates', country:'AE', type:'Gulf', hint:'Dubajský gigant, A380 cez SK na trasách EÚ-Ázia.' },
+  { cat:'sk', icao:'QTR', call:'Qatari', airline:'Qatar Airways', country:'QA', type:'Gulf', hint:'Katarský dopravca, prelety cez SK.' },
+  { cat:'sk', icao:'ETD', call:'Etihad', airline:'Etihad Airways', country:'AE', type:'Gulf', hint:'Abú Zabí.' },
+  { cat:'sk', icao:'DHK', call:'World Express', airline:'DHL Air UK', country:'UK', type:'Cargo', hint:'DHL Express UK/Európa cargo, nočné prelety cez SK.' },
+  { cat:'sk', icao:'BCS', call:'Eurotrans', airline:'European Air Transport (DHL)', country:'BE', type:'Cargo', hint:'DHL európske cargo, Brusel hub.' },
+  { cat:'sk', icao:'BOX', call:'German Cargo', airline:'AeroLogic', country:'DE', type:'Cargo', hint:'Lufthansa Cargo + DHL JV.' },
+  { cat:'sk', icao:'SXS', call:'Sunexpress', airline:'SunExpress', country:'TR', type:'Leisure', hint:'Turkish + LH joint, charter na turecké pobrežia.' },
+  { cat:'sk', icao:'EIN', call:'Shamrock', airline:'Aer Lingus', country:'IE', type:'Legacy', hint:'Írsky vlajkový dopravca.' },
+  { cat:'sk', icao:'TAY', call:'Quality', airline:'ASL Airlines Belgium', country:'BE', type:'Cargo', hint:'European cargo (FedEx feeder).' },
+
+  // === OTHER MAJOR CARRIERS (cat: 'other') ===
+  // EU
+  { cat:'other', icao:'VLG', call:'Vueling', airline:'Vueling', country:'ES', type:'LCC', hint:'Španielsky low-cost, IAG group.' },
+  { cat:'other', icao:'TRA', call:'Transavia', airline:'Transavia', country:'NL', type:'LCC', hint:'KLM dcérska LCC.' },
+  { cat:'other', icao:'JAF', call:'Beauty', airline:'TUI fly Belgium', country:'BE', type:'Leisure', hint:'Belgický TUI charter.' },
+  { cat:'other', icao:'SHT', call:'Shuttle', airline:'BA Shuttle', country:'UK', type:'Legacy', hint:'BA krátke vnútroštátne UK lety.' },
+  { cat:'other', icao:'IBE', call:'Iberia', airline:'Iberia', country:'ES', type:'Legacy', hint:'Španielsky vlajkový dopravca.' },
+  { cat:'other', icao:'ITY', call:'Itarrow', airline:'ITA Airways', country:'IT', type:'Legacy', hint:'Taliansky dopravca, nástupca Alitalie.' },
+  { cat:'other', icao:'SAS', call:'Scandinavian', airline:'SAS', country:'SE/DK/NO', type:'Legacy', hint:'Škandinávsky vlajkový dopravca.' },
+  { cat:'other', icao:'FIN', call:'Finnair', airline:'Finnair', country:'FI', type:'Legacy', hint:'Fínsky vlajkový dopravca.' },
+  { cat:'other', icao:'AEE', call:'Aegean', airline:'Aegean Airlines', country:'GR', type:'Legacy', hint:'Grécky vlajkový dopravca.' },
+  { cat:'other', icao:'TAP', call:'Air Portugal', airline:'TAP Air Portugal', country:'PT', type:'Legacy', hint:'Portugalský vlajkový dopravca.' },
+  { cat:'other', icao:'BEL', call:'Beeline', airline:'Brussels Airlines', country:'BE', type:'Legacy', hint:'Belgický národný dopravca, LH group.' },
+  { cat:'other', icao:'BTI', call:'Air Baltic', airline:'airBaltic', country:'LV', type:'Hybrid', hint:'Lotyšský dopravca, len A220.' },
+  { cat:'other', icao:'BER', call:'Air Berlin', airline:'Air Berlin (defunct)', country:'DE', type:'Legacy', hint:'Skrachovaná nemecká aerolinka 2017.' },
+  // Asia
+  { cat:'other', icao:'SIA', call:'Singapore', airline:'Singapore Airlines', country:'SG', type:'Legacy', hint:'Singapurský prémiový dopravca.' },
+  { cat:'other', icao:'CPA', call:'Cathay', airline:'Cathay Pacific', country:'HK', type:'Legacy', hint:'Hongkonský dopravca.' },
+  { cat:'other', icao:'ANA', call:'All Nippon', airline:'ANA', country:'JP', type:'Legacy', hint:'Japonský "ANA", modrá livery.' },
+  { cat:'other', icao:'JAL', call:'Japan Air', airline:'Japan Airlines', country:'JP', type:'Legacy', hint:'Druhý japonský veľký dopravca, červený žeriav.' },
+  { cat:'other', icao:'KAL', call:'Korean Air', airline:'Korean Air', country:'KR', type:'Legacy', hint:'Juhokórejský vlajkový dopravca.' },
+  { cat:'other', icao:'CCA', call:'Air China', airline:'Air China', country:'CN', type:'Legacy', hint:'Čínsky vlajkový dopravca.' },
+  { cat:'other', icao:'CES', call:'China Eastern', airline:'China Eastern', country:'CN', type:'Legacy', hint:'Šanghaj-based.' },
+  { cat:'other', icao:'AIC', call:'Air India', airline:'Air India', country:'IN', type:'Legacy', hint:'Indický vlajkový dopravca.' },
+  // US
+  { cat:'other', icao:'AAL', call:'American', airline:'American Airlines', country:'US', type:'Legacy', hint:'Najväčšia US aerolinka.' },
+  { cat:'other', icao:'DAL', call:'Delta', airline:'Delta Air Lines', country:'US', type:'Legacy', hint:'Atlanta hub.' },
+  { cat:'other', icao:'UAL', call:'United', airline:'United Airlines', country:'US', type:'Legacy', hint:'Chicago/Newark hub.' },
+  { cat:'other', icao:'SWA', call:'Southwest', airline:'Southwest', country:'US', type:'LCC', hint:'US low-cost, lieta len 737.' },
+  { cat:'other', icao:'JBU', call:'JetBlue', airline:'JetBlue', country:'US', type:'LCC', hint:'NYC-based US low-cost.' },
+  { cat:'other', icao:'ACA', call:'Air Canada', airline:'Air Canada', country:'CA', type:'Legacy', hint:'Kanadský vlajkový dopravca.' },
+  { cat:'other', icao:'NKS', call:'Spirit Wings', airline:'Spirit Airlines', country:'US', type:'LCC', hint:'Žltý US ultra-low-cost.' },
+  { cat:'other', icao:'FFT', call:'Frontier Flight', airline:'Frontier Airlines', country:'US', type:'LCC', hint:'US LCC s zvieratami na chvostoch.' },
+  // Cargo
+  { cat:'other', icao:'FDX', call:'FedEx', airline:'FedEx', country:'US', type:'Cargo', hint:'Americký cargo gigant.' },
+  { cat:'other', icao:'UPS', call:'UPS', airline:'UPS Airlines', country:'US', type:'Cargo', hint:'Hnedé balíky, Louisville hub.' },
+  { cat:'other', icao:'GTI', call:'Giant', airline:'Atlas Air', country:'US', type:'Cargo', hint:'US cargo / ACMI charter.' },
+  { cat:'other', icao:'CLX', call:'Cargolux', airline:'Cargolux', country:'LU', type:'Cargo', hint:'Luxemburský cargo, len 747s.' },
+  { cat:'other', icao:'QTK', call:'Qatari Cargo', airline:'Qatar Airways Cargo', country:'QA', type:'Cargo', hint:'Cargo dcéra QTR.' },
+  { cat:'other', icao:'CKS', call:'Connie', airline:'Kalitta Air', country:'US', type:'Cargo', hint:'US 747 cargo.' },
+  // Russia / CIS
+  { cat:'other', icao:'AFL', call:'Aeroflot', airline:'Aeroflot', country:'RU', type:'Legacy', hint:'Ruský vlajkový dopravca.' },
+  { cat:'other', icao:'SBI', call:'Siberian Airlines', airline:'S7 Airlines', country:'RU', type:'Hybrid', hint:'Ruský dopravca, zelená livery.' },
+];
+
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  mode: 'aircraft',
+  queue: [], current: null, index: 0, total: 0,
+  correct: 0, wrong: 0, streak: 0, bestStreak: 0,
+  mistakes: {},
+  filters: { wake: 'all', airportCat: 'all', callsignCat: 'all' },
+  hintsUsed: 0,
+};
+
+/* ============================================================
+   HELPERS - shuffle, normalize, levenshtein, matching
+   ============================================================ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function normalize(s) {
+  return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]/g, '').trim();
+}
+function lev(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  const dp = Array.from({length:m+1}, () => new Array(n+1).fill(0));
+  for (let i=0;i<=m;i++) dp[i][0]=i;
+  for (let j=0;j<=n;j++) dp[0][j]=j;
+  for (let i=1;i<=m;i++) for (let j=1;j<=n;j++) {
+    const cost = a[i-1]===b[j-1]?0:1;
+    dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost);
+  }
+  return dp[m][n];
+}
+function matches(userInput, candidates) {
+  const u = normalize(userInput);
+  if (!u) return false;
+  for (const c of candidates) {
+    const n = normalize(c);
+    if (!n) continue;
+    if (u === n) return true;
+    const tol = n.length >= 10 ? 2 : (n.length >= 5 ? 1 : 0);
+    if (lev(u, n) <= tol) return true;
+  }
+  return false;
+}
+
+/* ============================================================
+   QUESTION BUILDERS
+   ============================================================ */
+function buildAircraftQuestions() {
+  let pool = AIRCRAFT;
+  if (state.filters.wake !== 'all') pool = pool.filter(a => a.wake === state.filters.wake);
+  return shuffle(pool).map(a => ({ type: 'aircraft', id: 'AC_' + a.icao, data: a, accept: a.accept }));
+}
+function buildAirportQuestions() {
+  let pool = AIRPORTS;
+  if (state.filters.airportCat !== 'all') pool = pool.filter(a => a.cat === state.filters.airportCat);
+  const list = [];
+  pool.forEach(ap => {
+    list.push({ type: 'airport', subtype: 'icao-to-city', id: 'AP_I2C_' + ap.icao, data: ap,
+      accept: [ap.city] });
+    list.push({ type: 'airport', subtype: 'city-to-icao', id: 'AP_C2I_' + ap.icao, data: ap,
+      accept: [ap.icao] });
+  });
+  return shuffle(list);
+}
+function buildCallsignQuestions() {
+  let pool = CALLSIGNS;
+  if (state.filters.callsignCat !== 'all') pool = pool.filter(c => c.cat === state.filters.callsignCat);
+  const list = [];
+  pool.forEach(cs => {
+    list.push({ type: 'callsign', subtype: 'icao-to-call', id: 'CS_I2C_' + cs.icao, data: cs,
+      accept: [cs.call, cs.call.replace(/\s/g,'')] });
+    list.push({ type: 'callsign', subtype: 'call-to-icao', id: 'CS_C2I_' + cs.icao, data: cs,
+      accept: [cs.icao] });
+  });
+  return shuffle(list);
+}
+function buildQueue() {
+  switch(state.mode) {
+    case 'aircraft': return buildAircraftQuestions();
+    case 'airport':  return buildAirportQuestions();
+    case 'callsign': return buildCallsignQuestions();
+  }
+}
+
+/* ============================================================
+   HINT GENERATORS - progressive hints for each question type
+   ============================================================ */
+function generateHints(q) {
+  if (q.type === 'aircraft') return q.data.hints.slice();
+  if (q.type === 'airport') {
+    const ap = q.data;
+    if (q.subtype === 'icao-to-city') {
+      return [
+        `Krajina: ${ap.country}`,
+        `${ap.hint}`,
+        `Začína na "${ap.city.charAt(0)}", ${ap.city.length} písmen.`,
+        `Letisko: ${ap.name}`,
+      ];
+    } else {
+      const firstLetter = ap.icao.charAt(0);
+      const regionMap = { L: 'južná/stredná Európa', E: 'severná/západná Európa', K: 'USA', U: 'CIS/Ukrajina', O: 'Stredný východ' };
+      const region = regionMap[firstLetter] || '';
+      return [
+        `Krajina: ${ap.country}${region ? ' (' + region + ')' : ''}`,
+        `${ap.hint}`,
+        `Začína na "${ap.icao.substring(0,2)}".`,
+        `Posledné dve: "${ap.icao.substring(2,4)}".`,
+      ];
+    }
+  }
+  if (q.type === 'callsign') {
+    const cs = q.data;
+    if (q.subtype === 'icao-to-call') {
+      return [
+        `Aerolinka: ${cs.airline}`,
+        `Krajina: ${cs.country} · Typ: ${cs.type}`,
+        `${cs.hint}`,
+        `Callsign začína na "${cs.call.charAt(0)}".`,
+      ];
+    } else {
+      return [
+        `Aerolinka: ${cs.airline}`,
+        `Krajina: ${cs.country} · Typ: ${cs.type}`,
+        `${cs.hint}`,
+        `ICAO začína na "${cs.icao.charAt(0)}".`,
+      ];
+    }
+  }
+  return [];
+}
+
+/* ============================================================
+   PHOTO LOADER - Wikipedia REST API summary endpoint
+   Returns the infobox thumbnail (CORS-enabled, stable)
+   ============================================================ */
+const photoCache = {};
+async function loadAircraftPhoto(ac) {
+  const box = document.getElementById('ac-photo');
+  if (!box) return;
+  const setImg = (src) => {
+    box.innerHTML = `
+      <img src="${src}" alt="aircraft" onerror="this.parentElement.innerHTML='<div class=&quot;photo-loading&quot;>IMAGERY UNAVAILABLE</div>'">
+      <div class="photo-corner"><span>▲ INBOUND TRAFFIC</span><span>VIS REC</span></div>
+    `;
+  };
+  if (photoCache[ac.icao]) { setImg(photoCache[ac.icao]); return; }
+  try {
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${ac.wiki}`;
+    const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!r.ok) throw new Error('http ' + r.status);
+    const d = await r.json();
+    const src = (d.originalimage && d.originalimage.source) || (d.thumbnail && d.thumbnail.source);
+    if (!src) throw new Error('no image in summary');
+    photoCache[ac.icao] = src;
+    setImg(src);
+  } catch (e) {
+    box.innerHTML = `<div class="photo-loading">IMAGERY UNAVAILABLE<br><span style="font-size:9px;color:var(--text-faint)">${ac.wiki}</span></div>`;
+  }
+}
+
+/* ============================================================
+   RENDER QUESTION
+   ============================================================ */
+function renderQuestion() {
+  const q = state.current;
+  const card = document.getElementById('qcard');
+  document.getElementById('qnum').textContent = state.index + 1;
+  document.getElementById('qtotal').textContent = state.total;
+  document.getElementById('mode-label').textContent =
+    state.mode === 'aircraft' ? 'AIRCRAFT TYPE' :
+    state.mode === 'airport' ? 'AIRPORTS / ICAO' : 'CALLSIGNS';
+  state.hintsUsed = 0;
+
+  if (!q) {
+    const pct = Math.round((state.correct / Math.max(1,state.total)) * 100);
+    card.innerHTML = `
+      <div class="session-done">
+        <h2>SESSION COMPLETE</h2>
+        <p>Správne: ${state.correct} / ${state.total} · Najlepší streak: ${state.bestStreak}</p>
+        <div class="score-big">${pct}%</div>
+        <p style="margin-top:18px"><button class="btn" id="restart-btn">RESTART ▶</button></p>
+      </div>`;
+    document.getElementById('restart-btn').onclick = () => startMode(state.mode);
+    return;
+  }
+
+  let body = '';
+  let placeholder = '';
+
+  if (q.type === 'aircraft') {
+    const a = q.data;
+    body = `
+      <div class="qmeta">IDENT TYPE <span class="sep">·</span> ENTER ICAO TYPE DESIGNATOR <em style="color:var(--text-faint);font-style:normal">(e.g. B738)</em> OR COMMON NAME</div>
+      <div class="aircraft-display">
+        <div class="aircraft-photo" id="ac-photo">
+          <div class="photo-loading">LOADING IMAGERY...</div>
+        </div>
+        <div class="aircraft-info-side">
+          <div class="ac-target">
+            <small>QUICK RECOGNITION DATA</small>
+            ▼ UNKNOWN TRAFFIC
+          </div>
+          <div class="ac-row">
+            <div class="ac-chip"><strong>WTC</strong>${a.wake}</div>
+            <div class="ac-chip"><strong>ENG</strong>${a.enginesCount}</div>
+            <div class="ac-chip"><strong>CRS</strong>${a.cruise}</div>
+          </div>
+          <div class="ac-row">
+            <div class="ac-chip"><strong>ROLE</strong>${a.role}</div>
+          </div>
+        </div>
+      </div>`;
+    placeholder = 'TYPE DESIGNATOR OR NAME...';
+  }
+
+  if (q.type === 'airport') {
+    if (q.subtype === 'icao-to-city') {
+      body = `<div class="qmeta">AIRPORT ID <span class="sep">·</span> ICAO → CITY</div>
+              <div class="big-prompt">${q.data.icao}</div>
+              <div class="prompt-hint">— WHICH CITY? —</div>`;
+      placeholder = 'CITY NAME...';
+    } else {
+      body = `<div class="qmeta">AIRPORT ID <span class="sep">·</span> CITY → ICAO</div>
+              <div class="big-prompt small">${q.data.city}</div>
+              <div class="prompt-hint">— ${q.data.country} · ${q.data.name} —</div>`;
+      placeholder = 'ICAO CODE (4 LETTERS)...';
+    }
+  }
+
+  if (q.type === 'callsign') {
+    if (q.subtype === 'icao-to-call') {
+      body = `<div class="qmeta">OPERATOR CALL <span class="sep">·</span> ICAO → TELEPHONY</div>
+              <div class="big-prompt">${q.data.icao}</div>
+              <div class="prompt-hint">— RADIO CALLSIGN? —</div>`;
+      placeholder = 'CALLSIGN (e.g. SPEEDBIRD)...';
+    } else {
+      body = `<div class="qmeta">OPERATOR CALL <span class="sep">·</span> TELEPHONY → ICAO</div>
+              <div class="big-prompt small">"${q.data.call}"</div>
+              <div class="prompt-hint">— ICAO 3-LETTER OPERATOR CODE? —</div>`;
+      placeholder = 'ICAO 3-LETTER CODE...';
+    }
+  }
+
+  card.innerHTML = `
+    ${body}
+    <div class="hint-row empty" id="hint-row">
+      <span class="hint-label">HINT</span>
+      <span class="hint-text">— press [?] for a hint —</span>
+      <button class="btn-hint" id="btn-hint">? HINT</button>
+    </div>
+    <div class="input-row">
+      <input type="text" id="answer" placeholder="${placeholder}" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="btn" id="submit-btn">SUBMIT ▶</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  `;
+
+  if (q.type === 'aircraft') loadAircraftPhoto(q.data);
+
+  const input = document.getElementById('answer');
+  input.focus();
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitAnswer();
+  });
+  document.getElementById('submit-btn').onclick = submitAnswer;
+  document.getElementById('btn-hint').onclick = useHint;
+}
+
+function useHint() {
+  const q = state.current;
+  const hints = generateHints(q);
+  if (state.hintsUsed >= hints.length) return;
+  const row = document.getElementById('hint-row');
+  const txt = row.querySelector('.hint-text');
+  row.classList.remove('empty');
+  txt.innerHTML = `<strong style="color:var(--amber)">[${state.hintsUsed + 1}/${hints.length}]</strong> ${hints[state.hintsUsed]}`;
+  state.hintsUsed++;
+  const btn = document.getElementById('btn-hint');
+  if (state.hintsUsed >= hints.length) {
+    btn.disabled = true;
+    btn.textContent = 'NO MORE HINTS';
+  } else {
+    btn.textContent = `? HINT (${hints.length - state.hintsUsed} LEFT)`;
+  }
+}
+
+function renderStats() {
+  document.getElementById('stat-correct').textContent = state.correct;
+  document.getElementById('stat-wrong').textContent = state.wrong;
+  document.getElementById('stat-streak').textContent = state.streak;
+}
+
+function renderWeak() {
+  const el = document.getElementById('weak-list');
+  const items = Object.entries(state.mistakes)
+    .filter(([_, n]) => n >= 3).sort((a,b) => b[1] - a[1]);
+  if (!items.length) {
+    el.innerHTML = '<span class="weak-empty">— no weak spots yet —</span>';
+    return;
+  }
+  el.innerHTML = items.map(([id, n]) => `<span class="weak-item">${labelForId(id)} · ×${n}</span>`).join('');
+}
+
+function labelForId(id) {
+  if (id.startsWith('AC_')) {
+    const ac = AIRCRAFT.find(a => 'AC_' + a.icao === id);
+    return ac ? ac.icao : id;
+  }
+  if (id.startsWith('AP_I2C_')) {
+    const ic = id.slice(7);
+    const ap = AIRPORTS.find(a => a.icao === ic);
+    return ap ? `${ap.icao}→${ap.city}` : id;
+  }
+  if (id.startsWith('AP_C2I_')) {
+    const ic = id.slice(7);
+    const ap = AIRPORTS.find(a => a.icao === ic);
+    return ap ? `${ap.city}→${ap.icao}` : id;
+  }
+  if (id.startsWith('CS_I2C_')) {
+    const ic = id.slice(7);
+    const cs = CALLSIGNS.find(c => c.icao === ic);
+    return cs ? `${cs.icao}→${cs.call}` : id;
+  }
+  if (id.startsWith('CS_C2I_')) {
+    const ic = id.slice(7);
+    const cs = CALLSIGNS.find(c => c.icao === ic);
+    return cs ? `"${cs.call}"→${cs.icao}` : id;
+  }
+  return id;
+}
+
+function renderFilters() {
+  const el = document.getElementById('filters');
+  if (state.mode === 'aircraft') {
+    el.innerHTML = `
+      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">WAKE FILTER:</span>
+      <button class="filter-chip ${state.filters.wake==='all'?'on':''}" data-wake="all">ALL</button>
+      <button class="filter-chip ${state.filters.wake==='L'?'on':''}" data-wake="L">LIGHT</button>
+      <button class="filter-chip ${state.filters.wake==='M'?'on':''}" data-wake="M">MEDIUM</button>
+      <button class="filter-chip ${state.filters.wake==='H'?'on':''}" data-wake="H">HEAVY</button>
+      <button class="filter-chip ${state.filters.wake==='J'?'on':''}" data-wake="J">SUPER</button>
+    `;
+    el.querySelectorAll('[data-wake]').forEach(b => {
+      b.onclick = () => { state.filters.wake = b.dataset.wake; startMode(state.mode); };
+    });
+  } else if (state.mode === 'airport') {
+    el.innerHTML = `
+      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">REGION:</span>
+      <button class="filter-chip ${state.filters.airportCat==='all'?'on':''}" data-apcat="all">ALL</button>
+      <button class="filter-chip ${state.filters.airportCat==='sk'?'on':''}" data-apcat="sk">SK LETISKÁ</button>
+      <button class="filter-chip ${state.filters.airportCat==='neigh'?'on':''}" data-apcat="neigh">SUSEDNÉ ŠTÁTY</button>
+      <button class="filter-chip ${state.filters.airportCat==='other'?'on':''}" data-apcat="other">OSTATNÉ</button>
+    `;
+    el.querySelectorAll('[data-apcat]').forEach(b => {
+      b.onclick = () => { state.filters.airportCat = b.dataset.apcat; startMode(state.mode); };
+    });
+  } else if (state.mode === 'callsign') {
+    el.innerHTML = `
+      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">CATEGORY:</span>
+      <button class="filter-chip ${state.filters.callsignCat==='all'?'on':''}" data-cscat="all">ALL</button>
+      <button class="filter-chip ${state.filters.callsignCat==='sk'?'on':''}" data-cscat="sk">CEZ SLOVENSKO</button>
+      <button class="filter-chip ${state.filters.callsignCat==='other'?'on':''}" data-cscat="other">OSTATNÉ</button>
+    `;
+    el.querySelectorAll('[data-cscat]').forEach(b => {
+      b.onclick = () => { state.filters.callsignCat = b.dataset.cscat; startMode(state.mode); };
+    });
+  }
+}
+
+/* ============================================================
+   REVEAL - full info panel after submit
+   ============================================================ */
+function renderReveal(q) {
+  let header = '', grid = '', extra = '';
+
+  if (q.type === 'aircraft') {
+    const a = q.data;
+    header = `
+      <div class="reveal-title">${a.icao} — ${a.name}</div>
+      <div class="reveal-sub">${a.mfr.toUpperCase()} <span style="color:var(--text-faint)">·</span> ${a.role.toUpperCase()}</div>
+    `;
+    grid = `
+      <div class="item"><span class="item-label">WAKE TURB</span><span class="item-val"><strong>${a.wake}</strong></span></div>
+      <div class="item"><span class="item-label">ENGINES</span><span class="item-val">${a.engines}</span></div>
+      <div class="item"><span class="item-label">CRUISE</span><span class="item-val"><strong>${a.cruise}</strong></span></div>
+      <div class="item"><span class="item-label">MMO / VMO</span><span class="item-val">${a.mmo}</span></div>
+      <div class="item"><span class="item-label">VNE</span><span class="item-val">${a.vne}</span></div>
+      <div class="item"><span class="item-label">STALL (clean)</span><span class="item-val">${a.stall}</span></div>
+      <div class="item"><span class="item-label">CEILING</span><span class="item-val"><strong>${a.ceiling}</strong></span></div>
+      <div class="item"><span class="item-label">MTOW</span><span class="item-val">${a.mtow}</span></div>
+      <div class="item"><span class="item-label">LENGTH</span><span class="item-val">${a.length}</span></div>
+      <div class="item"><span class="item-label">WINGSPAN</span><span class="item-val">${a.wingspan}</span></div>
+      <div class="item"><span class="item-label">RANGE</span><span class="item-val">${a.range}</span></div>
+      <div class="item"><span class="item-label">CAPACITY</span><span class="item-val">${a.pax}</span></div>
+    `;
+    extra = `<div class="reveal-ops"><strong>OPERATORS</strong>${a.operators}</div>`;
+  }
+
+  if (q.type === 'airport') {
+    const ap = q.data;
+    header = `
+      <div class="reveal-title">${ap.icao} — ${ap.city}</div>
+      <div class="reveal-sub">${ap.name.toUpperCase()} <span style="color:var(--text-faint)">·</span> ${ap.country}</div>
+    `;
+    grid = `
+      <div class="item"><span class="item-label">ICAO</span><span class="item-val"><strong>${ap.icao}</strong></span></div>
+      <div class="item"><span class="item-label">CITY</span><span class="item-val">${ap.city}</span></div>
+      <div class="item"><span class="item-label">COUNTRY</span><span class="item-val">${ap.country}</span></div>
+      <div class="item"><span class="item-label">FACILITY</span><span class="item-val">${ap.name}</span></div>
+    `;
+    if (ap.region || ap.hint) extra = `<div class="reveal-ops"><strong>NOTE</strong>${ap.region ? ap.region + ' — ' : ''}${ap.hint || ''}</div>`;
+  }
+
+  if (q.type === 'callsign') {
+    const cs = q.data;
+    header = `
+      <div class="reveal-title">${cs.icao} — "${cs.call}"</div>
+      <div class="reveal-sub">${cs.airline.toUpperCase()} <span style="color:var(--text-faint)">·</span> ${cs.country} · ${cs.type.toUpperCase()}</div>
+    `;
+    grid = `
+      <div class="item"><span class="item-label">ICAO 3LTR</span><span class="item-val"><strong>${cs.icao}</strong></span></div>
+      <div class="item"><span class="item-label">CALLSIGN</span><span class="item-val"><strong>"${cs.call}"</strong></span></div>
+      <div class="item"><span class="item-label">AIRLINE</span><span class="item-val">${cs.airline}</span></div>
+      <div class="item"><span class="item-label">COUNTRY</span><span class="item-val">${cs.country}</span></div>
+      <div class="item"><span class="item-label">TYPE</span><span class="item-val">${cs.type}</span></div>
+    `;
+    extra = `<div class="reveal-ops"><strong>NOTE</strong>${cs.hint}</div>`;
+  }
+
+  return `<div class="reveal">${header}<div class="reveal-grid">${grid}</div>${extra}</div>`;
+}
+
+/* ============================================================
+   SUBMIT FLOW
+   ============================================================ */
+function submitAnswer() {
+  const input = document.getElementById('answer');
+  if (!input || input.disabled) return;
+  const val = input.value;
+  if (!val.trim()) return;
+
+  const q = state.current;
+  const ok = matches(val, q.accept);
+  const fb = document.getElementById('feedback');
+
+  if (ok) {
+    state.correct++;
+    state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+  } else {
+    state.wrong++;
+    state.streak = 0;
+    state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1;
+  }
+  renderStats();
+  renderWeak();
+
+  input.disabled = true;
+  const sb = document.getElementById('submit-btn');
+  sb.disabled = true; sb.style.opacity = '0.4';
+  const hb = document.getElementById('btn-hint'); if (hb) hb.disabled = true;
+
+  let bannerText;
+  if (ok) bannerText = `✓ <strong>CORRECT</strong>`;
+  else bannerText = `✗ <strong>WRONG</strong> · YOUR ANSWER: <span class="answer">${val.toUpperCase()}</span>`;
+
+  fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
+  fb.innerHTML = `
+    <div class="feedback-banner">
+      <span>${bannerText}</span>
+      <button class="btn" id="next-btn">NEXT ▶</button>
+    </div>
+    ${renderReveal(q)}
+  `;
+
+  setTimeout(() => {
+    const nb = document.getElementById('next-btn');
+    if (nb) { nb.focus(); nb.onclick = nextQuestion; }
+    document.addEventListener('keydown', onEnterNext, { once: true });
+  }, 50);
+}
+
+function onEnterNext(e) {
+  if (e.key === 'Enter') { e.preventDefault(); nextQuestion(); }
+}
+
+function nextQuestion() {
+  state.index++;
+  state.current = state.queue[state.index] || null;
+  renderQuestion();
+}
+
+function startMode(mode) {
+  state.mode = mode;
+  state.queue = buildQueue();
+  state.index = 0;
+  state.total = state.queue.length;
+  state.correct = 0; state.wrong = 0;
+  state.streak = 0; state.bestStreak = 0;
+  state.current = state.queue[0] || null;
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === mode);
+  });
+  renderFilters();
+  renderStats();
+  renderQuestion();
+}
+
+/* CLOCK */
+function tickClock() {
+  const d = new Date();
+  const h = String(d.getUTCHours()).padStart(2,'0');
+  const m = String(d.getUTCMinutes()).padStart(2,'0');
+  const s = String(d.getUTCSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}:${s} UTC`;
+}
+setInterval(tickClock, 1000); tickClock();
+
+document.querySelectorAll('.tab').forEach(t => { t.onclick = () => startMode(t.dataset.mode); });
+document.getElementById('btn-skip').onclick = () => {
+  if (!state.current) return;
+  state.mistakes[state.current.id] = (state.mistakes[state.current.id] || 0) + 1;
+  state.streak = 0;
+  renderStats(); renderWeak();
+  nextQuestion();
+};
+document.getElementById('btn-reset').onclick = () => startMode(state.mode);
+
+startMode('aircraft');
+</script>
+</body>
+</html>
