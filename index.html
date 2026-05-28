@@ -9,89 +9,111 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0e0c; --panel: #0f1512; --panel-2: #131a16;
-    --border: #1f2a24; --border-bright: #2d3d34;
-    --green: #5dff9e; --green-dim: #2d8556; --green-bg: #5dff9e10;
-    --amber: #ffb84d; --amber-bg: #ffb84d12;
-    --red: #ff5c5c; --red-bg: #ff5c5c12;
-    --text: #c9d6cf; --text-dim: #6a7d72; --text-faint: #3d4a43;
+    /* Light theme — white background, readable green accent, high-contrast buttons */
+    --bg: #f4f7f5; --panel: #ffffff; --panel-2: #eef3f0;
+    --border: #cdddd4; --border-bright: #9fb8aa;
+    /* readable emerald for text/accents on white */
+    --green: #07804b; --green-strong: #0a9d5c; --green-dim: #4a9a72; --green-bg: #e3f6ec;
+    --amber: #b06a00; --amber-bg: #fdf2dd;
+    --red: #c62f2f; --red-bg: #fdeaea;
+    --text: #16221c; --text-dim: #4f6359;
+    --text-faint: #87998f;
+    --shadow: 0 1px 2px rgba(16,40,28,0.06), 0 2px 8px rgba(16,40,28,0.06);
+    --shadow-btn: 0 1px 0 rgba(16,40,28,0.08), 0 2px 6px rgba(10,157,92,0.18);
     --mono: 'JetBrains Mono', ui-monospace, monospace;
     --display: 'Space Grotesk', sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 14px; min-height: 100vh; overflow-x: hidden; }
+  /* subtle light grid texture instead of dark scanlines */
   body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:1;
-    background: radial-gradient(ellipse at top, #0f2a1f33 0%, transparent 50%),
-                repeating-linear-gradient(0deg, transparent 0px, transparent 2px, #5dff9e03 2px, #5dff9e03 3px); }
-  body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:2;
-    background: radial-gradient(ellipse at center, transparent 60%, #00000080 100%); }
+    background: radial-gradient(ellipse at top, #c9f0db40 0%, transparent 55%),
+                linear-gradient(#0a9d5c08 1px, transparent 1px),
+                linear-gradient(90deg, #0a9d5c08 1px, transparent 1px);
+    background-size: 100% 100%, 28px 28px, 28px 28px; }
   .app { position:relative; z-index:3; max-width:1040px; margin:0 auto; padding:24px 20px 80px; }
-  header { display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border); background:var(--panel); padding:14px 18px; margin-bottom:20px; position:relative; }
-  header::before { content:''; position:absolute; top:-1px; left:-1px; width:12px; height:12px; border-top:2px solid var(--green); border-left:2px solid var(--green); }
-  header::after { content:''; position:absolute; bottom:-1px; right:-1px; width:12px; height:12px; border-bottom:2px solid var(--green); border-right:2px solid var(--green); }
+
+  header { display:flex; align-items:center; justify-content:space-between; border:1px solid var(--border); background:var(--panel); padding:14px 18px; margin-bottom:20px; position:relative; border-radius:8px; box-shadow:var(--shadow); }
+  header::before { content:''; position:absolute; top:-1px; left:-1px; width:12px; height:12px; border-top:3px solid var(--green-strong); border-left:3px solid var(--green-strong); border-radius:4px 0 0 0; }
+  header::after { content:''; position:absolute; bottom:-1px; right:-1px; width:12px; height:12px; border-bottom:3px solid var(--green-strong); border-right:3px solid var(--green-strong); border-radius:0 0 4px 0; }
   .brand { display:flex; align-items:baseline; gap:12px; }
-  .brand-mark { color:var(--green); font-weight:800; letter-spacing:0.18em; font-size:13px; text-shadow:0 0 12px #5dff9e80; }
+  .brand-mark { color:var(--green); font-weight:800; letter-spacing:0.18em; font-size:13px; }
   .brand-sub { color:var(--text-faint); font-size:11px; letter-spacing:0.2em; }
-  .clock { color:var(--green-dim); font-size:12px; letter-spacing:0.15em; }
-  .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px; }
-  .tab { background:var(--panel); border:1px solid var(--border); color:var(--text-dim); padding:14px 12px; cursor:pointer; text-align:left; font-family:var(--mono); font-size:12px; letter-spacing:0.12em; transition:all 0.15s; }
-  .tab:hover { border-color:var(--border-bright); color:var(--text); }
-  .tab.active { background:var(--green-bg); border-color:var(--green); color:var(--green); text-shadow:0 0 8px #5dff9e60; }
+  .clock { color:var(--green-dim); font-size:12px; letter-spacing:0.15em; font-weight:500; }
+
+  /* TABS — clearly card-like, active tab is a solid filled button */
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+  .tab { background:var(--panel); border:1.5px solid var(--border); color:var(--text-dim); padding:14px 14px; cursor:pointer; text-align:left; font-family:var(--mono); font-size:12px; letter-spacing:0.12em; transition:all 0.15s; border-radius:8px; box-shadow:var(--shadow); }
+  .tab:hover { border-color:var(--green-strong); color:var(--text); transform:translateY(-1px); box-shadow:0 3px 10px rgba(10,157,92,0.16); }
+  .tab.active { background:var(--green-strong); border-color:var(--green-strong); color:#ffffff; box-shadow:0 3px 12px rgba(10,157,92,0.32); }
   .tab .tab-num { display:block; font-size:10px; color:var(--text-faint); margin-bottom:4px; }
-  .tab.active .tab-num { color:var(--green-dim); }
+  .tab.active .tab-num { color:#d6f5e6; }
   .tab .tab-label { font-weight:700; }
-  .panel { background:var(--panel); border:1px solid var(--border); }
-  .panel-head { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--panel-2); font-size:11px; letter-spacing:0.18em; color:var(--text-faint); }
+
+  .panel { background:var(--panel); border:1px solid var(--border); border-radius:8px; box-shadow:var(--shadow); overflow:hidden; }
+  .panel-head { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--panel-2); font-size:11px; letter-spacing:0.18em; color:var(--text-dim); }
   .stats { display:flex; gap:18px; }
   .stat { display:flex; gap:6px; align-items:baseline; }
   .stat-label { color:var(--text-faint); font-size:10px; }
   .stat-val { color:var(--green); font-weight:700; }
   .stat-val.amber { color:var(--amber); }
   .stat-val.red { color:var(--red); }
+
   .qcard { padding:28px; min-height:340px; }
   .qmeta { font-size:10px; letter-spacing:0.25em; color:var(--text-faint); margin-bottom:18px; }
   .qmeta .sep { margin:0 10px; }
   .aircraft-display { display:grid; grid-template-columns:380px 1fr; gap:24px; align-items:stretch; margin-bottom:18px; }
-  .aircraft-photo { background:#050807; border:1px solid var(--border); position:relative; aspect-ratio:16/10; overflow:hidden; }
-  .aircraft-photo img { width:100%; height:100%; object-fit:cover; filter:grayscale(0.1) contrast(1.05) brightness(0.95); }
+  .aircraft-photo { background:var(--panel-2); border:1px solid var(--border); position:relative; aspect-ratio:16/10; overflow:hidden; border-radius:6px; }
+  .aircraft-photo img { width:100%; height:100%; object-fit:cover; }
   .aircraft-photo::after { content:''; position:absolute; inset:0; pointer-events:none;
-    background: linear-gradient(180deg, transparent 70%, #050807cc 100%),
-                repeating-linear-gradient(0deg, transparent 0px, transparent 3px, #5dff9e08 3px, #5dff9e08 4px); }
-  .photo-corner { position:absolute; bottom:8px; left:10px; right:10px; z-index:2; color:var(--green-dim); font-size:9px; letter-spacing:0.15em; display:flex; justify-content:space-between; }
+    background: linear-gradient(180deg, transparent 80%, #00000055 100%); }
+  .photo-corner { position:absolute; bottom:8px; left:10px; right:10px; z-index:2; color:#ffffff; font-size:9px; letter-spacing:0.15em; display:flex; justify-content:space-between; text-shadow:0 1px 3px rgba(0,0,0,0.7); }
   .photo-loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--green-dim); font-size:11px; letter-spacing:0.2em; animation:pulse-loading 1.4s infinite; }
   .aircraft-info-side { display:flex; flex-direction:column; gap:10px; }
   .ac-target { font-family:var(--display); font-size:18px; color:var(--text); font-weight:700; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:4px; }
   .ac-target small { display:block; font-family:var(--mono); font-size:10px; color:var(--text-faint); letter-spacing:0.15em; font-weight:400; margin-bottom:4px; }
   .ac-row { display:flex; gap:8px; flex-wrap:wrap; font-size:11px; }
-  .ac-chip { background:#0b110e; border:1px solid var(--border); padding:6px 10px; letter-spacing:0.08em; color:var(--text-dim); }
+  .ac-chip { background:var(--panel-2); border:1px solid var(--border); padding:6px 10px; letter-spacing:0.08em; color:var(--text-dim); border-radius:5px; }
   .ac-chip strong { color:var(--green); margin-right:6px; font-weight:700; }
-  .hint-row { margin:14px 0 6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 14px; background:var(--amber-bg); border-left:3px solid var(--amber); min-height:48px; }
-  .hint-row.empty { background:transparent; border-color:var(--border); }
+
+  .hint-row { margin:14px 0 6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 14px; background:var(--amber-bg); border-left:4px solid var(--amber); min-height:48px; border-radius:0 6px 6px 0; }
+  .hint-row.empty { background:var(--panel-2); border-color:var(--border); }
   .hint-label { color:var(--amber); font-size:10px; letter-spacing:0.18em; font-weight:700; }
   .hint-row.empty .hint-label { color:var(--text-faint); }
   .hint-text { color:var(--text); font-size:12px; flex:1; }
   .hint-row.empty .hint-text { color:var(--text-faint); font-style:italic; }
-  .btn-hint { background:transparent; border:1px solid var(--amber); color:var(--amber); padding:6px 14px; font-family:var(--mono); font-size:11px; letter-spacing:0.15em; cursor:pointer; font-weight:700; }
-  .btn-hint:hover { background:var(--amber); color:#050807; }
-  .btn-hint:disabled { opacity:0.3; cursor:not-allowed; border-color:var(--border); color:var(--text-faint); }
-  .big-prompt { font-family:var(--display); font-size:64px; font-weight:700; color:var(--green); letter-spacing:0.04em; text-align:center; margin:32px 0 14px; text-shadow:0 0 24px #5dff9e30; line-height:1; }
+
+  /* HINT button — clearly an amber filled action */
+  .btn-hint { background:var(--amber); border:1.5px solid var(--amber); color:#ffffff; padding:7px 16px; font-family:var(--mono); font-size:11px; letter-spacing:0.15em; cursor:pointer; font-weight:700; border-radius:6px; box-shadow:0 2px 6px rgba(176,106,0,0.25); transition:all 0.12s; }
+  .btn-hint:hover { background:#9a5d00; transform:translateY(-1px); }
+  .btn-hint:disabled { opacity:1; cursor:not-allowed; background:var(--panel-2); border-color:var(--border); color:var(--text-faint); box-shadow:none; transform:none; }
+
+  .big-prompt { font-family:var(--display); font-size:64px; font-weight:700; color:var(--green); letter-spacing:0.04em; text-align:center; margin:32px 0 14px; line-height:1; }
   .big-prompt.small { font-size:38px; }
   .prompt-hint { text-align:center; color:var(--text-faint); font-size:11px; letter-spacing:0.2em; margin-bottom:14px; }
+
+  /* INPUT — white field, dark green text, clear border */
   .input-row { display:flex; gap:10px; margin-top:18px; }
-  .input-row input { flex:1; background:#050807; border:1px solid var(--border-bright); color:var(--green); padding:16px 18px; font-family:var(--mono); font-size:18px; letter-spacing:0.08em; outline:none; text-transform:uppercase; }
-  .input-row input:focus { border-color:var(--green); box-shadow:0 0 0 1px #5dff9e30, inset 0 0 20px #5dff9e08; }
-  .input-row input::placeholder { color:var(--text-faint); text-transform:none; letter-spacing:0.1em; }
-  .btn { background:var(--green-bg); border:1px solid var(--green); color:var(--green); padding:0 22px; font-family:var(--mono); font-size:12px; letter-spacing:0.18em; font-weight:700; cursor:pointer; transition:all 0.1s; }
-  .btn:hover { background:var(--green); color:#050807; text-shadow:none; }
-  .btn.ghost { background:transparent; border-color:var(--border-bright); color:var(--text-dim); }
-  .btn.ghost:hover { background:var(--border); color:var(--text); }
+  .input-row input { flex:1; background:#ffffff; border:2px solid var(--border-bright); color:var(--green); padding:16px 18px; font-family:var(--mono); font-size:18px; letter-spacing:0.08em; outline:none; text-transform:uppercase; border-radius:8px; font-weight:700; transition:border-color 0.12s, box-shadow 0.12s; }
+  .input-row input:focus { border-color:var(--green-strong); box-shadow:0 0 0 3px rgba(10,157,92,0.18); }
+  .input-row input::placeholder { color:var(--text-faint); text-transform:none; letter-spacing:0.1em; font-weight:400; }
+
+  /* PRIMARY button — solid green, white text, obviously clickable */
+  .btn { background:var(--green-strong); border:1.5px solid var(--green-strong); color:#ffffff; padding:0 24px; font-family:var(--mono); font-size:12px; letter-spacing:0.18em; font-weight:700; cursor:pointer; transition:all 0.12s; border-radius:8px; box-shadow:var(--shadow-btn); }
+  .btn:hover { background:var(--green); border-color:var(--green); transform:translateY(-1px); box-shadow:0 4px 12px rgba(10,157,92,0.3); }
+  .btn:active { transform:translateY(0); }
+  /* SECONDARY (ghost) button — white with strong border, clearly a button */
+  .btn.ghost { background:#ffffff; border:1.5px solid var(--border-bright); color:var(--text-dim); box-shadow:var(--shadow); }
+  .btn.ghost:hover { background:var(--panel-2); border-color:var(--green-strong); color:var(--green); transform:translateY(-1px); }
+
   .feedback { margin-top:16px; padding:0; display:none; }
   .feedback.show { display:block; }
-  .feedback-banner { padding:12px 16px; border-left:3px solid; font-size:13px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
-  .feedback.ok .feedback-banner { background:var(--green-bg); border-color:var(--green); color:var(--green); }
+  .feedback-banner { padding:12px 16px; border-left:4px solid; font-size:13px; display:flex; align-items:center; justify-content:space-between; gap:16px; border-radius:0 6px 6px 0; font-weight:600; }
+  .feedback.ok .feedback-banner { background:var(--green-bg); border-color:var(--green-strong); color:var(--green); }
   .feedback.no .feedback-banner { background:var(--red-bg); border-color:var(--red); color:var(--red); }
   .feedback .answer { font-family:var(--display); font-size:16px; font-weight:700; }
-  .reveal { background:var(--panel-2); border:1px solid var(--border); border-top:none; padding:18px 20px; }
+
+  .reveal { background:var(--panel-2); border:1px solid var(--border); border-top:none; padding:18px 20px; border-radius:0 0 8px 8px; }
   .reveal-title { font-family:var(--display); font-size:22px; color:var(--green); font-weight:700; margin-bottom:4px; letter-spacing:0.01em; }
   .reveal-sub { font-size:11px; letter-spacing:0.15em; color:var(--text-faint); margin-bottom:14px; }
   .reveal-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:8px 14px; font-size:12px; }
@@ -101,22 +123,29 @@
   .reveal-grid .item-val strong { color:var(--green); font-weight:700; }
   .reveal-ops { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); font-size:11px; color:var(--text-dim); line-height:1.6; }
   .reveal-ops strong { color:var(--amber); display:block; font-size:9px; letter-spacing:0.2em; margin-bottom:4px; }
-  .controls { display:flex; gap:8px; padding:12px 18px; border-top:1px solid var(--border); background:var(--panel-2); justify-content:space-between; align-items:center; }
+
+  .controls { display:flex; gap:8px; padding:12px 18px; border-top:1px solid var(--border); background:var(--panel-2); justify-content:space-between; align-items:center; flex-wrap:wrap; }
   .controls-left { display:flex; gap:8px; flex-wrap:wrap; }
   .controls-right { display:flex; gap:8px; }
-  .filter-chip { background:transparent; border:1px solid var(--border); color:var(--text-dim); padding:6px 10px; font-family:var(--mono); font-size:10px; letter-spacing:0.12em; cursor:pointer; white-space:nowrap; }
-  .filter-chip.on { border-color:var(--green-dim); color:var(--green); background:var(--green-bg); }
-  .filter-chip:hover { border-color:var(--border-bright); }
-  .weak-section { margin-top:20px; background:var(--panel); border:1px solid var(--border); padding:14px 18px; }
-  .weak-title { font-size:11px; letter-spacing:0.2em; color:var(--amber); margin-bottom:10px; display:flex; gap:10px; align-items:center; }
-  .weak-title::before { content:'!'; display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border:1px solid var(--amber); color:var(--amber); font-weight:700; }
+
+  /* FILTER chips — clearly toggle buttons; active = filled green */
+  .filter-chip { background:#ffffff; border:1.5px solid var(--border-bright); color:var(--text-dim); padding:7px 12px; font-family:var(--mono); font-size:10px; letter-spacing:0.12em; cursor:pointer; white-space:nowrap; border-radius:20px; font-weight:600; transition:all 0.12s; }
+  .filter-chip.on { border-color:var(--green-strong); color:#ffffff; background:var(--green-strong); box-shadow:0 2px 6px rgba(10,157,92,0.22); }
+  .filter-chip:hover { border-color:var(--green-strong); color:var(--green); }
+  .filter-chip.on:hover { color:#ffffff; }
+
+  .weak-section { margin-top:20px; background:var(--panel); border:1px solid var(--border); padding:14px 18px; border-radius:8px; box-shadow:var(--shadow); }
+  .weak-title { font-size:11px; letter-spacing:0.2em; color:var(--amber); margin-bottom:10px; display:flex; gap:10px; align-items:center; font-weight:700; }
+  .weak-title::before { content:'!'; display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:var(--amber); color:#ffffff; font-weight:700; }
   .weak-list { display:flex; flex-wrap:wrap; gap:6px; }
-  .weak-item { font-size:11px; padding:4px 8px; background:var(--amber-bg); border:1px solid var(--amber); color:var(--amber); letter-spacing:0.05em; }
+  .weak-item { font-size:11px; padding:5px 9px; background:var(--amber-bg); border:1px solid var(--amber); color:var(--amber); letter-spacing:0.05em; border-radius:5px; font-weight:600; }
   .weak-empty { color:var(--text-faint); font-size:11px; }
+
   .session-done { padding:40px 28px; text-align:center; }
   .session-done h2 { font-family:var(--display); font-size:28px; color:var(--green); margin-bottom:8px; letter-spacing:0.02em; }
   .session-done p { color:var(--text-dim); margin-bottom:24px; }
-  .score-big { font-size:72px; color:var(--green); font-weight:800; font-family:var(--mono); text-shadow:0 0 20px #5dff9e40; }
+  .score-big { font-size:72px; color:var(--green); font-weight:800; font-family:var(--mono); }
+
   @media (max-width:760px) {
     .aircraft-display { grid-template-columns:1fr; }
     .big-prompt { font-size:44px; }
@@ -1199,16 +1228,14 @@ const AIRPORTS = [
   { cat:'sk', icao:'LZNI', city:'Nitra', country:'SK', name:'Nitra-Janíkovce', region:'JZ', hint:'Juhozápad SR.' },
   { cat:'sk', icao:'LZLU', city:'Lučenec', country:'SK', name:'Lučenec-Boľkovce', region:'Juh stred', hint:'Juh stredného SR.' },
   { cat:'sk', icao:'LZSK', city:'Svidník', country:'SK', name:'Svidník', region:'SV', hint:'Severovýchod SR.' },
-  { cat:'sk', icao:'LZPW', city:'Prievidza', country:'SK', name:'Prievidza', region:'Horná Nitra', hint:'Hornonitrianska kotlina.' },
+  { cat:'sk', icao:'LZPE', city:'Prievidza', country:'SK', name:'Prievidza', region:'Horná Nitra', hint:'Hornonitrianska kotlina.' },
   { cat:'sk', icao:'LZMC', city:'Malacky', country:'SK', name:'Malacky-Kuchyňa (mil.)', region:'Záhorie', hint:'Vojenské letisko, Záhorie.' },
   { cat:'sk', icao:'LZTN', city:'Trenčín', country:'SK', name:'Trenčín (mil./GA)', region:'Považie', hint:'Považie.' },
-  { cat:'sk', icao:'LZBL', city:'Boleráz', country:'SK', name:'Boleráz', region:'Trnava', hint:'Trnavský okres.' },
+  { cat:'sk', icao:'LZTR', city:'Boleráz', country:'SK', name:'Boleráz', region:'Trnava', hint:'Trnavský okres.' },
   { cat:'sk', icao:'LZSE', city:'Senica', country:'SK', name:'Senica', region:'Záhorie', hint:'Záhorie.' },
   { cat:'sk', icao:'LZJS', city:'Jasná', country:'SK', name:'Jasná heliport', region:'Nízke Tatry', hint:'Lyžiarske stredisko v Nízkych Tatrách.' },
-  { cat:'sk', icao:'LZSB', city:'Spišská Nová Ves', country:'SK', name:'Spišská Nová Ves', region:'Spiš', hint:'Spiš.' },
+  { cat:'sk', icao:'LZSV', city:'Spišská Nová Ves', country:'SK', name:'Spišská Nová Ves', region:'Spiš', hint:'Spiš.' },
   { cat:'sk', icao:'LZDB', city:'Dubnica nad Váhom', country:'SK', name:'Dubnica', region:'Považie', hint:'Považie.' },
-  { cat:'sk', icao:'LZRO', city:'Rožňava', country:'SK', name:'Rožňava', region:'Gemer', hint:'Gemer, juh SR.' },
-  { cat:'sk', icao:'LZKM', city:'Kremnica', country:'SK', name:'Kremnica', region:'Stred', hint:'Banská Bystrica oblasť.' },
   { cat:'sk', icao:'LZOC', city:'Očová', country:'SK', name:'Očová', region:'Zvolen', hint:'Pri Zvolene.' },
 
   // === NEIGHBOURING STATES (cat: 'neigh') — CZ, AT, HU, PL, UA ===
@@ -1227,23 +1254,21 @@ const AIRPORTS = [
   { cat:'neigh', icao:'LOWK', city:'Klagenfurt', country:'AT', name:'Klagenfurt', hint:'Korutánsko.' },
   // HU
   { cat:'neigh', icao:'LHBP', city:'Budapešť', country:'HU', name:'Liszt Ferenc Budapest', hint:'Hlavné mesto Maďarska.' },
-  { cat:'neigh', icao:'LHDC', city:'Debrecín', country:'HU', name:'Debrecen', hint:'Východné Maďarsko.' },
+  { cat:'neigh', icao:'LHDC', city:'Debrecen', country:'HU', name:'Debrecen', hint:'Východné Maďarsko.' },
   { cat:'neigh', icao:'LHPP', city:'Pécs', country:'HU', name:'Pécs-Pogány', hint:'Južné Maďarsko.' },
   { cat:'neigh', icao:'LHSM', city:'Sármellék', country:'HU', name:'Hévíz-Balaton', hint:'Pri Balatone.' },
-  { cat:'neigh', icao:'LHBC', city:'Miškovec', country:'HU', name:'Miskolc', hint:'Severovýchodné Maďarsko.' },
+  { cat:'neigh', icao:'LHMC', city:'Miskolc', country:'HU', name:'Miskolc', hint:'Severovýchodné Maďarsko.' },
   // PL
   { cat:'neigh', icao:'EPWA', city:'Varšava', country:'PL', name:'Warsaw Chopin', hint:'Hlavné mesto Poľska.' },
   { cat:'neigh', icao:'EPKK', city:'Krakov', country:'PL', name:'Kraków-Balice', hint:'Bývalé hlavné mesto Poľska.' },
   { cat:'neigh', icao:'EPKT', city:'Katovice', country:'PL', name:'Katowice-Pyrzowice', hint:'Sliezsko, blízko SK.' },
-  { cat:'neigh', icao:'EPRZ', city:'Rzeszów', country:'PL', name:'Rzeszów-Jasionka', hint:'JV Poľsko, blízko UA.' },
   { cat:'neigh', icao:'EPGD', city:'Gdaňsk', country:'PL', name:'Gdańsk Lech Wałęsa', hint:'Pobaltie, sever PL.' },
   { cat:'neigh', icao:'EPPO', city:'Poznaň', country:'PL', name:'Poznań-Ławica', hint:'Veľkopoľsko.' },
-  { cat:'neigh', icao:'EPWR', city:'Vroclav', country:'PL', name:'Wrocław', hint:'Dolné Sliezsko.' },
+  { cat:'neigh', icao:'EPWR', city:'Wroclaw', country:'PL', name:'Wrocław', hint:'Dolné Sliezsko.' },
   { cat:'neigh', icao:'EPLB', city:'Lublin', country:'PL', name:'Lublin', hint:'Východné Poľsko.' },
   // UA
   { cat:'neigh', icao:'UKLL', city:'Ľvov', country:'UA', name:'Lviv Danylo Halytskyi', hint:'Západná Ukrajina.' },
   { cat:'neigh', icao:'UKBB', city:'Kyjev', country:'UA', name:'Kyiv Boryspil', hint:'Hlavné mesto Ukrajiny.' },
-  { cat:'neigh', icao:'UKKK', city:'Kyjev', country:'UA', name:'Kyiv Zhuliany', hint:'Druhé letisko Kyjeva.' },
   { cat:'neigh', icao:'UKOO', city:'Odesa', country:'UA', name:'Odesa', hint:'Juh Ukrajiny pri Čiernom mori.' },
 
   // === OTHER WORLD (cat: 'other') ===
@@ -1253,19 +1278,18 @@ const AIRPORTS = [
   { cat:'other', icao:'EDDB', city:'Berlín', country:'DE', name:'Berlin Brandenburg', hint:'Hlavné mesto Nemecka.' },
   { cat:'other', icao:'EDDL', city:'Düsseldorf', country:'DE', name:'Düsseldorf', hint:'Severné Porýnie.' },
   { cat:'other', icao:'EDDH', city:'Hamburg', country:'DE', name:'Hamburg', hint:'Severné Nemecko.' },
-  { cat:'other', icao:'EDDK', city:'Kolín', country:'DE', name:'Köln/Bonn', hint:'Porýnie.' },
+  { cat:'other', icao:'EDDK', city:'Koln', country:'DE', name:'Köln/Bonn', hint:'Porýnie.' },
   { cat:'other', icao:'EDDS', city:'Stuttgart', country:'DE', name:'Stuttgart', hint:'Bádensko-Württembersko.' },
   { cat:'other', icao:'EDDN', city:'Norimberg', country:'DE', name:'Nürnberg', hint:'Severné Bavorsko.' },
   // EU west
   { cat:'other', icao:'EHAM', city:'Amsterdam', country:'NL', name:'Schiphol', hint:'KLM hub.' },
-  { cat:'other', icao:'EGLL', city:'Londýn', country:'UK', name:'Heathrow', hint:'BA hub, najväčšie UK letisko.' },
-  { cat:'other', icao:'EGKK', city:'Londýn', country:'UK', name:'Gatwick', hint:'Druhé londýnske letisko.' },
-  { cat:'other', icao:'EGSS', city:'Londýn', country:'UK', name:'Stansted', hint:'Ryanair hub v UK.' },
+  { cat:'other', icao:'EGLL', city:'Londýn Heathrow', country:'UK', name:'Heathrow', hint:'BA hub, najväčšie UK letisko.' },
+  { cat:'other', icao:'EGKK', city:'Londýn Gatwick', country:'UK', name:'Gatwick', hint:'Druhé londýnske letisko.' },
+  { cat:'other', icao:'EGSS', city:'Londýn Stansted', country:'UK', name:'Stansted', hint:'Ryanair hub v UK.' },
   { cat:'other', icao:'EGCC', city:'Manchester', country:'UK', name:'Manchester', hint:'Severné Anglicko.' },
   { cat:'other', icao:'EGGD', city:'Bristol', country:'UK', name:'Bristol', hint:'JZ Anglicko.' },
   { cat:'other', icao:'EIDW', city:'Dublin', country:'IE', name:'Dublin', hint:'Hlavné mesto Írska, Ryanair hub.' },
   { cat:'other', icao:'LFPG', city:'Paríž', country:'FR', name:'Charles de Gaulle', hint:'Air France hub.' },
-  { cat:'other', icao:'LFPO', city:'Paríž', country:'FR', name:'Orly', hint:'Druhé parížske letisko.' },
   { cat:'other', icao:'LFMN', city:'Nice', country:'FR', name:'Côte d\'Azur', hint:'Francúzska riviéra.' },
   { cat:'other', icao:'LIRF', city:'Rím', country:'IT', name:'Fiumicino', hint:'Hlavné mesto Talianska.' },
   { cat:'other', icao:'LIMC', city:'Miláno', country:'IT', name:'Malpensa', hint:'Lombardia.' },
@@ -1318,13 +1342,9 @@ const AIRPORTS = [
 const CALLSIGNS = [
   // === SK-RELEVANT (cat: 'sk') — fly through Slovak airspace regularly ===
   { cat:'sk', icao:'RYR', call:'Ryanair', airline:'Ryanair', country:'IE', type:'LCC', hint:'Írsky low-cost gigant, lieta z BTS denne.' },
-  { cat:'sk', icao:'RUK', call:'Bluemax', airline:'Ryanair UK', country:'UK', type:'LCC', hint:'UK divízia Ryanair-u.' },
   { cat:'sk', icao:'WZZ', call:'Wizz Air', airline:'Wizz Air', country:'HU', type:'LCC', hint:'Maďarský low-cost, ružové livery, lieta z VIE/BUD/KSC.' },
-  { cat:'sk', icao:'WMT', call:'Wizz Go', airline:'Wizz Air Malta', country:'MT', type:'LCC', hint:'Maltská divízia Wizz Air-u.' },
   { cat:'sk', icao:'EZY', call:'Easy', airline:'easyJet', country:'UK', type:'LCC', hint:'Oranžový britský low-cost.' },
-  { cat:'sk', icao:'EJU', call:'Alpine', airline:'easyJet Europe', country:'AT', type:'LCC', hint:'Rakúska dcéra EZY (AOC pre EÚ).' },
   { cat:'sk', icao:'TVS', call:'Skytravel', airline:'SmartWings', country:'CZ', type:'Leisure', hint:'Český charter operátor, lieta často cez SK.' },
-  { cat:'sk', icao:'TVL', call:'Slovaktravel', airline:'SmartWings Slovakia', country:'SK', type:'Leisure', hint:'Slovenská dcéra SmartWings.' },
   { cat:'sk', icao:'EWG', call:'Eurowings', airline:'Eurowings', country:'DE', type:'LCC', hint:'Lufthansa Group LCC.' },
   { cat:'sk', icao:'PGT', call:'Sunturk', airline:'Pegasus', country:'TR', type:'LCC', hint:'Turecký LCC, lieta z BTS/KSC.' },
   { cat:'sk', icao:'DLH', call:'Lufthansa', airline:'Lufthansa', country:'DE', type:'Legacy', hint:'Nemecký vlajkový dopravca, cez SK denne.' },
@@ -1352,7 +1372,6 @@ const CALLSIGNS = [
   { cat:'other', icao:'VLG', call:'Vueling', airline:'Vueling', country:'ES', type:'LCC', hint:'Španielsky low-cost, IAG group.' },
   { cat:'other', icao:'TRA', call:'Transavia', airline:'Transavia', country:'NL', type:'LCC', hint:'KLM dcérska LCC.' },
   { cat:'other', icao:'JAF', call:'Beauty', airline:'TUI fly Belgium', country:'BE', type:'Leisure', hint:'Belgický TUI charter.' },
-  { cat:'other', icao:'SHT', call:'Shuttle', airline:'BA Shuttle', country:'UK', type:'Legacy', hint:'BA krátke vnútroštátne UK lety.' },
   { cat:'other', icao:'IBE', call:'Iberia', airline:'Iberia', country:'ES', type:'Legacy', hint:'Španielsky vlajkový dopravca.' },
   { cat:'other', icao:'ITY', call:'Itarrow', airline:'ITA Airways', country:'IT', type:'Legacy', hint:'Taliansky dopravca, nástupca Alitalie.' },
   { cat:'other', icao:'SAS', call:'Scandinavian', airline:'SAS', country:'SE/DK/NO', type:'Legacy', hint:'Škandinávsky vlajkový dopravca.' },
@@ -1385,7 +1404,6 @@ const CALLSIGNS = [
   { cat:'other', icao:'UPS', call:'UPS', airline:'UPS Airlines', country:'US', type:'Cargo', hint:'Hnedé balíky, Louisville hub.' },
   { cat:'other', icao:'GTI', call:'Giant', airline:'Atlas Air', country:'US', type:'Cargo', hint:'US cargo / ACMI charter.' },
   { cat:'other', icao:'CLX', call:'Cargolux', airline:'Cargolux', country:'LU', type:'Cargo', hint:'Luxemburský cargo, len 747s.' },
-  { cat:'other', icao:'QTK', call:'Qatari Cargo', airline:'Qatar Airways Cargo', country:'QA', type:'Cargo', hint:'Cargo dcéra QTR.' },
   { cat:'other', icao:'CKS', call:'Connie', airline:'Kalitta Air', country:'US', type:'Cargo', hint:'US 747 cargo.' },
   // Russia / CIS
   { cat:'other', icao:'AFL', call:'Aeroflot', airline:'Aeroflot', country:'RU', type:'Legacy', hint:'Ruský vlajkový dopravca.' },
