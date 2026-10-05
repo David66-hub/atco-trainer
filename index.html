@@ -194,6 +194,34 @@
   .study-detail.empty { color:var(--text-faint); font-style:italic; display:flex; align-items:center; justify-content:center; text-align:center; letter-spacing:0.08em; }
   .study-tip { font-size:10px; letter-spacing:0.1em; color:var(--text-faint); text-align:center; margin-top:6px; }
 
+  /* ===== POMENUJ BOD — obrátený kvíz (mapa svieti, meno sa píše) ===== */
+  .wp-dot.ctx { fill:#ccd8d1; stroke:#8c9c94; stroke-width:1; cursor:default; }
+  .wp-dot.tgt { fill:var(--amber); stroke:#7a4a00; stroke-width:2.5; cursor:default; }
+  .wp-ring { fill:none; stroke:var(--amber); stroke-width:1.8; pointer-events:none; }
+  .wp-cross { stroke:var(--amber); stroke-width:1.1; opacity:0.55; pointer-events:none; }
+  .wp-label-ctx { fill:#5d6d65; font-family:var(--mono); font-size:8px; font-weight:700; pointer-events:none; letter-spacing:0.02em; paint-order:stroke; stroke:#fbfdfc; stroke-width:2.4px; stroke-linejoin:round; }
+  .wp-label-wrong { fill:var(--red); font-family:var(--mono); font-size:9px; font-weight:800; pointer-events:none; paint-order:stroke; stroke:#fbfdfc; stroke-width:2.5px; stroke-linejoin:round; }
+  .lg-lit::before { content:''; width:11px; height:11px; border-radius:50%; background:var(--amber); border:2px solid #7a4a00; display:inline-block; }
+  .lg-ctx::before { content:''; width:9px; height:9px; border-radius:50%; background:#ccd8d1; border:1px solid #8c9c94; display:inline-block; }
+
+  /* ===== SLEPÁ MAPA ===== */
+  .blind-dot { fill:#fff; stroke:var(--text-faint); stroke-width:1.6; }
+  .blind-dot.ok { fill:#0a9d5c; stroke:#0a9d5c; }
+  .blind-dot.no { fill:#fff; stroke:#c2603a; stroke-width:2.2; }
+  .blind-num { font:700 11px ui-monospace,monospace; fill:var(--text); text-anchor:middle; }
+  .blind-ans { font:600 9.5px ui-monospace,monospace; fill:#c2603a; text-anchor:middle; }
+  .blind-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px; margin-top:12px; }
+  .blind-cell { display:flex; align-items:center; gap:6px; }
+  .blind-n { font:700 10.5px ui-monospace,monospace; color:var(--text-faint); min-width:20px; text-align:right; }
+  .blind-in { flex:1; min-width:0; font-family:var(--mono); font-size:12px; text-transform:uppercase; padding:6px 8px; border:1px solid var(--border); border-radius:6px; background:#fff; }
+  .blind-in:focus { outline:none; border-color:var(--green-strong); }
+  .blind-in.ok { border-color:#0a9d5c; background:#eefaf3; }
+  /* doplnené alebo opravené systémom — červeným, aby bolo jasné, že to nie je tvoja odpoveď */
+  .blind-in.fixed { border-color:#c2603a; background:#fdf1ec; color:#c2603a; font-weight:700; }
+  .blind-was { font:600 10px ui-monospace,monospace; color:var(--text-faint); text-decoration:line-through; white-space:nowrap; }
+  .blind-actions { display:flex; gap:8px; margin-top:12px; }
+  .blind-actions .btn { padding:12px 24px; }
+
   @media (max-width:760px) {
     .aircraft-display { grid-template-columns:1fr; }
     .big-prompt { font-size:44px; }
@@ -1389,77 +1417,1161 @@ const AIRPORTS = [
 
 /* ============================================================
    CALLSIGNS - ICAO 3-letter <-> telephony
+   Zoznam je prepísaný z dokumentu „Volačky.pdf" (6 strán, 1138 riadkov)
+   a volačky sú písané presne tak, ako v ňom stoja; podčiarkovník z
+   dokumentu je tu medzera. cat:'sk' = dopravcovia, ktorí lietajú cez
+   Slovensko bežne — pri nich ostali aj pôvodné údaje o aerolinke.
    ============================================================ */
 const CALLSIGNS = [
-  // === SK-RELEVANT (cat: 'sk') — fly through Slovak airspace regularly ===
-  { cat:'sk', icao:'RYR', call:'Ryanair', airline:'Ryanair', country:'IE', type:'LCC', hint:'Írsky low-cost gigant, lieta z BTS denne.' },
-  { cat:'sk', icao:'WZZ', call:'Wizz Air', airline:'Wizz Air', country:'HU', type:'LCC', hint:'Maďarský low-cost, ružové livery, lieta z VIE/BUD/KSC.' },
-  { cat:'sk', icao:'EZY', call:'Easy', airline:'easyJet', country:'UK', type:'LCC', hint:'Oranžový britský low-cost.' },
-  { cat:'sk', icao:'TVS', call:'Skytravel', airline:'SmartWings', country:'CZ', type:'Leisure', hint:'Český charter operátor, lieta často cez SK.' },
-  { cat:'sk', icao:'EWG', call:'Eurowings', airline:'Eurowings', country:'DE', type:'LCC', hint:'Lufthansa Group LCC.' },
-  { cat:'sk', icao:'PGT', call:'Sunturk', airline:'Pegasus', country:'TR', type:'LCC', hint:'Turecký LCC, lieta z BTS/KSC.' },
-  { cat:'sk', icao:'DLH', call:'Lufthansa', airline:'Lufthansa', country:'DE', type:'Legacy', hint:'Nemecký vlajkový dopravca, cez SK denne.' },
-  { cat:'sk', icao:'CLH', call:'Hansaline', airline:'Lufthansa CityLine', country:'DE', type:'Regional', hint:'Regionálna dcéra DLH (CRJ, E-Jets).' },
-  { cat:'sk', icao:'AUA', call:'Austrian', airline:'Austrian Airlines', country:'AT', type:'Legacy', hint:'Rakúsky vlajkový dopravca, hneď za hranicou (LOWW).' },
-  { cat:'sk', icao:'SWR', call:'Swiss', airline:'Swiss International', country:'CH', type:'Legacy', hint:'Švajčiarsky vlajkový dopravca.' },
-  { cat:'sk', icao:'CSA', call:'CSA Lines', airline:'Czech Airlines', country:'CZ', type:'Legacy', hint:'Český vlajkový dopravca.' },
-  { cat:'sk', icao:'LOT', call:'lot', airline:'LOT Polish Airlines', country:'PL', type:'Legacy', hint:'Poľský vlajkový dopravca, susedný štát.' },
+  { cat:'other', icao:'AAB', call:'ABG' },
+  { cat:'other', icao:'AAE', call:'EUROVIKING' },
+  { cat:'other', icao:'AAF', call:'AIGLE AZUR' },
+  { cat:'other', icao:'AAL', call:'AMERICAN', airline:'American Airlines', country:'US', type:'Legacy', hint:'Najväčšia US aerolinka.' },
+  { cat:'other', icao:'AAN', call:'ATMOJET' },
+  { cat:'other', icao:'AAO', call:'HERO' },
+  { cat:'other', icao:'AAR', call:'ASIANA' },
+  { cat:'other', icao:'AAW', call:'AFRIQIYAH' },
+  { cat:'other', icao:'ABB', call:'AIR BELGIUM' },
+  { cat:'other', icao:'ABD', call:'ATLANTA' },
+  { cat:'other', icao:'ABE', call:'ABAN' },
+  { cat:'other', icao:'ABF', call:'SKYWINGS' },
+  { cat:'other', icao:'ABG', call:'ROYAL FLIGHT' },
+  { cat:'other', icao:'ABJ', call:'ABAETE' },
+  { cat:'other', icao:'ABN', call:'AIR ALBANIA' },
+  { cat:'other', icao:'ABP', call:'BAIR' },
+  { cat:'other', icao:'ABQ', call:'PAKBLUE' },
+  { cat:'other', icao:'ABR', call:'CONTRACT' },
+  { cat:'other', icao:'ABW', call:'AIRBRIDGE CARGO' },
+  { cat:'other', icao:'ABY', call:'ARABIA' },
+  { cat:'other', icao:'ACA', call:'AIR CANADA', airline:'Air Canada', country:'CA', type:'Legacy', hint:'Kanadský vlajkový dopravca.' },
+  { cat:'other', icao:'ADB', call:'ANTONOV BUREAU' },
+  { cat:'other', icao:'ADH', call:'HERON' },
+  { cat:'other', icao:'ADI', call:'AUDELI' },
+  { cat:'other', icao:'ADN', call:'AERODIENST' },
+  { cat:'other', icao:'ADR', call:'ADRIA' },
+  { cat:'other', icao:'ADZ', call:'MIGRATOR' },
+  { cat:'other', icao:'AEA', call:'EUROPA' },
+  { cat:'other', icao:'AEE', call:'AEGEAN', airline:'Aegean Airlines', country:'GR', type:'Legacy', hint:'Grécky vlajkový dopravca.' },
+  { cat:'other', icao:'AEG', call:'AIREST CARGO' },
+  { cat:'other', icao:'AEH', call:'VEGA' },
+  { cat:'other', icao:'AEW', call:'SEAGULL' },
+  { cat:'other', icao:'AEY', call:'AIR ITALY' },
+  { cat:'other', icao:'AEZ', call:'AERO ITALIA' },
+  { cat:'other', icao:'AFA', call:'BLUE ALFA' },
+  { cat:'other', icao:'AFB', call:'BULAF' },
+  { cat:'other', icao:'AFG', call:'ARIANA' },
+  { cat:'other', icao:'AFL', call:'AEROFLOT', airline:'Aeroflot', country:'RU', type:'Legacy', hint:'Ruský vlajkový dopravca.' },
+  { cat:'other', icao:'AFP', call:'PORTUGUESE AIR FORCE' },
+  { cat:'sk', icao:'AFR', call:'AIRFRANS', airline:'Air France', country:'FR', type:'Legacy', hint:'Francúzsky vlajkový dopravca.' },
+  { cat:'other', icao:'AGR', call:'ACE EUROPE' },
+  { cat:'other', icao:'AGY', call:'EGYPTIAN BIRD' },
+  { cat:'other', icao:'AHC', call:'AZALAVIACARGO' },
+  { cat:'other', icao:'AHO', call:'AIR HAMBURG' },
+  { cat:'other', icao:'AHU', call:'ABC HUNGARY' },
+  { cat:'other', icao:'AHY', call:'AZAL' },
+  { cat:'other', icao:'AIA', call:'AVIES' },
+  { cat:'other', icao:'AIB', call:'AIRBUS INDUSTRIE' },
+  { cat:'other', icao:'AIC', call:'AIRINDIA', airline:'Air India', country:'IN', type:'Legacy', hint:'Indický vlajkový dopravca.' },
+  { cat:'other', icao:'AID', call:'CENTURY AIRBIRD' },
+  { cat:'other', icao:'AIH', call:'QUANTUM SKY' },
+  { cat:'other', icao:'AIN', call:'FLY CARGO' },
+  { cat:'other', icao:'AIO', call:'AIR CHIEF' },
+  { cat:'other', icao:'AIZ', call:'ARKIA' },
+  { cat:'other', icao:'AJD', call:'CATCH ME' },
+  { cat:'other', icao:'AJF', call:'AVIACONSULT' },
+  { cat:'other', icao:'AJK', call:'BAMBI' },
+  { cat:'other', icao:'AKY', call:'YAK SERVICE' },
+  { cat:'other', icao:'ALI', call:'AIRLIFT' },
+  { cat:'other', icao:'ALK', call:'SRILANKAN' },
+  { cat:'other', icao:'ALN', call:'TOLEMAC' },
+  { cat:'other', icao:'ALX', call:'ALPIJETS' },
+  { cat:'other', icao:'AMA', call:'ADIK' },
+  { cat:'other', icao:'AMB', call:'CIVIL AIR AMBULANCE' },
+  { cat:'other', icao:'AMC', call:'AIR MALTA' },
+  { cat:'other', icao:'AME', call:'AIRMIL' },
+  { cat:'other', icao:'AMJ', call:'AMJET EXEC' },
+  { cat:'other', icao:'AMM', call:'AEROM' },
+  { cat:'other', icao:'AMQ', call:'AMEX' },
+  { cat:'other', icao:'ANA', call:'ALL NIPPON', airline:'ANA', country:'JP', type:'Legacy', hint:'Japonský "ANA", modrá livery.' },
+  { cat:'other', icao:'ANE', call:'NOSTRU AIR' },
+  { cat:'other', icao:'ANZ', call:'NEW ZEALAND' },
+  { cat:'other', icao:'AOJ', call:'ASTERIX' },
+  { cat:'other', icao:'AOV', call:'AEROVISION' },
+  { cat:'other', icao:'APN', call:'THAI AIR PHOENIX' },
+  { cat:'other', icao:'AQS', call:'AIRSTREAM' },
+  { cat:'other', icao:'ARR', call:'AIR ARMENIA' },
+  { cat:'other', icao:'ART', call:'SMART LYNX' },
+  { cat:'other', icao:'ARV', call:'ARAVCO' },
+  { cat:'other', icao:'ARZ', call:'BLUE EAGLE' },
+  { cat:'other', icao:'ASF', call:'AUSTRIAN AIRFORCE' },
+  { cat:'other', icao:'ASL', call:'AIR SERBIA' },
+  { cat:'other', icao:'ASY', call:'AUSSIE' },
+  { cat:'other', icao:'ATG', call:'MOLDCARGO' },
+  { cat:'other', icao:'ATJ', call:'SNOOPY' },
+  { cat:'other', icao:'ATL', call:'AIR BREMEN' },
+  { cat:'other', icao:'ATN', call:'AIR TRANSPORT' },
+  { cat:'other', icao:'ATV', call:'AVANTI AIR' },
+  { cat:'sk', icao:'AUA', call:'AUSTRIAN', airline:'Austrian Airlines', country:'AT', type:'Legacy', hint:'Rakúsky vlajkový dopravca, hneď za hranicou (LOWW).' },
+  { cat:'other', icao:'AUF', call:'AUGUSTA' },
+  { cat:'other', icao:'AUH', call:'SULTAN' },
+  { cat:'other', icao:'AUI', call:'UKRAINE INTERNATIONAL' },
+  { cat:'other', icao:'AUL', call:'ARCHANGELSK AIR' },
+  { cat:'other', icao:'AUV', call:'AUSTRIAN AMBULANCE' },
+  { cat:'other', icao:'AVB', call:'BEAUPAIR' },
+  { cat:'other', icao:'AVW', call:'AVIATOR' },
+  { cat:'other', icao:'AWC', call:'ZAP' },
+  { cat:'other', icao:'AWG', call:'ANIMA WINGS' },
+  { cat:'other', icao:'AWH', call:'AEROWEST' },
+  { cat:'other', icao:'AWN', call:'AIR NIAMEY' },
+  { cat:'other', icao:'AXE', call:'GALILEO' },
+  { cat:'other', icao:'AXG', call:'FORTUNE' },
+  { cat:'other', icao:'AXM', call:'RED CAP' },
+  { cat:'other', icao:'AXY', call:'LEGEND' },
+  { cat:'other', icao:'AYJ', call:'ALLEY JET' },
+  { cat:'other', icao:'AYY', call:'LUPUS' },
+  { cat:'other', icao:'AZA', call:'ALITALIA' },
+  { cat:'other', icao:'AZD', call:'MAILMAN' },
+  { cat:'other', icao:'AZE', call:'ARCUS AIR' },
+  { cat:'other', icao:'AZG', call:'SILK WEST' },
+  { cat:'other', icao:'AZI', call:'GREEK STAR' },
+  { cat:'other', icao:'AZQ', call:'SILK LINE' },
+  { cat:'other', icao:'AZS', call:'ZITOTRANS' },
+  { cat:'other', icao:'AZV', call:'AZUR AIR' },
+  { cat:'other', icao:'AZW', call:'AIR ZIMBABWE' },
+  { cat:'other', icao:'BAB', call:'BAHRAIN AIR' },
+  { cat:'other', icao:'BAF', call:'BELGIAN AIRFORCE' },
+  { cat:'other', icao:'BAH', call:'BAHRAIN' },
+  { cat:'other', icao:'BAL', call:'BELLEAIR EUROPE' },
+  { cat:'other', icao:'BAO', call:'AVANGARD' },
+  { cat:'other', icao:'BAT', call:'GHERKIN' },
+  { cat:'other', icao:'BAV', call:'BAMBOO' },
+  { cat:'sk', icao:'BAW', call:'SPEEDBIRD', airline:'British Airways', country:'UK', type:'Legacy', hint:'Britský vlajkový dopravca, slávny callsign.' },
+  { cat:'other', icao:'BBA', call:'BOMBARDIER' },
+  { cat:'other', icao:'BBB', call:'BLACKBIRD' },
+  { cat:'other', icao:'BBC', call:'BANGLADESH' },
+  { cat:'other', icao:'BBD', call:'BLUE CARGO' },
+  { cat:'other', icao:'BBG', call:'CANDIA BIRD' },
+  { cat:'other', icao:'BBT', call:'BIG BLUE' },
+  { cat:'other', icao:'BCF', call:'BACH' },
+  { cat:'sk', icao:'BCS', call:'POSTMAN', airline:'European Air Transport (DHL)', country:'BE', type:'Cargo', hint:'DHL európske cargo, Brusel hub.' },
+  { cat:'other', icao:'BCV', call:'BUSINESS AVIATION' },
+  { cat:'other', icao:'BCY', call:'CITY IRELAND' },
+  { cat:'other', icao:'BDI', call:'BIRDIE' },
+  { cat:'other', icao:'BEE', call:'JERSEY' },
+  { cat:'other', icao:'BEJ', call:'BEEJET' },
+  { cat:'other', icao:'BEK', call:'BEKAIR' },
+  { cat:'other', icao:'BEL', call:'BEELINE', airline:'Brussels Airlines', country:'BE', type:'Legacy', hint:'Belgický národný dopravca, LH group.' },
+  { cat:'other', icao:'BER', call:'AIR BERLIN', airline:'Air Berlin (defunct)', country:'DE', type:'Legacy', hint:'Skrachovaná nemecká aerolinka 2017.' },
+  { cat:'other', icao:'BES', call:'SKY BEES' },
+  { cat:'other', icao:'BEX', call:'BEXJET' },
+  { cat:'other', icao:'BFD', call:'MEDIA JET' },
+  { cat:'other', icao:'BFG', call:'BRIGHT FLIGHT' },
+  { cat:'other', icao:'BFX', call:'BLUE FOX' },
+  { cat:'other', icao:'BFY', call:'MWANGO BEST' },
+  { cat:'other', icao:'BGA', call:'BELOUGA' },
+  { cat:'other', icao:'BGF', call:'BULGARIAN' },
+  { cat:'other', icao:'BGH', call:'BALKAN HOLIDAYS' },
+  { cat:'other', icao:'BGT', call:'BERGEN AIR' },
+  { cat:'other', icao:'BGY', call:'SKIMMER' },
+  { cat:'other', icao:'BHP', call:'BELAIR' },
+  { cat:'other', icao:'BID', call:'BINAIR' },
+  { cat:'other', icao:'BIE', call:'MEDITERRANEE' },
+  { cat:'other', icao:'BIK', call:'BIKKAIR' },
+  { cat:'other', icao:'BIX', call:'SUN TRIP' },
+  { cat:'other', icao:'BJC', call:'BALTIC JET' },
+  { cat:'other', icao:'BJS', call:'SOLUTION' },
+  { cat:'other', icao:'BJT', call:'BAY JET' },
+  { cat:'other', icao:'BKP', call:'BANGKOK AIR' },
+  { cat:'other', icao:'BLA', call:'BLUEAIR' },
+  { cat:'other', icao:'BLE', call:'BLUEWATER' },
+  { cat:'other', icao:'BLF', call:'BLUEFIN' },
+  { cat:'other', icao:'BLI', call:'BLUELINE' },
+  { cat:'other', icao:'BLV', call:'BELLVIEW AIRLINES' },
+  { cat:'other', icao:'BLW', call:'BLUESTAR' },
+  { cat:'other', icao:'BLX', call:'BLUESCAN' },
+  { cat:'other', icao:'BMR', call:'MIDLAND' },
+  { cat:'other', icao:'BMS', call:'BLUE MESSANGER' },
+  { cat:'other', icao:'BMW', call:'BMW FLIGHT' },
+  { cat:'other', icao:'BNL', call:'MANARA' },
+  { cat:'other', icao:'BNO', call:'NORSE' },
+  { cat:'other', icao:'BOH', call:'BOHEMIA' },
+  { cat:'other', icao:'BOM', call:'BATMAN' },
+  { cat:'other', icao:'BON', call:'BH AIRLINES' },
+  { cat:'other', icao:'BOO', call:'BOOKAJET' },
+  { cat:'sk', icao:'BOX', call:'GERMAN CARGO', airline:'AeroLogic', country:'DE', type:'Cargo', hint:'Lufthansa Cargo + DHL JV.' },
+  { cat:'other', icao:'BPA', call:'BLUE PANORAMA' },
+  { cat:'other', icao:'BPS', call:'BASE' },
+  { cat:'other', icao:'BRK', call:'BARTOK' },
+  { cat:'other', icao:'BRO', call:'BROADSWORD' },
+  { cat:'other', icao:'BRQ', call:'BURAQAIR' },
+  { cat:'other', icao:'BRS', call:'BRAZILIAN AIR FORCE' },
+  { cat:'other', icao:'BRU', call:'BELARUS AVIA' },
+  { cat:'other', icao:'BRZ', call:'GREMAIR' },
+  { cat:'other', icao:'BSK', call:'BISCAYNE' },
+  { cat:'other', icao:'BST', call:'BARBIE' },
+  { cat:'other', icao:'BTI', call:'AIRBALTIC', airline:'airBaltic', country:'LV', type:'Hybrid', hint:'Lotyšský dopravca, len A220.' },
+  { cat:'other', icao:'BTX', call:'BEETLE' },
+  { cat:'other', icao:'BUC', call:'EUROCHARTER' },
+  { cat:'other', icao:'BVR', call:'BAVARIAN' },
+  { cat:'other', icao:'BWJ', call:'BELLAWING' },
+  { cat:'other', icao:'BXA', call:'BEXAIR' },
+  { cat:'other', icao:'BZE', call:'ZENSTAR' },
+  { cat:'other', icao:'BZH', call:'BRITAIR' },
+  { cat:'other', icao:'CAI', call:'CORENDON' },
+  { cat:'other', icao:'CAL', call:'DYNASTY' },
+  { cat:'other', icao:'CAO', call:'AIRCHINA FREIGHT' },
+  { cat:'other', icao:'CAT', call:'AIR CAT' },
+  { cat:'other', icao:'CAZ', call:'EUROCAT' },
+  { cat:'other', icao:'CBA', call:'CALIBRA' },
+  { cat:'other', icao:'CBI', call:'CABI' },
+  { cat:'other', icao:'CCA', call:'AIR CHINA', airline:'Air China', country:'CN', type:'Legacy', hint:'Čínsky vlajkový dopravca.' },
+  { cat:'other', icao:'CCC', call:'GLOBAL CARGO' },
+  { cat:'other', icao:'CCF', call:'TOMCAT' },
+  { cat:'other', icao:'CCM', call:'CORSICA' },
+  { cat:'other', icao:'CEF', call:'CZECH AIR FORCE' },
+  { cat:'other', icao:'CEG', call:'CEGA' },
+  { cat:'other', icao:'CES', call:'CHINA EASTERN', airline:'China Eastern', country:'CN', type:'Legacy', hint:'Šanghaj-based.' },
+  { cat:'other', icao:'CFC', call:'CANFORCE' },
+  { cat:'other', icao:'CFE', call:'FLYER' },
+  { cat:'other', icao:'CFG', call:'CONDOR' },
+  { cat:'other', icao:'CGF', call:'CLEVER' },
+  { cat:'other', icao:'CGP', call:'CAPGROUP' },
+  { cat:'other', icao:'CHG', call:'CHALLENGE' },
+  { cat:'other', icao:'CHH', call:'HAINAN' },
+  { cat:'other', icao:'CHZ', call:'CARGO ROCK' },
+  { cat:'other', icao:'CIA', call:'CALIMERA' },
+  { cat:'other', icao:'CIM', call:'CIMBER' },
+  { cat:'other', icao:'CIU', call:'CIELOS' },
+  { cat:'other', icao:'CJT', call:'CARGOJET' },
+  { cat:'other', icao:'CKK', call:'CARGO KING' },
+  { cat:'other', icao:'CKM', call:'RIVAFLECHA' },
+  { cat:'other', icao:'CKS', call:'CONNIE', airline:'Kalitta Air', country:'US', type:'Cargo', hint:'US 747 cargo.' },
+  { cat:'other', icao:'CLB', call:'CALIBRATOR' },
+  { cat:'sk', icao:'CLH', call:'HANSALINE', airline:'Lufthansa CityLine', country:'DE', type:'Regional', hint:'Regionálna dcéra DLH (CRJ, E-Jets).' },
+  { cat:'other', icao:'CLI', call:'CLICKJET' },
+  { cat:'other', icao:'CLS', call:'AIRISTO' },
+  { cat:'other', icao:'CLU', call:'FIREBIRD' },
+  { cat:'other', icao:'CLW', call:'CENTRALWINGS' },
+  { cat:'other', icao:'CLX', call:'CARGOLUX', airline:'Cargolux', country:'LU', type:'Cargo', hint:'Luxemburský cargo, len 747s.' },
+  { cat:'other', icao:'CMB', call:'CAMBER' },
+  { cat:'other', icao:'CNB', call:'CITYHUN' },
+  { cat:'other', icao:'CND', call:'DUTCH CORENDON' },
+  { cat:'other', icao:'CNO', call:'SCANOR' },
+  { cat:'other', icao:'CNV', call:'CONVOY' },
+  { cat:'other', icao:'COE', call:'COMTEL AIR' },
+  { cat:'other', icao:'CPA', call:'CATHAY', airline:'Cathay Pacific', country:'HK', type:'Legacy', hint:'Hongkonský dopravca.' },
+  { cat:'other', icao:'CPI', call:'AIRCAI' },
+  { cat:'other', icao:'CRL', call:'CORSAIR' },
+  { cat:'sk', icao:'CSA', call:'CSA LINES', airline:'Czech Airlines', country:'CZ', type:'Legacy', hint:'Český vlajkový dopravca.' },
+  { cat:'other', icao:'CSC', call:'SI CHUAN' },
+  { cat:'other', icao:'CSG', call:'SOUTHERN CARGO' },
+  { cat:'other', icao:'CSH', call:'SHANGHAI AIR' },
+  { cat:'other', icao:'CSN', call:'CHINA SOUTHERN' },
+  { cat:'other', icao:'CSS', call:'SHUN FENG' },
+  { cat:'other', icao:'CSW', call:'SILKITALIA' },
+  { cat:'other', icao:'CTM', call:'COTAM' },
+  { cat:'other', icao:'CTN', call:'CROATIA' },
+  { cat:'other', icao:'CVK', call:'CARGO LINE' },
+  { cat:'other', icao:'CWL', call:'CRANWELL' },
+  { cat:'other', icao:'CXA', call:'XIAMEN AIR' },
+  { cat:'other', icao:'CXI', call:'TOURISTIC' },
+  { cat:'other', icao:'CYF', call:'TUS AIR' },
+  { cat:'other', icao:'CYL', call:'CITYLINER' },
+  { cat:'other', icao:'CYP', call:'CYPRUS' },
+  { cat:'other', icao:'DAF', call:'DANISH AIRFORCE' },
+  { cat:'other', icao:'DAH', call:'AIR ALGERIE' },
+  { cat:'other', icao:'DAL', call:'DELTA', airline:'Delta Air Lines', country:'US', type:'Legacy', hint:'Atlanta hub.' },
+  { cat:'other', icao:'DAM', call:'BLADE' },
+  { cat:'other', icao:'DAN', call:'DANACO' },
+  { cat:'other', icao:'DAT', call:'DARTLIMITED' },
+  { cat:'other', icao:'DBR', call:'DOBROLET' },
+  { cat:'other', icao:'DCF', call:'DESERT STAR' },
+  { cat:'other', icao:'DCL', call:'DON CARLOS' },
+  { cat:'other', icao:'DCS', call:'TWIN STAR' },
+  { cat:'other', icao:'DCW', call:'MALTA STAR' },
+  { cat:'other', icao:'DEF', call:'TIRPA' },
+  { cat:'other', icao:'DEL', call:'RED TAIL' },
+  { cat:'other', icao:'DER', call:'DEER JET' },
+  { cat:'other', icao:'DFC', call:'DARK BLUE' },
+  { cat:'other', icao:'DGX', call:'DASNA' },
+  { cat:'sk', icao:'DHK', call:'WORLD EXPRESS', airline:'DHL Air UK', country:'UK', type:'Cargo', hint:'DHL Express UK/Európa cargo, nočné prelety cez SK.' },
+  { cat:'other', icao:'DHX', call:'DILMUN' },
+  { cat:'other', icao:'DIR', call:'DIREKT WINGS' },
+  { cat:'other', icao:'DIS', call:'AERODIS' },
+  { cat:'other', icao:'DJC', call:'DYNAMICJET CHARTER' },
+  { cat:'other', icao:'DLA', call:'DOLOMITI' },
+  { cat:'sk', icao:'DLH', call:'LUFTHANSA', airline:'Lufthansa', country:'DE', type:'Legacy', hint:'Nemecký vlajkový dopravca, cez SK denne.' },
+  { cat:'other', icao:'DLY', call:'DAILY' },
+  { cat:'other', icao:'DML', call:'DREAMLAND' },
+  { cat:'other', icao:'DNA', call:'DAN AIR' },
+  { cat:'other', icao:'DNC', call:'FLYINGOLIVE' },
+  { cat:'other', icao:'DNE', call:'VENID' },
+  { cat:'other', icao:'DNU', call:'DANU' },
+  { cat:'other', icao:'DNV', call:'DONAVIA' },
+  { cat:'other', icao:'DRT', call:'DARTA' },
+  { cat:'other', icao:'DSO', call:'DASSAULT' },
+  { cat:'other', icao:'DSR', call:'DAIRAIR' },
+  { cat:'other', icao:'DTR', call:'DANISH' },
+  { cat:'other', icao:'DUB', call:'DUBAI' },
+  { cat:'other', icao:'DUK', call:'LION KING' },
+  { cat:'other', icao:'DWT', call:'DARWIN' },
+  { cat:'other', icao:'EAB', call:'GOLD EAGLE' },
+  { cat:'other', icao:'EAF', call:'ELECTRA' },
+  { cat:'other', icao:'EAL', call:'EASTERN' },
+  { cat:'other', icao:'EAS', call:'AEROSPACE' },
+  { cat:'other', icao:'EAT', call:'TRANS EUROPE' },
+  { cat:'other', icao:'EAU', call:'ELITE' },
+  { cat:'other', icao:'EAV', call:'ELITAVIA' },
+  { cat:'other', icao:'ECA', call:'DARK KNIGHT' },
+  { cat:'other', icao:'ECJ', call:'EASTCOAST JET' },
+  { cat:'other', icao:'ECN', call:'EURO CONTINENTAL' },
+  { cat:'other', icao:'EDC', call:'SALTIRE' },
+  { cat:'other', icao:'EDW', call:'EDELWEISS' },
+  { cat:'other', icao:'EEF', call:'ESTONIAN AIRFORCE' },
+  { cat:'other', icao:'EES', call:'EAGLE STAR' },
+  { cat:'other', icao:'EEU', call:'EUROFLY' },
+  { cat:'other', icao:'EFD', call:'EVER FLIGHT' },
+  { cat:'other', icao:'EFF', call:'EMERALD' },
+  { cat:'other', icao:'EFW', call:'GRIFFIN' },
+  { cat:'other', icao:'EGT', call:'BULGARIAN JET' },
+  { cat:'other', icao:'EGY', call:'EGYPTIAN AIR FORCE' },
+  { cat:'other', icao:'EIA', call:'EVERGREEN' },
+  { cat:'sk', icao:'EIN', call:'SHAMROCK', airline:'Aer Lingus', country:'IE', type:'Legacy', hint:'Írsky vlajkový dopravca.' },
+  { cat:'other', icao:'EJM', call:'JET SPEED' },
+  { cat:'other', icao:'EJO', call:'MIDJET' },
+  { cat:'other', icao:'EJU', call:'ALPINE' },
+  { cat:'other', icao:'ELB', call:'ELLINAIR HELLAS' },
+  { cat:'other', icao:'ELG', call:'ELANGENI' },
+  { cat:'other', icao:'ELJ', call:'TOP JET' },
+  { cat:'other', icao:'ELL', call:'ESTONIAN' },
+  { cat:'other', icao:'ELO', call:'EUROLOT' },
+  { cat:'other', icao:'ELY', call:'ELAL' },
+  { cat:'other', icao:'EMM', call:'RULER' },
+  { cat:'other', icao:'ENI', call:'ENIMEX' },
+  { cat:'other', icao:'ENT', call:'ENTERAIR' },
+  { cat:'other', icao:'ENY', call:'ENVOY' },
+  { cat:'other', icao:'EOL', call:'EOLE' },
+  { cat:'other', icao:'EQE', call:'EUROJET' },
+  { cat:'other', icao:'ERN', call:'ERNEST' },
+  { cat:'other', icao:'ESL', call:'RADUGA' },
+  { cat:'other', icao:'ESQ', call:'EUROP STAR' },
+  { cat:'other', icao:'EST', call:'NORDICA' },
+  { cat:'other', icao:'ESW', call:'W BUSINESS' },
+  { cat:'sk', icao:'ETD', call:'ETIHAD', airline:'Etihad Airways', country:'AE', type:'Gulf', hint:'Abú Zabí.' },
+  { cat:'other', icao:'ETH', call:'ETHIOPIAN' },
+  { cat:'other', icao:'ETI', call:'JETHAWK' },
+  { cat:'other', icao:'ETJ', call:'EAST TAJIK' },
+  { cat:'other', icao:'ETN', call:'CHIMNIR' },
+  { cat:'other', icao:'EUL', call:'EUROLINK' },
+  { cat:'other', icao:'EVA', call:'EVA' },
+  { cat:'other', icao:'EVE', call:'ENVELOPE' },
+  { cat:'other', icao:'EVP', call:'EUROAIR' },
+  { cat:'sk', icao:'EWG', call:'EUROWINGS', airline:'Eurowings', country:'DE', type:'LCC', hint:'Lufthansa Group LCC.' },
+  { cat:'other', icao:'EWZ', call:'E WING' },
+  { cat:'other', icao:'EXH', call:'BATMAN' },
+  { cat:'other', icao:'EXJ', call:'VOLANTE' },
+  { cat:'other', icao:'EXN', call:'EXIN' },
+  { cat:'other', icao:'EXS', call:'CHANNEX' },
+  { cat:'other', icao:'EXT', call:'EXECUTIVE' },
+  { cat:'other', icao:'EXU', call:'SACIR' },
+  { cat:'other', icao:'EZE', call:'EASTFLIGHT' },
+  { cat:'other', icao:'EZS', call:'TOPSWISS' },
+  { cat:'sk', icao:'EZY', call:'EASY', airline:'easyJet', country:'UK', type:'LCC', hint:'Oranžový britský low-cost.' },
+  { cat:'other', icao:'EZZ', call:'ENTERPRISE' },
+  { cat:'other', icao:'FAD', call:'ADEAL' },
+  { cat:'other', icao:'FAF', call:'FRENCH AIR FORCE' },
+  { cat:'other', icao:'FAH', call:'BLUE STRIP' },
+  { cat:'other', icao:'FAT', call:'FARNER' },
+  { cat:'other', icao:'FAV', call:'FAIRAVIA' },
+  { cat:'other', icao:'FBR', call:'AVANGARD' },
+  { cat:'other', icao:'FCA', call:'COOPAIR' },
+  { cat:'other', icao:'FCM', call:'FINNCOMM' },
+  { cat:'other', icao:'FDB', call:'SKY DUBAI' },
+  { cat:'other', icao:'FDS', call:'FLYDOC' },
+  { cat:'other', icao:'FDX', call:'FEDEX', airline:'FedEx', country:'US', type:'Cargo', hint:'Americký cargo gigant.' },
+  { cat:'other', icao:'FEG', call:'SKY EGYPT' },
+  { cat:'other', icao:'FFD', call:'FIRST FLIGHT' },
+  { cat:'other', icao:'FGN', call:'FRANCE GENDARME' },
+  { cat:'other', icao:'FGS', call:'ELITELLINA' },
+  { cat:'other', icao:'FHM', call:'EURO BIRD' },
+  { cat:'other', icao:'FHY', call:'FREEBIRD AIR' },
+  { cat:'other', icao:'FIA', call:'FIA AIRLINES' },
+  { cat:'other', icao:'FIE', call:'ARMRIDER' },
+  { cat:'other', icao:'FIF', call:'AIR FINLAND' },
+  { cat:'other', icao:'FIN', call:'FINNAIR', airline:'Finnair', country:'FI', type:'Legacy', hint:'Fínsky vlajkový dopravca.' },
+  { cat:'other', icao:'FIX', call:'AIRFIX' },
+  { cat:'other', icao:'FJO', call:'FLEX EUROPE' },
+  { cat:'other', icao:'FLI', call:'FAROELINE' },
+  { cat:'other', icao:'FLJ', call:'FLEXAIR' },
+  { cat:'other', icao:'FLK', call:'FLYLINK' },
+  { cat:'other', icao:'FMG', call:'HUSKY' },
+  { cat:'other', icao:'FMY', call:'FRENCH ARMY' },
+  { cat:'other', icao:'FNF', call:'FINNFORCE' },
+  { cat:'other', icao:'FNG', call:'FINNGUARD' },
+  { cat:'other', icao:'FNS', call:'FINESSE' },
+  { cat:'other', icao:'FNY', call:'FRENCH NAVY' },
+  { cat:'other', icao:'FOE', call:'FIRST EAGLE' },
+  { cat:'other', icao:'FOR', call:'FORMULA' },
+  { cat:'other', icao:'FOX', call:'GREEN STAR' },
+  { cat:'other', icao:'FPG', call:'TAG AVIATION' },
+  { cat:'other', icao:'FPO', call:'FRENCH POST' },
+  { cat:'other', icao:'FRC', call:'FRANCHE COMPTE' },
+  { cat:'other', icao:'FRF', call:'FAIRFLEET' },
+  { cat:'other', icao:'FRO', call:'FROST' },
+  { cat:'other', icao:'FRX', call:'FORT AERO' },
+  { cat:'other', icao:'FSF', call:'ROCKY' },
+  { cat:'other', icao:'FTC', call:'FANTASTIC' },
+  { cat:'other', icao:'FTL', call:'FLIGHT AVIA' },
+  { cat:'other', icao:'FTT', call:'FLIGHT TRAINING' },
+  { cat:'other', icao:'FTY', call:'FLY TYROL' },
+  { cat:'other', icao:'FWK', call:'FLIGHTWORKS' },
+  { cat:'other', icao:'FXR', call:'WILDFOX' },
+  { cat:'other', icao:'FYA', call:'FLYANT' },
+  { cat:'other', icao:'FYG', call:'FLYING GROUP' },
+  { cat:'other', icao:'FYJ', call:'FASTJET' },
+  { cat:'other', icao:'FYL', call:'FLYINGLUX' },
+  { cat:'other', icao:'GAC', call:'DREAM TEAM' },
+  { cat:'other', icao:'GAF', call:'GERMAN AIR FORCE' },
+  { cat:'other', icao:'GAI', call:'GROMOV AIRLINE' },
+  { cat:'other', icao:'GAO', call:'GOLDEN' },
+  { cat:'other', icao:'GAV', call:'GRAVITY' },
+  { cat:'other', icao:'GBG', call:'VAGABOND' },
+  { cat:'other', icao:'GBJ', call:'GLOBAL THAI' },
+  { cat:'other', icao:'GCB', call:'LINACONGO' },
+  { cat:'other', icao:'GCC', call:'GECAS' },
+  { cat:'other', icao:'GCK', call:'GLOCK' },
+  { cat:'other', icao:'GCO', call:'GEMINI' },
+  { cat:'other', icao:'GDK', call:'GOLDECK FLUG' },
+  { cat:'other', icao:'GEC', call:'LUFTHANSA CARGO' },
+  { cat:'other', icao:'GEL', call:'SKY GEORGIA' },
+  { cat:'other', icao:'GES', call:'GESTAIR' },
+  { cat:'other', icao:'GFA', call:'GULF AIR' },
+  { cat:'other', icao:'GFD', call:'KITE' },
+  { cat:'other', icao:'GFM', call:'PARROT' },
+  { cat:'other', icao:'GIA', call:'INDONESIA' },
+  { cat:'other', icao:'GJM', call:'AIRHUB' },
+  { cat:'other', icao:'GJT', call:'GET JET' },
+  { cat:'other', icao:'GLA', call:'LAKES AIR' },
+  { cat:'other', icao:'GLJ', call:'GLOBAL AUSTRIA' },
+  { cat:'other', icao:'GLP', call:'GLOBUS' },
+  { cat:'other', icao:'GMA', call:'GAMA' },
+  { cat:'other', icao:'GMI', call:'GERMANIA' },
+  { cat:'other', icao:'GNJ', call:'GAIN JET' },
+  { cat:'other', icao:'GNZ', call:'GONZO' },
+  { cat:'other', icao:'GOJ', call:'GOJET' },
+  { cat:'other', icao:'GOM', call:'GOMEL' },
+  { cat:'other', icao:'GOT', call:'GOTHIC' },
+  { cat:'other', icao:'GOZ', call:'GROZNYY AVIA' },
+  { cat:'other', icao:'GPX', call:'IVORY' },
+  { cat:'other', icao:'GRL', call:'GREENLAND' },
+  { cat:'other', icao:'GSJ', call:'GROSSJET' },
+  { cat:'other', icao:'GSW', call:'EIGER' },
+  { cat:'other', icao:'GTI', call:'GIANT', airline:'Atlas Air', country:'US', type:'Cargo', hint:'US cargo / ACMI charter.' },
+  { cat:'other', icao:'GWI', call:'GERMAN WINGS' },
+  { cat:'other', icao:'GWL', call:'GREAT WALL' },
+  { cat:'other', icao:'GXA', call:'GEMINI' },
+  { cat:'other', icao:'GZP', call:'GAZPROM' },
+  { cat:'other', icao:'HAF', call:'HELLENIC AIR FORCE' },
+  { cat:'other', icao:'HAL', call:'HAWAIIAN' },
+  { cat:'other', icao:'HAT', call:'SKY RUNNER' },
+  { cat:'other', icao:'HAY', call:'HAMBURG AIRWAYS' },
+  { cat:'other', icao:'HDA', call:'DRAGON' },
+  { cat:'other', icao:'HEA', call:'HELIAVIA' },
+  { cat:'other', icao:'HER', call:'HEX AIRLINE' },
+  { cat:'other', icao:'HEZ', call:'ARROW' },
+  { cat:'other', icao:'HGO', call:'HAMPTON' },
+  { cat:'other', icao:'HGR', call:'HANG' },
+  { cat:'other', icao:'HIF', call:'HIFSA' },
+  { cat:'other', icao:'HKC', call:'MASCOT' },
+  { cat:'other', icao:'HKH', call:'HAWK HUNGARY' },
+  { cat:'other', icao:'HKS', call:'HELIBUS' },
+  { cat:'other', icao:'HLF', call:'HOMELAND' },
+  { cat:'other', icao:'HLJ', call:'HELLOJETS' },
+  { cat:'other', icao:'HLR', call:'HELI BULGARIA' },
+  { cat:'other', icao:'HMR', call:'HAMMER' },
+  { cat:'other', icao:'HMS', call:'HEMUS AIR' },
+  { cat:'other', icao:'HOA', call:'HOLA' },
+  { cat:'other', icao:'HOP', call:'AIR HOP' },
+  { cat:'other', icao:'HOT', call:'SUNNY SKY' },
+  { cat:'other', icao:'HRM', call:'HERMES' },
+  { cat:'other', icao:'HRZ', call:'CROATIAN AIRFORCE' },
+  { cat:'other', icao:'HST', call:'HESTON' },
+  { cat:'other', icao:'HTG', call:'GROSSMANN' },
+  { cat:'other', icao:'HTM', call:'HELITRAVEL' },
+  { cat:'other', icao:'HUA', call:'HUNGARY' },
+  { cat:'other', icao:'HUF', call:'HUNGARIAN AIRFORCE' },
+  { cat:'other', icao:'HVK', call:'TURKISH AIRFORCE' },
+  { cat:'other', icao:'HVN', call:'VIET NAM AIRLINES' },
+  { cat:'other', icao:'HYM', call:'SKY MOLDOVA' },
+  { cat:'other', icao:'HYP', call:'HYPERION' },
+  { cat:'other', icao:'HYR', call:'HIGHFLYER' },
+  { cat:'other', icao:'HYS', call:'SKY EUROPE' },
+  { cat:'other', icao:'HYT', call:'QUICK AIR' },
+  { cat:'other', icao:'IAC', call:'INTERCHARTER' },
+  { cat:'other', icao:'IAM', call:'ITALIAN AIRFORCE' },
+  { cat:'other', icao:'IAR', call:'ILIAMNA AIR' },
+  { cat:'other', icao:'IAW', call:'IRAQI' },
+  { cat:'other', icao:'IAY', call:'IASON' },
+  { cat:'other', icao:'IBE', call:'IBERIA', airline:'Iberia', country:'ES', type:'Legacy', hint:'Španielsky vlajkový dopravca.' },
+  { cat:'other', icao:'IBK', call:'NORTRANS' },
+  { cat:'other', icao:'IBS', call:'IBEREXPRES' },
+  { cat:'other', icao:'IBZ', call:'INTERBIZ' },
+  { cat:'other', icao:'ICA', call:'INTERCARGO' },
+  { cat:'other', icao:'ICB', call:'ICEBIRD' },
+  { cat:'other', icao:'ICE', call:'ICEAIR' },
+  { cat:'other', icao:'ICG', call:'ICELAND COAST' },
+  { cat:'other', icao:'ICI', call:'ICEMAN' },
+  { cat:'other', icao:'ICL', call:'CAL' },
+  { cat:'other', icao:'ICT', call:'CONTAVIA' },
+  { cat:'other', icao:'ICV', call:'CARGOLUX ITALIA' },
+  { cat:'other', icao:'IFA', call:'RED ANGEL' },
+  { cat:'other', icao:'IFT', call:'INTERFLIGHT' },
+  { cat:'other', icao:'IGA', call:'IGUANA' },
+  { cat:'other', icao:'IGO', call:'IFLY' },
+  { cat:'other', icao:'IJM', call:'JET MANAGEMENT' },
+  { cat:'other', icao:'ILM', call:'BIRDMAN' },
+  { cat:'other', icao:'IMT', call:'IMTREC' },
+  { cat:'other', icao:'INI', call:'INITIUM' },
+  { cat:'other', icao:'INX', call:'INTER EURO' },
+  { cat:'other', icao:'IRA', call:'IRANAIR' },
+  { cat:'other', icao:'IRL', call:'IRISH' },
+  { cat:'other', icao:'IRM', call:'MAHAN AIR' },
+  { cat:'other', icao:'ISD', call:'ISDAVIA' },
+  { cat:'other', icao:'ISK', call:'INTERSKY' },
+  { cat:'other', icao:'ISM', call:'STORK' },
+  { cat:'other', icao:'ISR', call:'ISRAIR' },
+  { cat:'other', icao:'ISS', call:'AIR ITALY' },
+  { cat:'other', icao:'ITE', call:'AEROTAXI' },
+  { cat:'other', icao:'ITL', call:'ITALFLY' },
+  { cat:'other', icao:'IXR', call:'X BIRD' },
+  { cat:'other', icao:'IYE', call:'YEMENI' },
+  { cat:'other', icao:'IZA', call:'IZHAVIA' },
+  { cat:'other', icao:'JAE', call:'JADE CARGO' },
+  { cat:'other', icao:'JAF', call:'BEAUTY', airline:'TUI fly Belgium', country:'BE', type:'Leisure', hint:'Belgický TUI charter.' },
+  { cat:'other', icao:'JAG', call:'JETALLIANCE' },
+  { cat:'other', icao:'JAI', call:'JET AIRWAYS' },
+  { cat:'other', icao:'JAL', call:'JAPANAIR', airline:'Japan Airlines', country:'JP', type:'Legacy', hint:'Druhý japonský veľký dopravca, červený žeriav.' },
+  { cat:'other', icao:'JAR', call:'AIRLINK' },
+  { cat:'other', icao:'JAS', call:'JET SETTER' },
+  { cat:'other', icao:'JAV', call:'JORDAN AVIATION' },
+  { cat:'other', icao:'JBC', call:'JETBEE' },
+  { cat:'other', icao:'JBR', call:'JOBAIR' },
+  { cat:'other', icao:'JCB', call:'JAYSEEBEE' },
+  { cat:'other', icao:'JCO', call:'CONCIERGE' },
+  { cat:'other', icao:'JDI', call:'JEDI' },
+  { cat:'other', icao:'JEA', call:'JETA' },
+  { cat:'other', icao:'JEC', call:'TAIPAN' },
+  { cat:'other', icao:'JEF', call:'JETFLITE' },
+  { cat:'other', icao:'JEI', call:'JET EXECUTIVE' },
+  { cat:'other', icao:'JEK', call:'JET OPS' },
+  { cat:'other', icao:'JEM', call:'JEMAX' },
+  { cat:'other', icao:'JET', call:'TRADE WIND' },
+  { cat:'other', icao:'JFA', call:'MOSQUITO' },
+  { cat:'other', icao:'JFL', call:'BLUE DANUBE' },
+  { cat:'other', icao:'JKH', call:'JET KONDOR' },
+  { cat:'other', icao:'JKK', call:'SPANAIR' },
+  { cat:'other', icao:'JLN', call:'JET LINE' },
+  { cat:'other', icao:'JMP', call:'JUMP RUN' },
+  { cat:'other', icao:'JNJ', call:'JOIN JET' },
+  { cat:'other', icao:'JNL', call:'JETNETHERLANDS' },
+  { cat:'other', icao:'JNV', call:'JETNOVA' },
+  { cat:'other', icao:'JOC', call:'JUST US' },
+  { cat:'other', icao:'JOR', call:'BLUE TRANSPORT' },
+  { cat:'other', icao:'JSD', call:'ALPOK' },
+  { cat:'other', icao:'JSF', call:'BORA' },
+  { cat:'other', icao:'JSG', call:'BOOMAIR' },
+  { cat:'other', icao:'JSH', call:'STREAM AIR' },
+  { cat:'other', icao:'JSI', call:'SISTEMA' },
+  { cat:'other', icao:'JSY', call:'JUNG SKY' },
+  { cat:'other', icao:'JTD', call:'JET TIME' },
+  { cat:'other', icao:'JTF', call:'JETFIN' },
+  { cat:'other', icao:'JTG', call:'JET TIME' },
+  { cat:'other', icao:'JTI', call:'JETCLIPPER' },
+  { cat:'other', icao:'JTR', call:'JESTER' },
+  { cat:'other', icao:'JTT', call:'MOSCOW JET' },
+  { cat:'other', icao:'JTY', call:'JETOLOGY' },
+  { cat:'other', icao:'JZR', call:'JAZEERA' },
+  { cat:'other', icao:'KAC', call:'KUWAITI' },
+  { cat:'other', icao:'KAI', call:'KAISER' },
+  { cat:'other', icao:'KAJ', call:'KARTHAGO' },
+  { cat:'other', icao:'KAL', call:'KOREANAIR', airline:'Korean Air', country:'KR', type:'Legacy', hint:'Juhokórejský vlajkový dopravca.' },
+  { cat:'other', icao:'KAR', call:'KRASJET' },
+  { cat:'other', icao:'KAY', call:'KAYAK' },
+  { cat:'other', icao:'KBR', call:'KORAL BLUE' },
+  { cat:'other', icao:'KEJ', call:'KAZAIRJET' },
+  { cat:'other', icao:'KFK', call:'KRIFKA AIR' },
+  { cat:'other', icao:'KFR', call:'KINGFISHER' },
+  { cat:'other', icao:'KGL', call:'KOGALYM' },
+  { cat:'other', icao:'KHO', call:'AIRCOMPANY KHORS' },
+  { cat:'other', icao:'KIL', call:'AIR KUBAN' },
+  { cat:'other', icao:'KIP', call:'KINNARPS' },
+  { cat:'other', icao:'KIW', call:'KIWI' },
+  { cat:'other', icao:'KKK', call:'ATLASJET' },
+  { cat:'other', icao:'KLC', call:'CITY' },
+  { cat:'other', icao:'KLG', call:'KARLOG' },
+  { cat:'other', icao:'KLJ', call:'CLASS LINE' },
   { cat:'sk', icao:'KLM', call:'KLM', airline:'KLM Royal Dutch', country:'NL', type:'Legacy', hint:'Holandský vlajkový dopravca, lieta cez SK.' },
-  { cat:'sk', icao:'AFR', call:'Airfrans', airline:'Air France', country:'FR', type:'Legacy', hint:'Francúzsky vlajkový dopravca.' },
-  { cat:'sk', icao:'BAW', call:'Speedbird', airline:'British Airways', country:'UK', type:'Legacy', hint:'Britský vlajkový dopravca, slávny callsign.' },
-  { cat:'sk', icao:'THY', call:'Turkish', airline:'Turkish Airlines', country:'TR', type:'Legacy', hint:'Turecký dopravca, najviac destinácií na svete, cez SK denne.' },
-  { cat:'sk', icao:'UAE', call:'Emirates', airline:'Emirates', country:'AE', type:'Gulf', hint:'Dubajský gigant, A380 cez SK na trasách EÚ-Ázia.' },
-  { cat:'sk', icao:'QTR', call:'Qatari', airline:'Qatar Airways', country:'QA', type:'Gulf', hint:'Katarský dopravca, prelety cez SK.' },
-  { cat:'sk', icao:'ETD', call:'Etihad', airline:'Etihad Airways', country:'AE', type:'Gulf', hint:'Abú Zabí.' },
-  { cat:'sk', icao:'DHK', call:'World Express', airline:'DHL Air UK', country:'UK', type:'Cargo', hint:'DHL Express UK/Európa cargo, nočné prelety cez SK.' },
-  { cat:'sk', icao:'BCS', call:'Eurotrans', airline:'European Air Transport (DHL)', country:'BE', type:'Cargo', hint:'DHL európske cargo, Brusel hub.' },
-  { cat:'sk', icao:'BOX', call:'German Cargo', airline:'AeroLogic', country:'DE', type:'Cargo', hint:'Lufthansa Cargo + DHL JV.' },
-  { cat:'sk', icao:'SXS', call:'Sunexpress', airline:'SunExpress', country:'TR', type:'Leisure', hint:'Turkish + LH joint, charter na turecké pobrežia.' },
-  { cat:'sk', icao:'EIN', call:'Shamrock', airline:'Aer Lingus', country:'IE', type:'Legacy', hint:'Írsky vlajkový dopravca.' },
-  { cat:'sk', icao:'TAY', call:'Quality', airline:'ASL Airlines Belgium', country:'BE', type:'Cargo', hint:'European cargo (FedEx feeder).' },
-
-  // === OTHER MAJOR CARRIERS (cat: 'other') ===
-  // EU
-  { cat:'other', icao:'VLG', call:'Vueling', airline:'Vueling', country:'ES', type:'LCC', hint:'Španielsky low-cost, IAG group.' },
-  { cat:'other', icao:'TRA', call:'Transavia', airline:'Transavia', country:'NL', type:'LCC', hint:'KLM dcérska LCC.' },
-  { cat:'other', icao:'JAF', call:'Beauty', airline:'TUI fly Belgium', country:'BE', type:'Leisure', hint:'Belgický TUI charter.' },
-  { cat:'other', icao:'IBE', call:'Iberia', airline:'Iberia', country:'ES', type:'Legacy', hint:'Španielsky vlajkový dopravca.' },
-  { cat:'other', icao:'ITY', call:'Itarrow', airline:'ITA Airways', country:'IT', type:'Legacy', hint:'Taliansky dopravca, nástupca Alitalie.' },
-  { cat:'other', icao:'SAS', call:'Scandinavian', airline:'SAS', country:'SE/DK/NO', type:'Legacy', hint:'Škandinávsky vlajkový dopravca.' },
-  { cat:'other', icao:'FIN', call:'Finnair', airline:'Finnair', country:'FI', type:'Legacy', hint:'Fínsky vlajkový dopravca.' },
-  { cat:'other', icao:'AEE', call:'Aegean', airline:'Aegean Airlines', country:'GR', type:'Legacy', hint:'Grécky vlajkový dopravca.' },
-  { cat:'other', icao:'TAP', call:'Air Portugal', airline:'TAP Air Portugal', country:'PT', type:'Legacy', hint:'Portugalský vlajkový dopravca.' },
-  { cat:'other', icao:'BEL', call:'Beeline', airline:'Brussels Airlines', country:'BE', type:'Legacy', hint:'Belgický národný dopravca, LH group.' },
-  { cat:'other', icao:'BTI', call:'Air Baltic', airline:'airBaltic', country:'LV', type:'Hybrid', hint:'Lotyšský dopravca, len A220.' },
-  { cat:'other', icao:'BER', call:'Air Berlin', airline:'Air Berlin (defunct)', country:'DE', type:'Legacy', hint:'Skrachovaná nemecká aerolinka 2017.' },
-  // Asia
-  { cat:'other', icao:'SIA', call:'Singapore', airline:'Singapore Airlines', country:'SG', type:'Legacy', hint:'Singapurský prémiový dopravca.' },
-  { cat:'other', icao:'CPA', call:'Cathay', airline:'Cathay Pacific', country:'HK', type:'Legacy', hint:'Hongkonský dopravca.' },
-  { cat:'other', icao:'ANA', call:'All Nippon', airline:'ANA', country:'JP', type:'Legacy', hint:'Japonský "ANA", modrá livery.' },
-  { cat:'other', icao:'JAL', call:'Japan Air', airline:'Japan Airlines', country:'JP', type:'Legacy', hint:'Druhý japonský veľký dopravca, červený žeriav.' },
-  { cat:'other', icao:'KAL', call:'Korean Air', airline:'Korean Air', country:'KR', type:'Legacy', hint:'Juhokórejský vlajkový dopravca.' },
-  { cat:'other', icao:'CCA', call:'Air China', airline:'Air China', country:'CN', type:'Legacy', hint:'Čínsky vlajkový dopravca.' },
-  { cat:'other', icao:'CES', call:'China Eastern', airline:'China Eastern', country:'CN', type:'Legacy', hint:'Šanghaj-based.' },
-  { cat:'other', icao:'AIC', call:'Air India', airline:'Air India', country:'IN', type:'Legacy', hint:'Indický vlajkový dopravca.' },
-  // US
-  { cat:'other', icao:'AAL', call:'American', airline:'American Airlines', country:'US', type:'Legacy', hint:'Najväčšia US aerolinka.' },
-  { cat:'other', icao:'DAL', call:'Delta', airline:'Delta Air Lines', country:'US', type:'Legacy', hint:'Atlanta hub.' },
-  { cat:'other', icao:'UAL', call:'United', airline:'United Airlines', country:'US', type:'Legacy', hint:'Chicago/Newark hub.' },
-  { cat:'other', icao:'SWA', call:'Southwest', airline:'Southwest', country:'US', type:'LCC', hint:'US low-cost, lieta len 737.' },
-  { cat:'other', icao:'JBU', call:'JetBlue', airline:'JetBlue', country:'US', type:'LCC', hint:'NYC-based US low-cost.' },
-  { cat:'other', icao:'ACA', call:'Air Canada', airline:'Air Canada', country:'CA', type:'Legacy', hint:'Kanadský vlajkový dopravca.' },
-  { cat:'other', icao:'NKS', call:'Spirit Wings', airline:'Spirit Airlines', country:'US', type:'LCC', hint:'Žltý US ultra-low-cost.' },
-  { cat:'other', icao:'FFT', call:'Frontier Flight', airline:'Frontier Airlines', country:'US', type:'LCC', hint:'US LCC s zvieratami na chvostoch.' },
-  // Cargo
-  { cat:'other', icao:'FDX', call:'FedEx', airline:'FedEx', country:'US', type:'Cargo', hint:'Americký cargo gigant.' },
+  { cat:'other', icao:'KNE', call:'FLYNAS' },
+  { cat:'other', icao:'KNI', call:'KALININGRAD AIR' },
+  { cat:'other', icao:'KOR', call:'AIR KORYO' },
+  { cat:'other', icao:'KPO', call:'KRYPTO' },
+  { cat:'other', icao:'KQA', call:'KENYA' },
+  { cat:'other', icao:'KRF', call:'KITTYHAWK' },
+  { cat:'other', icao:'KRH', call:'SPARROWHAWK' },
+  { cat:'other', icao:'KRO', call:'KROONK' },
+  { cat:'other', icao:'KRP', call:'CARPATAIR' },
+  { cat:'other', icao:'KSA', call:'SKY CAMEL' },
+  { cat:'other', icao:'KSJ', call:'KAY JETS' },
+  { cat:'other', icao:'KSM', call:'KOSMOS' },
+  { cat:'other', icao:'KST', call:'KING STAR' },
+  { cat:'other', icao:'KTB', call:'TRANSBALTIKA' },
+  { cat:'other', icao:'KTK', call:'AZUR AIR' },
+  { cat:'other', icao:'KYB', call:'SKY AIROPS' },
+  { cat:'other', icao:'KYV', call:'AIRKIBRIS' },
+  { cat:'other', icao:'KZR', call:'ASTANALINE' },
+  { cat:'other', icao:'KZU', call:'UNIVERSAL CARGO' },
+  { cat:'other', icao:'LAA', call:'LIBAIR' },
+  { cat:'other', icao:'LAF', call:'LATVIAN AIRFORCE' },
+  { cat:'other', icao:'LAV', call:'ALBASTAR' },
+  { cat:'other', icao:'LBC', call:'ALBANIAN' },
+  { cat:'other', icao:'LBT', call:'NOUVELAIR' },
+  { cat:'other', icao:'LDA', call:'LAUDA AIR' },
+  { cat:'other', icao:'LDM', call:'LAUDAMOTION' },
+  { cat:'other', icao:'LDX', call:'LAUDA RUSH' },
+  { cat:'other', icao:'LEA', call:'LEADAIR' },
+  { cat:'other', icao:'LEU', call:'LIONSAIR' },
+  { cat:'other', icao:'LGL', call:'LUXAIR' },
+  { cat:'other', icao:'LHA', call:'AIR CANTON' },
+  { cat:'other', icao:'LHX', call:'CITY AIR' },
+  { cat:'other', icao:'LIL', call:'LILIES' },
+  { cat:'other', icao:'LIP', call:'LIPIZAN' },
+  { cat:'other', icao:'LKS', call:'AIRLIN' },
+  { cat:'other', icao:'LLC', call:'SMALL PLANET' },
+  { cat:'other', icao:'LLK', call:'AIR LIFE' },
+  { cat:'other', icao:'LLM', call:'YAMAL' },
+  { cat:'other', icao:'LLP', call:'SKYPOL' },
+  { cat:'other', icao:'LLT', call:'CLASSIC JET' },
+  { cat:'other', icao:'LLX', call:'GERMANJET' },
+  { cat:'other', icao:'LMG', call:'SOUTH AFRICAN' },
+  { cat:'other', icao:'LMJ', call:'MASTERJET' },
+  { cat:'other', icao:'LMU', call:'ALMASRIA' },
+  { cat:'other', icao:'LNX', call:'LONEX' },
+  { cat:'other', icao:'LOD', call:'LOGIC' },
+  { cat:'other', icao:'LOL', call:'EASYCHARTER' },
+  { cat:'sk', icao:'LOT', call:'LOT', airline:'LOT Polish Airlines', country:'PL', type:'Legacy', hint:'Poľský vlajkový dopravca, susedný štát.' },
+  { cat:'other', icao:'LPV', call:'ALPAV' },
+  { cat:'other', icao:'LRB', call:'LADY RACINE' },
+  { cat:'other', icao:'LRQ', call:'LUX RESCUE' },
+  { cat:'other', icao:'LRR', call:'LORRAINE' },
+  { cat:'other', icao:'LSK', call:'AURELA' },
+  { cat:'other', icao:'LSR', call:'ALSAIR' },
+  { cat:'other', icao:'LSV', call:'SLOVENIAN AIRFORCE' },
+  { cat:'other', icao:'LTC', call:'CHARTER JETS' },
+  { cat:'other', icao:'LTE', call:'FUN JET' },
+  { cat:'other', icao:'LTF', call:'LETS FLY' },
+  { cat:'other', icao:'LTU', call:'LITUANICA' },
+  { cat:'other', icao:'LUC', call:'ALBINATI' },
+  { cat:'other', icao:'LUK', call:'LUKOIL' },
+  { cat:'other', icao:'LVN', call:'ALIVEN' },
+  { cat:'other', icao:'LVR', call:'AVIAVILSA' },
+  { cat:'other', icao:'LWG', call:'LUXWING' },
+  { cat:'other', icao:'LXA', call:'RED LION' },
+  { cat:'other', icao:'LXF', call:'LYNX FLIGHT' },
+  { cat:'other', icao:'LXG', call:'LUX AVIATION' },
+  { cat:'other', icao:'LXJ', call:'FLEXJET' },
+  { cat:'other', icao:'LXP', call:'LANEX' },
+  { cat:'other', icao:'LYF', call:'LITHUANIAN AIRFORCE' },
+  { cat:'other', icao:'LYN', call:'ALTYN AVIA' },
+  { cat:'other', icao:'LZB', call:'FLYING BULGARIA' },
+  { cat:'other', icao:'LZR', call:'LAZUR BEE GEE' },
+  { cat:'other', icao:'MAE', call:'MALI AIREXPRESS' },
+  { cat:'other', icao:'MAK', call:'MAKAVIO' },
+  { cat:'other', icao:'MAR', call:'MEDITERANIAN' },
+  { cat:'other', icao:'MAS', call:'MALAYSIAN' },
+  { cat:'other', icao:'MAT', call:'MAINE AV' },
+  { cat:'other', icao:'MAV', call:'MINOAN' },
+  { cat:'other', icao:'MAY', call:'MAJESTY' },
+  { cat:'other', icao:'MBU', call:'MARABU' },
+  { cat:'other', icao:'MCD', call:'AIR MED' },
+  { cat:'other', icao:'MCK', call:'MAVERICK' },
+  { cat:'other', icao:'MDJ', call:'JETRAN AIR' },
+  { cat:'other', icao:'MDT', call:'MIDNIGHT' },
+  { cat:'other', icao:'MDV', call:'MOLDAVIAN' },
+  { cat:'other', icao:'MEA', call:'CEDAR JET' },
+  { cat:'other', icao:'MEM', call:'MERIDIAN CHERRY' },
+  { cat:'other', icao:'MFX', call:'WHITE BIRD' },
+  { cat:'other', icao:'MGF', call:'FOGLIA' },
+  { cat:'other', icao:'MGH', call:'MAVI' },
+  { cat:'other', icao:'MGO', call:'MANGO' },
+  { cat:'other', icao:'MGX', call:'MONTAIR' },
+  { cat:'other', icao:'MHL', call:'HASSIMAIR' },
+  { cat:'other', icao:'MHN', call:'MANHATTAN' },
+  { cat:'other', icao:'MHS', call:'AIR MEMPHIS' },
+  { cat:'other', icao:'MHV', call:'SNOWCAP' },
+  { cat:'other', icao:'MIG', call:'MIG AVIA' },
+  { cat:'other', icao:'MIX', call:'MIDEXCARGO' },
+  { cat:'other', icao:'MJE', call:'EMJET' },
+  { cat:'other', icao:'MJF', call:'EM EXPRESS' },
+  { cat:'other', icao:'MJL', call:'MOLDJET' },
+  { cat:'other', icao:'MJS', call:'MEDICAL JET' },
+  { cat:'other', icao:'MKA', call:'KRUGER AIR' },
+  { cat:'other', icao:'MLD', call:'AIR MOLDOVA' },
+  { cat:'other', icao:'MLH', call:'SOUTH WIND' },
+  { cat:'other', icao:'MLM', call:'LUXMALTA' },
+  { cat:'other', icao:'MLT', call:'MALETH' },
+  { cat:'other', icao:'MMD', call:'MERMAID' },
+  { cat:'other', icao:'MMF', call:'MULTI' },
+  { cat:'other', icao:'MMM', call:'AVIAMERIDIAN' },
+  { cat:'other', icao:'MMZ', call:'EUROATLANTIC' },
+  { cat:'other', icao:'MNB', call:'BLACK SEA' },
+  { cat:'other', icao:'MND', call:'CUGAT' },
+  { cat:'other', icao:'MNE', call:'MOUNT EAGLE' },
+  { cat:'other', icao:'MNJ', call:'MENAJET' },
+  { cat:'other', icao:'MON', call:'MONARCH' },
+  { cat:'other', icao:'MOV', call:'MOV AIR' },
+  { cat:'other', icao:'MOZ', call:'MOZART' },
+  { cat:'other', icao:'MPD', call:'RED COMET' },
+  { cat:'other', icao:'MPH', call:'MARTINAIR' },
+  { cat:'other', icao:'MRG', call:'MANAG AIR' },
+  { cat:'other', icao:'MSA', call:'MISTRAL WINGS' },
+  { cat:'other', icao:'MSC', call:'AIR CAIRO' },
+  { cat:'other', icao:'MSI', call:'MOTOR SICH' },
+  { cat:'other', icao:'MSR', call:'EGYPTAIR' },
+  { cat:'other', icao:'MSX', call:'EGYPTAIR CARGO' },
+  { cat:'other', icao:'MTL', call:'MITAVIA' },
+  { cat:'other', icao:'MXU', call:'CARGO MAX' },
+  { cat:'other', icao:'MYJ', call:'MY JET' },
+  { cat:'other', icao:'MYO', call:'MAYORAL' },
+  { cat:'other', icao:'MYW', call:'MY SKY' },
+  { cat:'other', icao:'MYX', call:'TALLINN CAT' },
+  { cat:'other', icao:'NAF', call:'NETHERLANDS AIR FORCE' },
+  { cat:'other', icao:'NAO', call:'NORTH AMERICAN' },
+  { cat:'other', icao:'NAX', call:'NOR SHUTTLE' },
+  { cat:'other', icao:'NBL', call:'NOBIL AIR' },
+  { cat:'other', icao:'NBT', call:'LONGSHIP' },
+  { cat:'other', icao:'NCA', call:'NIPPON CARGO' },
+  { cat:'other', icao:'NCR', call:'NATIONAL CARGO' },
+  { cat:'other', icao:'NDC', call:'NORDIC' },
+  { cat:'other', icao:'NFA', call:'NORTH FLYING' },
+  { cat:'other', icao:'NGA', call:'NIGERIA' },
+  { cat:'other', icao:'NIA', call:'NILE BIRD' },
+  { cat:'other', icao:'NJE', call:'FRACTION' },
+  { cat:'other', icao:'NLK', call:'ELAVIA' },
+  { cat:'other', icao:'NLV', call:'SEAGULL' },
+  { cat:'other', icao:'NLY', call:'FLYNIKI' },
+  { cat:'other', icao:'NMA', call:'NESMA' },
+  { cat:'other', icao:'NOS', call:'MOONFLOWER' },
+  { cat:'other', icao:'NOW', call:'NORWEGIAN' },
+  { cat:'other', icao:'NOY', call:'NOY AVIATION' },
+  { cat:'other', icao:'NOZ', call:'NORSEMAN' },
+  { cat:'other', icao:'NOZ', call:'NORDIC' },
+  { cat:'other', icao:'NPG', call:'NOVA' },
+  { cat:'other', icao:'NPT', call:'NEPTUNE' },
+  { cat:'other', icao:'NSK', call:'INTERSALONIKA' },
+  { cat:'other', icao:'NSZ', call:'REDNOSE' },
+  { cat:'other', icao:'NTF', call:'NETFLIGHT' },
+  { cat:'other', icao:'NTJ', call:'NEXTJET' },
+  { cat:'other', icao:'NUB', call:'VALLETTA' },
+  { cat:'other', icao:'NUM', call:'NOMADJET' },
+  { cat:'other', icao:'NVD', call:'NORDVIND' },
+  { cat:'other', icao:'NVR', call:'NAVIGATOR' },
+  { cat:'other', icao:'NWD', call:'NEW WORLD' },
+  { cat:'other', icao:'NWG', call:'NORWING' },
+  { cat:'other', icao:'NWS', call:'NORDLAND' },
+  { cat:'other', icao:'OAE', call:'OMNI EXPRESS' },
+  { cat:'other', icao:'OAL', call:'OLYMPIC' },
+  { cat:'other', icao:'OAV', call:'OMNI' },
+  { cat:'other', icao:'OAW', call:'HELVETIC' },
+  { cat:'other', icao:'OBS', call:'ORBEST' },
+  { cat:'other', icao:'OCN', call:'OCEAN' },
+  { cat:'other', icao:'ODS', call:'ODESSA AIR' },
+  { cat:'other', icao:'OEA', call:'ORIENT THAI' },
+  { cat:'other', icao:'OHY', call:'ONUR AIR' },
+  { cat:'other', icao:'OKA', call:'OKAYJET' },
+  { cat:'other', icao:'OKS', call:'SLOK GAMBIA' },
+  { cat:'other', icao:'OMA', call:'OMAN AIR' },
+  { cat:'other', icao:'OMF', call:'OMNIFLYS' },
+  { cat:'other', icao:'OMG', call:'OMEGA' },
+  { cat:'other', icao:'OMR', call:'ORMINE' },
+  { cat:'other', icao:'OPJ', call:'OPERA JET' },
+  { cat:'other', icao:'ORB', call:'ORENBURG' },
+  { cat:'other', icao:'ORF', call:'OMAN' },
+  { cat:'other', icao:'ORT', call:'SKYWALKER' },
+  { cat:'other', icao:'ORX', call:'OREX' },
+  { cat:'other', icao:'ORZ', call:'ZOREX' },
+  { cat:'other', icao:'OSY', call:'OPEN SKIES' },
+  { cat:'other', icao:'OTL', call:'SOUTHLINE' },
+  { cat:'other', icao:'OVA', call:'AERONOVA' },
+  { cat:'other', icao:'OYO', call:'ROGUE' },
+  { cat:'other', icao:'PAC', call:'POLAR' },
+  { cat:'other', icao:'PAJ', call:'ALIPARMA' },
+  { cat:'other', icao:'PAL', call:'PHILIPPINE' },
+  { cat:'other', icao:'PAT', call:'PAT' },
+  { cat:'other', icao:'PAV', call:'BRILLIANT' },
+  { cat:'other', icao:'PBD', call:'POBEDA' },
+  { cat:'other', icao:'PCE', call:'PACE' },
+  { cat:'other', icao:'PCH', call:'PILATUS WINGS' },
+  { cat:'other', icao:'PCJ', call:'PACIFIC JET' },
+  { cat:'other', icao:'PDA', call:'PODILIA' },
+  { cat:'other', icao:'PGA', call:'PORTUGALIA' },
+  { cat:'sk', icao:'PGT', call:'SUNTURK', airline:'Pegasus', country:'TR', type:'LCC', hint:'Turecký LCC, lieta z BTS/KSC.' },
+  { cat:'other', icao:'PHA', call:'GRAY BIRD' },
+  { cat:'other', icao:'PHB', call:'PHOEBUS' },
+  { cat:'other', icao:'PHE', call:'PAWAN HANS' },
+  { cat:'other', icao:'PHM', call:'PETROLEUM' },
+  { cat:'other', icao:'PHT', call:'PANANK' },
+  { cat:'other', icao:'PHV', call:'NEW BIRD' },
+  { cat:'other', icao:'PIA', call:'PAKISTAN' },
+  { cat:'other', icao:'PJI', call:'SKYBOSS' },
+  { cat:'other', icao:'PJS', call:'JETAVIATION' },
+  { cat:'other', icao:'PJZ', call:'PRIMEJET' },
+  { cat:'other', icao:'PKZ', call:'PRAVI' },
+  { cat:'other', icao:'PLF', call:'POLISH AIRFORCE' },
+  { cat:'other', icao:'PLM', call:'PULLMANTUR' },
+  { cat:'other', icao:'PNC', call:'PRINCE AVIATION' },
+  { cat:'other', icao:'PNK', call:'AIR PINK' },
+  { cat:'other', icao:'PNY', call:'POLISH NAVY' },
+  { cat:'other', icao:'POT', call:'POLET' },
+  { cat:'other', icao:'PRI', call:'PRIMERA' },
+  { cat:'other', icao:'PRJ', call:'PRONAIR' },
+  { cat:'other', icao:'PRW', call:'JETBIRD' },
+  { cat:'other', icao:'PRX', call:'PAREX' },
+  { cat:'other', icao:'PSK', call:'SUPPORT' },
+  { cat:'other', icao:'PSW', call:'PSKOVAVIA' },
+  { cat:'other', icao:'PTG', call:'PRIVATJET' },
+  { cat:'other', icao:'PTI', call:'PRIVATAIR' },
+  { cat:'other', icao:'PTN', call:'PLATOON' },
+  { cat:'other', icao:'PVD', call:'PAD AVIATION' },
+  { cat:'other', icao:'PVG', call:'PRIVILEGE' },
+  { cat:'other', icao:'PVV', call:'SUNDAY' },
+  { cat:'other', icao:'PWA', call:'PRIESTER' },
+  { cat:'other', icao:'PWF', call:'PRIVATE WINGS' },
+  { cat:'other', icao:'QAF', call:'AMIRI' },
+  { cat:'other', icao:'QAJ', call:'DAGOBERT' },
+  { cat:'other', icao:'QAV', call:'QUIET AVIATION' },
+  { cat:'other', icao:'QFA', call:'QANTAS' },
+  { cat:'other', icao:'QGA', call:'QUADRIGA' },
+  { cat:'other', icao:'QID', call:'QUID' },
+  { cat:'other', icao:'QNR', call:'QUEEN AIR' },
+  { cat:'other', icao:'QNT', call:'SHARQ' },
+  { cat:'other', icao:'QQE', call:'QREX' },
+  { cat:'other', icao:'QSC', call:'ZEBRA' },
+  { cat:'other', icao:'QSM', call:'QESHM AIR' },
+  { cat:'sk', icao:'QTR', call:'QATARI', airline:'Qatar Airways', country:'QA', type:'Gulf', hint:'Katarský dopravca, prelety cez SK.' },
+  { cat:'other', icao:'QUI', call:'QUIMMCO' },
+  { cat:'other', icao:'RAM', call:'ROYALAIR MAROC' },
+  { cat:'other', icao:'RBA', call:'BRUNEI' },
+  { cat:'other', icao:'RBB', call:'RABBIT' },
+  { cat:'other', icao:'RCH', call:'REACH' },
+  { cat:'other', icao:'RCR', call:'ROMCARGO' },
+  { cat:'other', icao:'RDP', call:'JET ARROW' },
+  { cat:'other', icao:'REI', call:'RAY AVIATION' },
+  { cat:'other', icao:'REM', call:'ROSE' },
+  { cat:'other', icao:'RFF', call:'RUSSIAN AIRFORCE' },
+  { cat:'other', icao:'RFR', call:'RAFAIR' },
+  { cat:'other', icao:'RGN', call:'CYGNUS AIR' },
+  { cat:'other', icao:'RHA', call:'SHERWOOD' },
+  { cat:'other', icao:'RHH', call:'STAR CRESCENT' },
+  { cat:'other', icao:'RJA', call:'JORDANIAN' },
+  { cat:'other', icao:'RJD', call:'ROTANA' },
+  { cat:'other', icao:'RKM', call:'RAKAIR' },
+  { cat:'other', icao:'RLS', call:'S AIRLINES' },
+  { cat:'other', icao:'RLU', call:'RUSLINE AIR' },
+  { cat:'other', icao:'RLX', call:'RELAX' },
+  { cat:'other', icao:'RMF', call:'ANGKASA' },
+  { cat:'other', icao:'RMV', call:'AEROMAVIA' },
+  { cat:'other', icao:'RMX', call:'AIR MASTER' },
+  { cat:'other', icao:'ROF', call:'ROMAF' },
+  { cat:'other', icao:'ROJ', call:'ROYALJET' },
+  { cat:'other', icao:'ROT', call:'TAROM' },
+  { cat:'other', icao:'RPC', call:'AEROPACSA' },
+  { cat:'other', icao:'RRR', call:'ASCOT' },
+  { cat:'other', icao:'RSB', call:'RUBYSTAR' },
+  { cat:'other', icao:'RSD', call:'STATE AERO' },
+  { cat:'other', icao:'RSE', call:'RED SEA' },
+  { cat:'other', icao:'RSJ', call:'RUSJET' },
+  { cat:'other', icao:'RSX', call:'RED SEA' },
+  { cat:'other', icao:'RSY', call:'RUSSIAN SKY' },
+  { cat:'other', icao:'RUK', call:'BLUEMAX' },
+  { cat:'other', icao:'RUN', call:'CARGO TURK' },
+  { cat:'other', icao:'RVL', call:'AIR VALLEE' },
+  { cat:'other', icao:'RWZ', call:'AIR RED' },
+  { cat:'other', icao:'RYN', call:'RYAN INTERNATIONAL' },
+  { cat:'sk', icao:'RYR', call:'RYANAIR', airline:'Ryanair', country:'IE', type:'LCC', hint:'Írsky low-cost gigant, lieta z BTS denne.' },
+  { cat:'other', icao:'RYS', call:'MAGIC SUN' },
+  { cat:'other', icao:'RYW', call:'ROYAL WINGS' },
+  { cat:'other', icao:'RZJ', call:'RIZON JET' },
+  { cat:'other', icao:'RZO', call:'AIR AZORES' },
+  { cat:'other', icao:'SAA', call:'SPRINGBOK' },
+  { cat:'other', icao:'SAG', call:'MEDICAL AIR' },
+  { cat:'other', icao:'SAH', call:'SMART JET' },
+  { cat:'other', icao:'SAI', call:'SHAHEEN AIR' },
+  { cat:'other', icao:'SAM', call:'SAM' },
+  { cat:'other', icao:'SAR', call:'SPRINTAIR' },
+  { cat:'other', icao:'SAS', call:'SCANDINAVIAN', airline:'SAS', country:'SE/DK/NO', type:'Legacy', hint:'Škandinávsky vlajkový dopravca.' },
+  { cat:'other', icao:'SAW', call:'SHAMWING' },
+  { cat:'other', icao:'SAY', call:'SKYPATH' },
+  { cat:'other', icao:'SAZ', call:'SWISS AMBULANCE' },
+  { cat:'other', icao:'SBI', call:'SIBERIAN AIRLINES', airline:'S7 Airlines', country:'RU', type:'Hybrid', hint:'Ruský dopravca, zelená livery.' },
+  { cat:'other', icao:'SBW', call:'SNOWMAN' },
+  { cat:'other', icao:'SCU', call:'SCORPIO UNIVERS' },
+  { cat:'other', icao:'SCW', call:'SCANWING' },
+  { cat:'other', icao:'SDM', call:'RUSSIA' },
+  { cat:'other', icao:'SDR', call:'SUNDAIR' },
+  { cat:'other', icao:'SEH', call:'AIR CRETE' },
+  { cat:'other', icao:'SEK', call:'EAST RIDER' },
+  { cat:'other', icao:'SER', call:'AEROCALIFORNIA' },
+  { cat:'other', icao:'SEU', call:'SKY MALTA' },
+  { cat:'other', icao:'SEY', call:'SEYCHELLES' },
+  { cat:'other', icao:'SFB', call:'AIR SOFIA' },
+  { cat:'other', icao:'SFG', call:'COLORSKY' },
+  { cat:'other', icao:'SHE', call:'SHELL' },
+  { cat:'other', icao:'SHJ', call:'SHARJAH' },
+  { cat:'other', icao:'SHQ', call:'SHANGHAI CARGO' },
+  { cat:'other', icao:'SHU', call:'AURORA' },
+  { cat:'other', icao:'SHY', call:'SKY POWER' },
+  { cat:'other', icao:'SIA', call:'SINGAPORE', airline:'Singapore Airlines', country:'SG', type:'Legacy', hint:'Singapurský prémiový dopravca.' },
+  { cat:'other', icao:'SIO', call:'SIRIO' },
+  { cat:'other', icao:'SJX', call:'STARWALKER' },
+  { cat:'other', icao:'SKJ', call:'SKYNET AIR' },
+  { cat:'other', icao:'SKV', call:'SKY SIDE' },
+  { cat:'other', icao:'SLD', call:'SILVERLINE' },
+  { cat:'other', icao:'SLJ', call:'SLAMAIR' },
+  { cat:'other', icao:'SMJ', call:'AVAVIA' },
+  { cat:'other', icao:'SMR', call:'SOMON AIR' },
+  { cat:'other', icao:'SMX', call:'ALIEXPRESS' },
+  { cat:'other', icao:'SNA', call:'SENATOR' },
+  { cat:'other', icao:'SNB', call:'STERLING' },
+  { cat:'other', icao:'SNM', call:'SERVIZI AEREI' },
+  { cat:'other', icao:'SOO', call:'SOUTHERN AIR' },
+  { cat:'other', icao:'SOP', call:'SOLINAIR' },
+  { cat:'other', icao:'SOV', call:'SARATOV AIR' },
+  { cat:'other', icao:'SOW', call:'SPARROW' },
+  { cat:'other', icao:'SOX', call:'SOLIDAIR' },
+  { cat:'other', icao:'SOZ', call:'SATCO' },
+  { cat:'other', icao:'SPA', call:'SIERRA PACIFIC' },
+  { cat:'other', icao:'SPF', call:'SPACE WORLD' },
+  { cat:'other', icao:'SPH', call:'SAPPHIRE CHARTER' },
+  { cat:'other', icao:'SPN', call:'SEPAHAN' },
+  { cat:'other', icao:'SPP', call:'SAPPHIRE' },
+  { cat:'other', icao:'SPT', call:'SPEED AVIATION' },
+  { cat:'other', icao:'SPW', call:'SPEEDWING' },
+  { cat:'other', icao:'SQC', call:'SINGCARGO' },
+  { cat:'other', icao:'SQF', call:'SLOVAK AIRFORCE' },
+  { cat:'other', icao:'SQP', call:'SKY UP' },
+  { cat:'other', icao:'SRK', call:'SKYFOX' },
+  { cat:'other', icao:'SRR', call:'WHITESTAR' },
+  { cat:'other', icao:'SSF', call:'SEVERSTAL' },
+  { cat:'other', icao:'SSG', call:'SLOVAK GOVERNMENT' },
+  { cat:'other', icao:'SSR', call:'SARDINIAN' },
+  { cat:'other', icao:'STK', call:'STOBART AIR' },
+  { cat:'other', icao:'STM', call:'SKYSTREAM' },
+  { cat:'other', icao:'STW', call:'MOON STAR' },
+  { cat:'other', icao:'STY', call:'ALTAIR' },
+  { cat:'other', icao:'SUA', call:'AIR SILESIA' },
+  { cat:'other', icao:'SUB', call:'SUB AIR' },
+  { cat:'other', icao:'SUD', call:'SUDANAIR' },
+  { cat:'other', icao:'SUI', call:'SWISS AIR FORCE' },
+  { cat:'other', icao:'SUM', call:'SUMES' },
+  { cat:'other', icao:'SUS', call:'SUNSCAN' },
+  { cat:'other', icao:'SUW', call:'ASTAIR' },
+  { cat:'other', icao:'SVA', call:'SAUDIA' },
+  { cat:'other', icao:'SVF', call:'SWEDEFORCE' },
+  { cat:'other', icao:'SVK', call:'VISION' },
+  { cat:'other', icao:'SVR', call:'SVERDLOVSK AIR' },
+  { cat:'other', icao:'SVW', call:'SILVER ARROWS' },
+  { cat:'other', icao:'SWN', call:'AIR SWEDEN' },
+  { cat:'sk', icao:'SWR', call:'SWISS', airline:'Swiss International', country:'CH', type:'Legacy', hint:'Švajčiarsky vlajkový dopravca.' },
+  { cat:'other', icao:'SWT', call:'SWIFT' },
+  { cat:'other', icao:'SWU', call:'EUROSWISS' },
+  { cat:'other', icao:'SWV', call:'SKYALPS' },
+  { cat:'other', icao:'SWW', call:'WAY AERO' },
+  { cat:'other', icao:'SWZ', call:'SKYWISE' },
+  { cat:'other', icao:'SXD', call:'SUNRISE' },
+  { cat:'sk', icao:'SXS', call:'SUNEXPRESS', airline:'SunExpress', country:'TR', type:'Leisure', hint:'Turkish + LH joint, charter na turecké pobrežia.' },
+  { cat:'other', icao:'SYL', call:'AIR YAKUTIA' },
+  { cat:'other', icao:'SYR', call:'SYRIANAIR' },
+  { cat:'other', icao:'TAG', call:'TAG U S' },
+  { cat:'other', icao:'TAH', call:'AIR ANKA' },
+  { cat:'other', icao:'TAP', call:'AIR PORTUGAL', airline:'TAP Air Portugal', country:'PT', type:'Legacy', hint:'Portugalský vlajkový dopravca.' },
+  { cat:'other', icao:'TAR', call:'TUNAIR' },
+  { cat:'other', icao:'TAS', call:'LOTUS FLOWER' },
+  { cat:'other', icao:'TAX', call:'EXPRESS WING' },
+  { cat:'sk', icao:'TAY', call:'QUALITY', airline:'ASL Airlines Belgium', country:'BE', type:'Cargo', hint:'European cargo (FedEx feeder).' },
+  { cat:'other', icao:'TCF', call:'MERCURY' },
+  { cat:'other', icao:'TCR', call:'TICOS' },
+  { cat:'other', icao:'TCV', call:'CABOVERDE' },
+  { cat:'other', icao:'TCW', call:'PHOENIX' },
+  { cat:'other', icao:'TCX', call:'THOMAS COOK' },
+  { cat:'other', icao:'TDR', call:'TRADEAIR' },
+  { cat:'other', icao:'TEU', call:'TAG MALTA' },
+  { cat:'other', icao:'TFF', call:'TALON FLIGHT' },
+  { cat:'other', icao:'TFG', call:'TRAFALGAR' },
+  { cat:'other', icao:'TFL', call:'ORANGE' },
+  { cat:'other', icao:'TGM', call:'TAG ESPANA' },
+  { cat:'other', icao:'TGT', call:'TARGET' },
+  { cat:'other', icao:'TGW', call:'SCOOTER' },
+  { cat:'other', icao:'TGZ', call:'TAMAZI' },
+  { cat:'other', icao:'THA', call:'THAI' },
+  { cat:'sk', icao:'THY', call:'TURKISH', airline:'Turkish Airlines', country:'TR', type:'Legacy', hint:'Turecký dopravca, najviac destinácií na svete, cez SK denne.' },
+  { cat:'other', icao:'THZ', call:'LYON HELIJET' },
+  { cat:'other', icao:'TIE', call:'TIME AIR' },
+  { cat:'other', icao:'TIH', call:'TIRIAC AIR' },
+  { cat:'other', icao:'TJD', call:'ALISERIO' },
+  { cat:'other', icao:'TJK', call:'TAJIKAIR' },
+  { cat:'other', icao:'TJS', call:'TYROLJET' },
+  { cat:'other', icao:'TKJ', call:'ANATOLIA' },
+  { cat:'other', icao:'TLG', call:'TALGAT' },
+  { cat:'other', icao:'TLJ', call:'TALJET' },
+  { cat:'other', icao:'TLY', call:'TOPFLY' },
+  { cat:'other', icao:'TMA', call:'TANGO LIMA' },
+  { cat:'other', icao:'TOM', call:'TOMJET' },
+  { cat:'other', icao:'TOY', call:'TOYO AVIATION' },
+  { cat:'other', icao:'TPD', call:'TROPICAL' },
+  { cat:'other', icao:'TRA', call:'TRANSAVIA', airline:'Transavia', country:'NL', type:'LCC', hint:'KLM dcérska LCC.' },
+  { cat:'other', icao:'TRF', call:'TAXI JET' },
+  { cat:'other', icao:'TSC', call:'AIR TRANSAT' },
+  { cat:'other', icao:'TSI', call:'TRANSPORTAIR' },
+  { cat:'other', icao:'TSO', call:'TRANSOVIET' },
+  { cat:'other', icao:'TSP', call:'TONLESAP AIR' },
+  { cat:'other', icao:'TSW', call:'GRIZZLY' },
+  { cat:'other', icao:'TSY', call:'TRIPLE STAR' },
+  { cat:'other', icao:'TTF', call:'CARGO UNIT' },
+  { cat:'other', icao:'TTJ', call:'TATRA' },
+  { cat:'other', icao:'TUA', call:'TURKMENISTAN' },
+  { cat:'other', icao:'TUI', call:'TUI JET' },
+  { cat:'other', icao:'TUL', call:'URSAL' },
+  { cat:'other', icao:'TUP', call:'TUPOLEVAIR' },
+  { cat:'other', icao:'TVF', call:'FRANCE SOLEIL' },
+  { cat:'other', icao:'TVI', call:'TIRAMAVIA' },
+  { cat:'other', icao:'TVL', call:'TRAVEL SERVICE' },
+  { cat:'other', icao:'TVP', call:'JET TRAVEL' },
+  { cat:'other', icao:'TVQ', call:'SLOVAK TRAVEL' },
+  { cat:'sk', icao:'TVS', call:'SKYTRAVEL', airline:'SmartWings', country:'CZ', type:'Leisure', hint:'Český charter operátor, lieta často cez SK.' },
+  { cat:'other', icao:'TWB', call:'TEE WAY' },
+  { cat:'other', icao:'TWE', call:'TRANSWEDE' },
+  { cat:'other', icao:'TWF', call:'CLOUD RUNNER' },
+  { cat:'other', icao:'TWG', call:'TWIN GOOSE' },
+  { cat:'other', icao:'TWI', call:'TAILWIND' },
+  { cat:'other', icao:'TWY', call:'TWILIGHT' },
+  { cat:'other', icao:'TXC', call:'TRANSEXPORT' },
+  { cat:'other', icao:'TYA', call:'TAIMYR' },
+  { cat:'other', icao:'TYR', call:'TYROLEAN' },
+  { cat:'other', icao:'TYW', call:'TYROL AMBULANCE' },
+  { cat:'other', icao:'UAB', call:'UNITED ARABIAN' },
+  { cat:'sk', icao:'UAE', call:'EMIRATES', airline:'Emirates', country:'AE', type:'Gulf', hint:'Dubajský gigant, A380 cez SK na trasách EÚ-Ázia.' },
+  { cat:'other', icao:'UAG', call:'SAKTA' },
+  { cat:'other', icao:'UAL', call:'UNITED', airline:'United Airlines', country:'US', type:'Legacy', hint:'Chicago/Newark hub.' },
+  { cat:'other', icao:'UAR', call:'AEROSTAR' },
+  { cat:'other', icao:'UBD', call:'URAIR' },
+  { cat:'other', icao:'UBE', call:'FLOWER BEE' },
+  { cat:'other', icao:'UBT', call:'LONGBOAT' },
+  { cat:'other', icao:'UCK', call:'GALETA' },
+  { cat:'other', icao:'UCR', call:'CHARTER UKRAINE' },
+  { cat:'other', icao:'UDC', call:'DONBASS AERO' },
+  { cat:'other', icao:'UDN', call:'DNIEPRO' },
+  { cat:'other', icao:'UGP', call:'SHARINK' },
+  { cat:'other', icao:'UKL', call:'UKRAINE ALLIANCE' },
+  { cat:'other', icao:'UKM', call:'UKRAINE MEDITERRANEE' },
+  { cat:'other', icao:'UKN', call:'ENTERPRISE UKRAINE' },
+  { cat:'other', icao:'UKW', call:'UKRAINE WEST' },
+  { cat:'other', icao:'ULC', call:'ALBINATY' },
+  { cat:'other', icao:'UMK', call:'YUZMASH' },
+  { cat:'other', icao:'UNI', call:'UNICAIR' },
   { cat:'other', icao:'UPS', call:'UPS', airline:'UPS Airlines', country:'US', type:'Cargo', hint:'Hnedé balíky, Louisville hub.' },
-  { cat:'other', icao:'GTI', call:'Giant', airline:'Atlas Air', country:'US', type:'Cargo', hint:'US cargo / ACMI charter.' },
-  { cat:'other', icao:'CLX', call:'Cargolux', airline:'Cargolux', country:'LU', type:'Cargo', hint:'Luxemburský cargo, len 747s.' },
-  { cat:'other', icao:'CKS', call:'Connie', airline:'Kalitta Air', country:'US', type:'Cargo', hint:'US 747 cargo.' },
-  // Russia / CIS
-  { cat:'other', icao:'AFL', call:'Aeroflot', airline:'Aeroflot', country:'RU', type:'Legacy', hint:'Ruský vlajkový dopravca.' },
-  { cat:'other', icao:'SBI', call:'Siberian Airlines', airline:'S7 Airlines', country:'RU', type:'Hybrid', hint:'Ruský dopravca, zelená livery.' },
+  { cat:'other', icao:'UQA', call:'UNICARGO' },
+  { cat:'other', icao:'URG', call:'URGA' },
+  { cat:'other', icao:'URO', call:'EURO' },
+  { cat:'other', icao:'USY', call:'UNISKY' },
+  { cat:'other', icao:'UTA', call:'UTAIR' },
+  { cat:'other', icao:'UTN', call:'UT UKRAINE' },
+  { cat:'other', icao:'UTS', call:'AIRRUH' },
+  { cat:'other', icao:'UVL', call:'UNIVERAL AIR' },
+  { cat:'other', icao:'UVN', call:'SENYARI' },
+  { cat:'other', icao:'UZA', call:'CONSTANTA' },
+  { cat:'other', icao:'UZB', call:'UZBEK' },
+  { cat:'other', icao:'VAA', call:'EUROVAN' },
+  { cat:'other', icao:'VAJ', call:'TRUBADIX' },
+  { cat:'other', icao:'VAP', call:'PHUKET AIR' },
+  { cat:'other', icao:'VAW', call:'SOFIA JET' },
+  { cat:'other', icao:'VBC', call:'AIR VICTOR' },
+  { cat:'other', icao:'VCG', call:'THUNDER CAT' },
+  { cat:'other', icao:'VCJ', call:'OBELIX' },
+  { cat:'other', icao:'VCN', call:'AVCON' },
+  { cat:'other', icao:'VCV', call:'CONVIASA' },
+  { cat:'other', icao:'VDA', call:'VOLGA' },
+  { cat:'other', icao:'VEX', call:'VIRGIN EXPRESS' },
+  { cat:'other', icao:'VIK', call:'SWEDJET' },
+  { cat:'other', icao:'VIM', call:'CRYSTAL' },
+  { cat:'other', icao:'VIP', call:'SOVEREIGN' },
+  { cat:'other', icao:'VIR', call:'VIRGIN' },
+  { cat:'other', icao:'VIZ', call:'AEROVIZ' },
+  { cat:'other', icao:'VJA', call:'VIENNAJET' },
+  { cat:'other', icao:'VJH', call:'VISTA GERMANY' },
+  { cat:'other', icao:'VJS', call:'VISTA JET' },
+  { cat:'other', icao:'VJT', call:'VISTAJET' },
+  { cat:'other', icao:'VKA', call:'VULKAN AIR' },
+  { cat:'other', icao:'VKG', call:'VIKING' },
+  { cat:'other', icao:'VLB', call:'AIR VOLTA' },
+  { cat:'other', icao:'VLE', call:'VOLA' },
+  { cat:'other', icao:'VLF', call:'VALOR' },
+  { cat:'other', icao:'VLG', call:'VUELING', airline:'Vueling', country:'ES', type:'LCC', hint:'Španielsky low-cost, IAG group.' },
+  { cat:'other', icao:'VLJ', call:'VALJET' },
+  { cat:'other', icao:'VLK', call:'VLADAIR' },
+  { cat:'other', icao:'VLM', call:'RUBENS' },
+  { cat:'other', icao:'VLN', call:'VALAN' },
+  { cat:'other', icao:'VMP', call:'VAMPIRE' },
+  { cat:'other', icao:'VND', call:'AVINORD' },
+  { cat:'other', icao:'VOE', call:'VOLOTEA' },
+  { cat:'other', icao:'VOL', call:'BLUE SPEED' },
+  { cat:'other', icao:'VPB', call:'VETERAN' },
+  { cat:'other', icao:'VPC', call:'SOLAR' },
+  { cat:'other', icao:'VSR', call:'AVIOSTART' },
+  { cat:'other', icao:'VSV', call:'VLASTA' },
+  { cat:'other', icao:'VTB', call:'SUXAIR' },
+  { cat:'other', icao:'VTI', call:'VISTARA' },
+  { cat:'other', icao:'VUE', call:'FLIGHTVUE' },
+  { cat:'other', icao:'VVA', call:'IALSI' },
+  { cat:'other', icao:'VVF', call:'WORLDFOCUS' },
+  { cat:'other', icao:'VZL', call:'VZLYET' },
+  { cat:'other', icao:'WAU', call:'WIZZAIR UKRAINE' },
+  { cat:'other', icao:'WAY', call:'GARONNE' },
+  { cat:'other', icao:'WAZ', call:'WIZZ SKY' },
+  { cat:'other', icao:'WDE', call:'SANDSTONE' },
+  { cat:'other', icao:'WDL', call:'WDL' },
+  { cat:'other', icao:'WFL', call:'BLUE WORLD' },
+  { cat:'other', icao:'WFT', call:'WORLD FLIGHT' },
+  { cat:'other', icao:'WGN', call:'WESTERN GLOBAL' },
+  { cat:'other', icao:'WGT', call:'WORLDGATE' },
+  { cat:'other', icao:'WHT', call:'WHITEJET' },
+  { cat:'other', icao:'WIF', call:'WIDEROE' },
+  { cat:'other', icao:'WLB', call:'WINGS LEBANON' },
+  { cat:'other', icao:'WLC', call:'WELCOMEAIR' },
+  { cat:'other', icao:'WLG', call:'GOUMRAK' },
+  { cat:'other', icao:'WLR', call:'AIRWALSER' },
+  { cat:'other', icao:'WMT', call:'WIZZ MALTA' },
+  { cat:'other', icao:'WOA', call:'WORLD' },
+  { cat:'other', icao:'WOW', call:'WOW AIR' },
+  { cat:'other', icao:'WRC', call:'WIND ROSE' },
+  { cat:'other', icao:'WUK', call:'WIZZ GO' },
+  { cat:'other', icao:'WWI', call:'WORLDWIDE' },
+  { cat:'sk', icao:'WZZ', call:'WIZZAIR', airline:'Wizz Air', country:'HU', type:'LCC', hint:'Maďarský low-cost, ružové livery, lieta z VIE/BUD/KSC.' },
+  { cat:'other', icao:'XJC', call:'EXCLUSIVE JET' },
+  { cat:'other', icao:'XLF', call:'STARWAY' },
+  { cat:'other', icao:'XPE', call:'EXPERT' },
+  { cat:'other', icao:'XRO', call:'CRAMER' },
+  { cat:'other', icao:'YZR', call:'YANGTZE RIVER' },
 ];
+
+/* Dokument má jeden kód s dvoma volačkami (NOZ) a niekoľko volačiek,
+   ktoré patria dvom kódom (JET TIME, RED SEA, GEMINI…). Skupiny sa
+   počítajú z CELÉHO zoznamu, aby sa uznala každá platná odpoveď aj
+   vtedy, keď je zapnutý filter. */
+const CS_BY_ICAO = {}, CS_BY_CALL = {};
+CALLSIGNS.forEach(cs => {
+  (CS_BY_ICAO[cs.icao] = CS_BY_ICAO[cs.icao] || []).push(cs);
+  (CS_BY_CALL[cs.call] = CS_BY_CALL[cs.call] || []).push(cs);
+});
 
 /* ============================================================
    FRA SIGNIFICANT POINTS - FIR BRATISLAVA (MOD 04)
@@ -1645,7 +2757,7 @@ const state = {
   queue: [], current: null, index: 0, total: 0,
   correct: 0, wrong: 0, streak: 0, bestStreak: 0,
   mistakes: {},
-  filters: { wake: 'all', airportCat: 'all', callsignCat: 'all', wpDiff: 'easy', wpGrp: 'all', wpMode: 'quiz' },
+  filters: { wake: 'all', airportCat: 'all', callsignCat: 'all', wpDiff: 'easy', csLetter: 'all', wpGrp: 'all', wpMode: 'quiz', wpBorder: 'all' },
   hintsUsed: 0,
 };
 
@@ -1712,16 +2824,228 @@ function buildAirportQuestions() {
 function buildCallsignQuestions() {
   let pool = CALLSIGNS;
   if (state.filters.callsignCat !== 'all') pool = pool.filter(c => c.cat === state.filters.callsignCat);
-  const list = [];
+  if (state.filters.csLetter !== 'all') pool = pool.filter(c => c.icao.charAt(0) === state.filters.csLetter);
+  /* jedna otázka na kód a jedna na volačku — duplicity z dokumentu
+     sa zlúčia a uzná sa ktorákoľvek platná odpoveď */
+  const list = [], seen = {};
   pool.forEach(cs => {
-    list.push({ type: 'callsign', subtype: 'icao-to-call', id: 'CS_I2C_' + cs.icao, data: cs,
-      accept: [cs.call, cs.call.replace(/\s/g,'')] });
-    list.push({ type: 'callsign', subtype: 'call-to-icao', id: 'CS_C2I_' + cs.icao, data: cs,
-      accept: [cs.icao] });
+    if (!seen['I' + cs.icao]) {
+      seen['I' + cs.icao] = 1;
+      const g = CS_BY_ICAO[cs.icao];
+      list.push({ type: 'callsign', subtype: 'icao-to-call', id: 'CS_I2C_' + cs.icao, data: cs, group: g,
+        accept: g.map(c => c.call) });
+    }
+    if (!seen['C' + cs.call]) {
+      seen['C' + cs.call] = 1;
+      const g = CS_BY_CALL[cs.call];
+      list.push({ type: 'callsign', subtype: 'call-to-icao', id: 'CS_C2I_' + cs.icao, data: cs, group: g,
+        accept: g.map(c => c.icao) });
+    }
   });
   return shuffle(list);
 }
+/* Volačiek je vyše tisíc a mnohé sa líšia jediným písmenom
+   (BEXJET / BEEJET). Tolerancia preklepov preto nesmie uznať odpoveď,
+   ktorá je presne INÁ volačka alebo iný kód z dokumentu. */
+function callsignClash(val, q) {
+  if (q.type !== 'callsign') return false;
+  const u = normalize(val);
+  if (q.accept.some(a => normalize(a) === u)) return false;
+  const map = q.subtype === 'icao-to-call' ? CS_BY_CALL : CS_BY_ICAO;
+  return Object.keys(map).some(k => normalize(k) === u);
+}
+
+/* ============================================================
+   MOD 04 — HRANIČNÉ BODY A SLEPÁ MAPA
+   ------------------------------------------------------------
+   „Hraničný bod" sa počíta GEOMETRICKY a nie z poľa `type`:
+   písmená E/X (Entry/Exit) sú v dátach vyplnené len pri 10 bodoch
+   a len na severe a východe — západ a juh ich nemajú vôbec. Filter
+   postavený na nich by dal krivý a neúplný výber. Vzdialenosť od
+   obrysu FIR je úplná a overiteľná: 42 bodov leží do 2 NM od
+   hranice a ďalej je zreteľná medzera.
+   ============================================================ */
+
+const WP_BORDER_NM = 2;
+
+/* najkratšia vzdialenosť bodu od HRANY obrysu (nie od vrcholu) */
+function wpDistToBoundary(p) {
+  const O = FIR_OUTLINE;
+  const k = Math.cos(p.lat * Math.PI / 180);
+  let best = Infinity;
+  for (let i = 0; i < O.length; i++) {
+    const a = O[i], b = O[(i + 1) % O.length];
+    const ax = (a[0] - p.lon) * 60 * k, ay = (a[1] - p.lat) * 60;
+    const bx = (b[0] - p.lon) * 60 * k, by = (b[1] - p.lat) * 60;
+    const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy;
+    let t = L ? -((ax * dx + ay * dy) / L) : 0;
+    t = Math.max(0, Math.min(1, t));
+    best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy));
+  }
+  return best;
+}
+
+/* výsledok sa počíta raz a drží na bode — mapa sa prekresľuje často */
+function wpIsBorder(w) {
+  if (w._bd === undefined) w._bd = wpDistToBoundary(w);
+  return w._bd <= WP_BORDER_NM;
+}
+
+/* Poloha bodu POZDĹŽ hranice, meraná ako prejdená dĺžka obrysu.
+   Triedenie podľa azimutu od stredu tu nestačí: FIR je pretiahnutý
+   a členitý, takže pri zálivoch dva susedné body dostanú veľmi
+   odlišný uhol a číslovanie preskakuje (KEKED → KENIN a pod.). */
+function wpArcPos(p) {
+  const O = FIR_OUTLINE;
+  const k = Math.cos(p.lat * Math.PI / 180);
+  let cum = 0, best = Infinity, bestPos = 0;
+  for (let i = 0; i < O.length; i++) {
+    const a = O[i], b = O[(i + 1) % O.length];
+    const ax = (a[0] - p.lon) * 60 * k, ay = (a[1] - p.lat) * 60;
+    const bx = (b[0] - p.lon) * 60 * k, by = (b[1] - p.lat) * 60;
+    const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+    const segLen = Math.sqrt(L2);
+    let t = L2 ? -((ax * dx + ay * dy) / L2) : 0;
+    t = Math.max(0, Math.min(1, t));
+    const d = Math.hypot(ax + t * dx, ay + t * dy);
+    if (d < best) { best = d; bestPos = cum + t * segLen; }
+    cum += segLen;
+  }
+  return { pos: bestPos, total: cum };
+}
+
+/* ============================================================
+   SLEPÁ MAPA — všetky body naraz, ku každému políčko.
+   Cieľom je prejsť hranicu ako celok, nie hádať bod po bode.
+   ============================================================ */
+function blindPool() {
+  const pool = filterBySector(WAYPOINTS).slice();
+  if (!pool.length) return pool;
+  pool.forEach(w => { if (w._arc === undefined) w._arc = wpArcPos(w).pos; });
+  pool.sort((a, b) => a._arc - b._arc);
+  if (pool.length < 3) return pool;
+
+  const total = wpArcPos(pool[0]).total;
+  /* Medzery medzi susednými bodmi po obvode, vrátane tej cez koniec. */
+  const gap = i => (i === pool.length - 1)
+    ? (total - pool[i]._arc + pool[0]._arc)
+    : (pool[i + 1]._arc - pool[i]._arc);
+  let maxI = 0, maxG = 0, steps = [];
+  for (let i = 0; i < pool.length; i++) { const g = gap(i); steps.push(g); if (g > maxG) { maxG = g; maxI = i; } }
+  const median = steps.slice().sort((a, b) => a - b)[Math.floor(steps.length / 2)];
+
+  /* Sektorový filter vyberá body, ktoré na hranici NIE SÚ súvislé
+     (EAST leží v dvoch úsekoch, CENTRAL v troch). Číslovanie preto
+     začne za najväčšou medzerou — tá potom padne medzi posledné a prvé
+     číslo namiesto doprostred radu. Pri súvislom výbere sa začína na
+     severe. Prah 3,5× mediánu: pri 2,5× sa pravidlo zaplo aj pre celú
+     FIR a číslovanie začínalo na juhovýchode. */
+  let startIdx;
+  if (maxG > median * 3.5) startIdx = (maxI + 1) % pool.length;
+  else { startIdx = 0; for (let i = 1; i < pool.length; i++) if (pool[i].lat > pool[startIdx].lat) startIdx = i; }
+  return pool.slice(startIdx).concat(pool.slice(0, startIdx));
+}
+
+function buildBlindSVG(points, answers, checked) {
+  const P = MAP_PROJ;
+  const { firPath, cities } = mapBaseParts();
+  const placed = [];
+  const collides = (lx, ly) => placed.some(p => Math.abs(p.x - lx) < 22 && Math.abs(p.y - ly) < 9);
+  const out = [];
+  points.forEach((c, i) => {
+    const x = projX(c.lon), y = projY(c.lat);
+    const n = i + 1;
+    let cls = 'blind-dot';
+    if (checked) cls += (answers[i] || '').trim().toUpperCase() === c.name ? ' ok' : ' no';
+    out.push(`<circle class="${cls}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6"></circle>`);
+    const tries = [[x+9,y-6],[x+9,y+12],[x-9,y-6],[x-9,y+12],[x,y-12],[x,y+17]];
+    let ch = tries[0];
+    for (const t of tries) { if (!collides(t[0], t[1])) { ch = t; break; } }
+    placed.push({ x: ch[0], y: ch[1] });
+    out.push(`<text class="blind-num" x="${ch[0].toFixed(1)}" y="${ch[1].toFixed(1)}">${n}</text>`);
+    if (checked)
+      out.push(`<text class="blind-ans" x="${ch[0].toFixed(1)}" y="${(ch[1]+10).toFixed(1)}">${c.name}</text>`);
+  });
+  return `<svg viewBox="0 0 ${P.w} ${P.h.toFixed(0)}" xmlns="http://www.w3.org/2000/svg" id="map-svg">
+    <rect x="0" y="0" width="${P.w}" height="${P.h.toFixed(0)}" fill="#fbfdfc"></rect>
+    <path d="${firPath}" fill="#eef6f0" stroke="var(--border-bright)" stroke-width="1.5"></path>
+    ${cities}${out.join('')}
+  </svg>`;
+}
+
+function blindCountLabel(filled, total) {
+  return `vyplnené ${filled} z ${total} — vyhodnotiť môžeš kedykoľvek, zvyšok sa doplní`;
+}
+
+function renderWaypointBlind(card) {
+  const pool = blindPool();
+  const B = state.blind || (state.blind = { answers: [], checked: false });
+  if (B.answers.length !== pool.length) { B.answers = pool.map(() => ''); B.checked = false; }
+  document.getElementById('qnum').textContent = '•';
+  document.getElementById('qtotal').textContent = pool.length + ' bodov';
+
+  const filled = B.answers.filter(a => a.trim()).length;
+  const score = B.checked
+    ? pool.reduce((n, w, i) => n + ((B.answers[i] || '').trim().toUpperCase() === w.name ? 1 : 0), 0)
+    : 0;
+
+  const inputs = pool.map((w, i) => {
+    const v = (B.answers[i] || '').trim();
+    const ok = B.checked && v.toUpperCase() === w.name;
+    /* Po vyhodnotení sa do políčka doplní SPRÁVNY názov — aj tam, kde
+       ostalo prázdne, aj tam, kde bola chyba. Pôvodná odpoveď zostane
+       vedľa prečiarknutá, inak by si videl len riešenie a nie svoju chybu. */
+    const shown = B.checked ? (ok ? v : w.name) : v;
+    const cls = B.checked ? (ok ? 'blind-in ok' : 'blind-in fixed') : 'blind-in';
+    const was = (B.checked && !ok && v) ? `<span class="blind-was">${v.toUpperCase().replace(/</g,'&lt;')}</span>` : '';
+    return `<div class="blind-cell">
+      <span class="blind-n">${i + 1}</span>
+      <input class="${cls}" data-bi="${i}" value="${shown.replace(/"/g,'&quot;')}"
+             ${B.checked ? 'disabled' : ''} autocomplete="off" spellcheck="false" maxlength="10">
+      ${was}
+    </div>`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="qmeta">FRA SIGNIFICANT POINTS <span class="sep">·</span> SLEPÁ MAPA — POMENUJ KAŽDÝ BOD</div>
+    <div class="map-prompt"><span class="mp-label">${
+      B.checked ? `${score} z ${pool.length} správne — zvyšok je nižšie doplnený červeným`
+                : blindCountLabel(filled, pool.length)
+    }</span></div>
+    <div class="map-wrap">${buildBlindSVG(pool, B.answers, B.checked)}</div>
+    <div class="blind-grid">${inputs}</div>
+    <div class="blind-actions">
+      <button class="btn" id="blind-check" ${B.checked || !pool.length ? 'disabled' : ''}>VYHODNOTIŤ</button>
+      <button class="btn ghost" id="blind-reset">${B.checked ? 'SKÚSIŤ ZNOVA' : 'VYMAZAŤ'}</button>
+    </div>`;
+
+  card.querySelectorAll('[data-bi]').forEach(inp => {
+    inp.oninput = () => { B.answers[+inp.dataset.bi] = inp.value; blindRefreshCount(pool.length); };
+    inp.onkeydown = e => {
+      if (e.key !== 'Enter') return;
+      const next = card.querySelector(`[data-bi="${+inp.dataset.bi + 1}"]`);
+      if (next) next.focus(); else { const c = document.getElementById('blind-check'); if (c) c.focus(); }
+    };
+  });
+  const chk = document.getElementById('blind-check');
+  if (chk) chk.onclick = () => { B.checked = true; renderQuestion(); };
+  const rst = document.getElementById('blind-reset');
+  if (rst) rst.onclick = () => { state.blind = { answers: pool.map(() => ''), checked: false }; renderQuestion(); };
+}
+
+/* Prepočet počítadla bez prekreslenia celej karty — inak by input
+   pri každom písmene stratil kurzor. */
+function blindRefreshCount(total) {
+  const B = state.blind; if (!B) return;
+  const filled = B.answers.filter(a => a.trim()).length;
+  const lbl = document.querySelector('#qcard .mp-label');
+  if (lbl) lbl.textContent = blindCountLabel(filled, total);
+}
+
 function filterBySector(pool) {
+  /* Filter hraničných bodov je ZÁMERNE tu, a nie v jednotlivých
+     režimoch — takto platí naraz pre všetky cvičenia MOD 04. */
+  if (state.filters.wpBorder === 'border') pool = pool.filter(wpIsBorder);
   const g = state.filters.wpGrp;
   if (g === 'all' || !g) return pool;
   if (g === 'NAV') return pool.filter(w => w.kind === 'nav');
@@ -1730,7 +3054,9 @@ function filterBySector(pool) {
 }
 function buildWaypointQuestions() {
   const pool = filterBySector(WAYPOINTS);
-  return shuffle(pool).map(w => ({ type: 'waypoint', id: 'WP_' + w.name, data: w, accept: [w.name] }));
+  /* 'find' = meno je zadanie a hľadá sa bod, 'name' = bod je zadanie a píše sa meno */
+  const sub = state.filters.wpMode === 'name' ? 'name' : 'find';
+  return shuffle(pool).map(w => ({ type: 'waypoint', subtype: sub, id: 'WP_' + w.name, data: w, accept: [w.name] }));
 }
 function buildQueue() {
   switch(state.mode) {
@@ -1785,21 +3111,40 @@ function generateHints(q) {
   }
   if (q.type === 'callsign') {
     const cs = q.data;
+    /* údaje o aerolinke majú len dopravcovia z pôvodného zoznamu —
+       pri ostatných sa napovedá z písmen */
+    const meta = cs.airline ? [
+      `Aerolinka: ${cs.airline}`,
+      `Krajina: ${cs.country} · Typ: ${cs.type}`,
+      `${cs.hint}`,
+    ] : [];
     if (q.subtype === 'icao-to-call') {
-      return [
-        `Aerolinka: ${cs.airline}`,
-        `Krajina: ${cs.country} · Typ: ${cs.type}`,
-        `${cs.hint}`,
+      const flat = cs.call.replace(/\s/g, '');
+      const words = cs.call.split(' ').length;
+      const out = meta.concat([
+        `Volačka má ${words === 1 ? 'jedno slovo' : words + ' slová'}, spolu ${flat.length} písmen.`,
         `Callsign začína na "${cs.call.charAt(0)}".`,
-      ];
+      ]);
+      if (flat.length > 4) out.push(`Prvé tri písmená: "${flat.substring(0, 3)}".`);
+      return out;
     } else {
-      return [
-        `Aerolinka: ${cs.airline}`,
-        `Krajina: ${cs.country} · Typ: ${cs.type}`,
-        `${cs.hint}`,
+      return meta.concat([
         `ICAO začína na "${cs.icao.charAt(0)}".`,
-      ];
+        `ICAO končí na "${cs.icao.charAt(2)}".`,
+      ]);
     }
+  }
+  if (q.type === 'waypoint' && q.subtype === 'name') {
+    const w = q.data;
+    const typeFull = { A:'Príletový', D:'Odletový', E:'Vstupný', I:'Vnútorný', X:'Výstupný' };
+    const typeList = (w.type||'').split('').filter(c=>typeFull[c]).map(c=>typeFull[c]).join(', ') || '—';
+    const near = nearestPoints(w, 1)[0];
+    return [
+      `Sektor: ${SECTOR_NAMES[w.sec] || '—'}`,
+      `Typ bodu: ${typeList}`,
+      `Najbližší bod: ${near ? near.name : '—'}`,
+      `Začína na „${w.name.charAt(0)}“, ${w.name.length} písmen.`,
+    ];
   }
   return [];
 }
@@ -1850,6 +3195,11 @@ function renderQuestion() {
   // STUDY / EXPLORE mode for waypoints — no question, just an interactive map
   if (state.mode === 'waypoint' && state.filters.wpMode === 'study') {
     renderWaypointStudy(card);
+    return;
+  }
+  /* SLEPÁ MAPA — tiež bez fronty otázok: celý výber naraz. */
+  if (state.mode === 'waypoint' && state.filters.wpMode === 'blind') {
+    renderWaypointBlind(card);
     return;
   }
 
@@ -1924,7 +3274,8 @@ function renderQuestion() {
   }
 
   if (q.type === 'waypoint') {
-    renderWaypointQuestion(q, card);
+    if (q.subtype === 'name') renderWaypointNameQuestion(q, card);
+    else renderWaypointQuestion(q, card);
     return;
   }
 
@@ -2221,11 +3572,6 @@ function onWaypointPick(pickedName, target, svg, cands) {
   renderStats(); renderWeak();
 
   const fb = document.getElementById('feedback');
-  const typeFull = { A:'Arrival Connection', D:'Departure Connection', E:'Horizontal Entry', I:'Intermediate', X:'Horizontal Exit' };
-  const typeList = (target.type||'').split('').filter(c=>typeFull[c]).map(c=>typeFull[c]).join(', ') || '—';
-  const grpName = { SEVER:'Sever (PL / Warszawa FIR)', ZAPAD:'Západ (CZ-AT / Praha FIR)', VYCHOD:'Východ (UA / Lviv FIR)', JUH:'Juh (HU / Budapest FIR)', STRED:'Vnútro FIR', NAV:'Navigačné zariadenie' };
-  const secTxt = target.sec ? `<strong>${SECTOR_NAMES[target.sec]}</strong>` : '—';
-
   let banner = ok ? `✓ <strong>SPRÁVNE</strong>` : `✗ <strong>ZLE</strong> · klikol si: <span class="answer">${pickedName}</span>`;
   fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
   fb.innerHTML = `
@@ -2233,18 +3579,273 @@ function onWaypointPick(pickedName, target, svg, cands) {
       <span>${banner}</span>
       <button class="btn" id="next-btn">ĎALŠÍ ▶</button>
     </div>
-    <div class="reveal">
-      <div class="reveal-title">${target.name}</div>
-      <div class="reveal-sub">${target.kind==='nav' ? (target.nav||'NAVIGAČNÉ ZARIADENIE') : 'FRA SIGNIFICANT POINT'}</div>
-      <div class="reveal-grid">
-        <div class="item"><span class="item-label">TYP BODU</span><span class="item-val"><strong>${target.type||'—'}</strong> ${typeList}</span></div>
-        <div class="item"><span class="item-label">SEKTOR</span><span class="item-val">${secTxt}</span></div>
-        <div class="item"><span class="item-label">OBLASŤ</span><span class="item-val">${grpName[target.grp]||target.grp}</span></div>
-        <div class="item"><span class="item-label">LAT</span><span class="item-val">${fmtLat(target.lat)}</span></div>
-        <div class="item"><span class="item-label">LON</span><span class="item-val">${fmtLon(target.lon)}</span></div>
-      </div>
-    </div>
+    ${waypointRevealHTML(target)}
   `;
+  setTimeout(() => {
+    const nb = document.getElementById('next-btn');
+    if (nb) { nb.focus(); nb.onclick = nextQuestion; }
+    document.addEventListener('keydown', onEnterNext, { once: true });
+  }, 50);
+}
+
+/* Plný informačný panel o bode — používa ho hľadanie aj pomenovanie. */
+function waypointRevealHTML(w) {
+  const typeFull = { A:'Arrival Connection', D:'Departure Connection', E:'Horizontal Entry', I:'Intermediate', X:'Horizontal Exit' };
+  const typeList = (w.type||'').split('').filter(c=>typeFull[c]).map(c=>typeFull[c]).join(', ') || '—';
+  const grpName = { SEVER:'Sever (PL / Warszawa FIR)', ZAPAD:'Západ (CZ-AT / Praha FIR)', VYCHOD:'Východ (UA / Lviv FIR)', JUH:'Juh (HU / Budapest FIR)', STRED:'Vnútro FIR', NAV:'Navigačné zariadenie' };
+  const secTxt = w.sec ? `<strong>${SECTOR_NAMES[w.sec]}</strong>` : '—';
+  return `
+    <div class="reveal">
+      <div class="reveal-title">${w.name}</div>
+      <div class="reveal-sub">${w.kind==='nav' ? (w.nav||'NAVIGAČNÉ ZARIADENIE') : 'FRA SIGNIFICANT POINT'}</div>
+      <div class="reveal-grid">
+        <div class="item"><span class="item-label">TYP BODU</span><span class="item-val"><strong>${w.type||'—'}</strong> ${typeList}</span></div>
+        <div class="item"><span class="item-label">SEKTOR</span><span class="item-val">${secTxt}</span></div>
+        <div class="item"><span class="item-label">OBLASŤ</span><span class="item-val">${grpName[w.grp]||w.grp}</span></div>
+        <div class="item"><span class="item-label">LAT</span><span class="item-val">${fmtLat(w.lat)}</span></div>
+        <div class="item"><span class="item-label">LON</span><span class="item-val">${fmtLon(w.lon)}</span></div>
+      </div>
+    </div>`;
+}
+
+/* ============================================================
+   MOD 04 — POMENUJ BOD (obrátený kvíz)
+   Mapa rozsvieti jeden bod a meno sa píše z hlavy. Opak
+   hľadania, kde meno dostaneš a klikáš do mapy.
+   ============================================================ */
+
+/* n najbližších bodov k cieľu — merané v projekcii, nie na guli,
+   takže to zodpovedá tomu, čo je blízko na obrazovke. */
+function nearestPoints(target, n) {
+  return WAYPOINTS
+    .filter(w => w.name !== target.name)
+    .map(w => {
+      const dx = projX(w.lon) - projX(target.lon);
+      const dy = projY(w.lat) - projY(target.lat);
+      return { w, d: dx*dx + dy*dy };
+    })
+    .sort((a,b) => a.d - b.d)
+    .slice(0, n)
+    .map(o => o.w);
+}
+
+/* Okolie rozsvieteného bodu.
+   ĽAHKÁ    = 6 najbližších bodov aj s menami — orientuješ sa podľa toho, čo už vieš
+   HARDCORE = celý filtrovaný výber, bez mien */
+function nameContext(target) {
+  if (state.filters.wpDiff === 'hard') {
+    return filterBySector(WAYPOINTS).filter(w => w.name !== target.name);
+  }
+  return nearestPoints(target, 6);
+}
+
+/* Rozmiestňovač menoviek — rovnaký vzor ako v študijnom režime:
+   skús šesť pozícií okolo bodu a vezmi prvú, ktorá do ničoho nenarazí. */
+function labelPlacer() {
+  const placed = [];
+  return {
+    push(x, y) {
+      const tries = [
+        [x+8, y-5, 'start'], [x+8, y+11, 'start'],
+        [x-8, y-5, 'end'],   [x-8, y+11, 'end'],
+        [x, y-11, 'middle'], [x, y+16, 'middle'],
+      ];
+      let ch = tries[0];
+      for (const t of tries) {
+        if (!placed.some(pp => Math.abs(pp.x - t[0]) < 32 && Math.abs(pp.y - t[1]) < 10)) { ch = t; break; }
+      }
+      placed.push({ x: ch[0], y: ch[1] });
+      return ch;
+    },
+    block(x, y) { placed.push({ x, y }); },
+  };
+}
+
+function hexPoints(x, y, r) {
+  const pts = [];
+  for (let i = 0; i < 6; i++) { const a = Math.PI/6 + i*Math.PI/3; pts.push(`${(x+r*Math.cos(a)).toFixed(1)},${(y+r*Math.sin(a)).toFixed(1)}`); }
+  return pts.join(' ');
+}
+
+function buildNameSVG(target, context, showLabels) {
+  const P = MAP_PROJ;
+  const { firPath, cities } = mapBaseParts();
+  const tx = projX(target.lon), ty = projY(target.lat);
+
+  const place = labelPlacer();
+  place.block(tx + 9, ty - 8); // miesto pre menovku cieľa po odpovedi
+
+  const dots = [], labels = [];
+  context.forEach(c => {
+    const x = projX(c.lon), y = projY(c.lat);
+    dots.push(c.kind === 'nav'
+      ? `<polygon class="wp-dot ctx" data-name="${c.name}" points="${hexPoints(x, y, 5)}"></polygon>`
+      : `<circle class="wp-dot ctx" data-name="${c.name}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"></circle>`);
+    if (showLabels) {
+      const ch = place.push(x, y);
+      labels.push(`<text class="wp-label-ctx" x="${ch[0].toFixed(1)}" y="${ch[1].toFixed(1)}" text-anchor="${ch[2]}">${c.name}</text>`);
+    }
+  });
+
+  /* rozsvietený cieľ: nitkový kríž, stály prstenec a jeden pulzujúci.
+     Pulz je cez SMIL, nie cez CSS — animácia polomeru cez CSS vo Firefoxe
+     nefunguje, SMIL áno vo všetkých troch prehliadačoch. */
+  const cross = `<path class="wp-cross" d="M ${(tx-32).toFixed(1)},${ty.toFixed(1)} h 17 M ${(tx+15).toFixed(1)},${ty.toFixed(1)} h 17
+                    M ${tx.toFixed(1)},${(ty-32).toFixed(1)} v 17 M ${tx.toFixed(1)},${(ty+15).toFixed(1)} v 17"></path>`;
+  const rings = `
+    <circle class="wp-ring" cx="${tx.toFixed(1)}" cy="${ty.toFixed(1)}" r="12"></circle>
+    <circle class="wp-ring" cx="${tx.toFixed(1)}" cy="${ty.toFixed(1)}" r="12">
+      <animate attributeName="r" values="11;27" dur="2s" repeatCount="indefinite"></animate>
+      <animate attributeName="opacity" values="0.9;0" dur="2s" repeatCount="indefinite"></animate>
+    </circle>`;
+  const tgt = target.kind === 'nav'
+    ? `<polygon id="tgt-dot" class="wp-dot tgt" points="${hexPoints(tx, ty, 8)}"></polygon>`
+    : `<circle id="tgt-dot" class="wp-dot tgt" cx="${tx.toFixed(1)}" cy="${ty.toFixed(1)}" r="7"></circle>`;
+
+  return `<svg viewBox="0 0 ${P.w} ${P.h.toFixed(0)}" xmlns="http://www.w3.org/2000/svg" id="map-svg">
+    <rect x="0" y="0" width="${P.w}" height="${P.h.toFixed(0)}" fill="#fbfdfc"></rect>
+    <path d="${firPath}" fill="#eef6f0" stroke="var(--border-bright)" stroke-width="1.5"></path>
+    ${cities}
+    ${dots.join('')}
+    ${labels.join('')}
+    ${cross}
+    ${rings}
+    ${tgt}
+  </svg>`;
+}
+
+function renderWaypointNameQuestion(q, card) {
+  const target = q.data;
+  const hard = state.filters.wpDiff === 'hard';
+  const context = nameContext(target);
+  const typeNames = { A:'Arrival', D:'Departure', E:'Entry', I:'Intermediate', X:'Exit' };
+  /* v hardcore režime nedostaneš ani typ bodu — len polohu */
+  const tags = hard ? '' : (target.type || '').split('').filter(c=>typeNames[c])
+    .map(c => `<span class="tg" title="${typeNames[c]}">${c}</span>`).join('');
+  const kindTxt = hard ? 'len poloha'
+    : (target.kind === 'nav'
+        ? `<span class="tg" style="background:#fff4e0;border-color:var(--amber);color:var(--amber)">NAV</span> navigačné zariadenie`
+        : 'FRA significant point');
+  const diffLabel = hard
+    ? 'HARDCORE · celý sektor na mape, bez mien'
+    : 'ĽAHKÁ · šesť najbližších bodov s menami';
+
+  card.innerHTML = `
+    <div class="qmeta">FRA SIGNIFICANT POINT <span class="sep">·</span> POMENUJ ROZSVIETENÝ BOD</div>
+    <div class="map-prompt">
+      <span class="mp-label">KTORÝ BOD SVIETI?</span>
+      <div class="mp-sub">${kindTxt}${tags ? ' <span class="sep">·</span> ' + tags : ''}</div>
+    </div>
+    <div class="map-difficulty">${diffLabel}</div>
+    <div class="map-wrap">${buildNameSVG(target, context, !hard)}</div>
+    <div class="map-legend">
+      <span class="lg-lit">bod, na ktorý sa pýtam</span>
+      <span class="lg-ctx">okolité body</span>
+      <span class="lg-city">mesto / letisko</span>
+    </div>
+    <div class="hint-row empty" id="hint-row">
+      <span class="hint-label">HINT</span>
+      <span class="hint-text">— stlač [?] pre nápovedu —</span>
+      <button class="btn-hint" id="btn-hint">? HINT</button>
+    </div>
+    <div class="input-row">
+      <input type="text" id="answer" placeholder="${target.kind === 'nav' ? 'NÁZOV ZARIADENIA...' : 'NÁZOV BODU (5 PÍSMEN)...'}" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="btn" id="submit-btn">SUBMIT ▶</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  `;
+
+  const input = document.getElementById('answer');
+  input.focus();
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') submitWaypointName(); });
+  document.getElementById('submit-btn').onclick = submitWaypointName;
+  document.getElementById('btn-hint').onclick = useHint;
+}
+
+/* Po odpovedi domenuj okolie, aby si si odniesol aj susedov.
+   V ľahkej sú menovky už na mape — len stmavnú. V hardcore je na mape
+   celý sektor, tak sa dokreslí len šesť najbližších. */
+function labelNeighbours(svg, target) {
+  const existing = svg.querySelectorAll('.wp-label-ctx');
+  if (existing.length) {
+    existing.forEach(el => el.setAttribute('class', 'wp-label-other'));
+    return;
+  }
+  const NS = 'http://www.w3.org/2000/svg';
+  const place = labelPlacer();
+  place.block(projX(target.lon) + 9, projY(target.lat) - 8);
+  nearestPoints(target, 6).forEach(w => {
+    const x = projX(w.lon), y = projY(w.lat);
+    const ch = place.push(x, y);
+    const t = document.createElementNS(NS,'text');
+    t.setAttribute('class','wp-label-other');
+    t.setAttribute('x', ch[0].toFixed(1));
+    t.setAttribute('y', ch[1].toFixed(1));
+    t.setAttribute('text-anchor', ch[2]);
+    t.textContent = w.name;
+    svg.appendChild(t);
+  });
+}
+
+function submitWaypointName() {
+  const input = document.getElementById('answer');
+  if (!input || input.disabled) return;
+  const val = input.value.trim();
+  if (!val) return;
+
+  const q = state.current, target = q.data;
+  /* Tolerancia preklepov sa tu zámerne nepoužíva: názvy bodov sa líšia
+     aj jedným písmenom (KELEL / KEFIR) a v prevádzke musia sedieť presne. */
+  const ok = normalize(val) === normalize(target.name);
+  /* ak si napísal iný skutočný bod, oplatí sa to povedať nahlas */
+  const other = ok ? null : WAYPOINTS.find(w => normalize(w.name) === normalize(val));
+
+  if (ok) {
+    state.correct++; state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+  } else {
+    state.wrong++; state.streak = 0;
+    state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1;
+  }
+  renderStats(); renderWeak();
+
+  input.disabled = true;
+  const sb = document.getElementById('submit-btn');
+  if (sb) { sb.disabled = true; sb.style.opacity = '0.4'; }
+  const hb = document.getElementById('btn-hint'); if (hb) hb.disabled = true;
+
+  /* mapa: pulz zhasne, bod sa prefarbí a dostane menovku */
+  const svg = document.getElementById('map-svg');
+  if (svg) {
+    svg.querySelectorAll('.wp-ring').forEach(r => r.remove());
+    const dot = svg.querySelector('#tgt-dot');
+    if (dot) { dot.classList.remove('tgt'); dot.classList.add(ok ? 'reveal-correct' : 'wrong'); }
+    const NS = 'http://www.w3.org/2000/svg';
+    const lbl = document.createElementNS(NS,'text');
+    lbl.setAttribute('class', ok ? 'wp-label-reveal' : 'wp-label-wrong');
+    lbl.setAttribute('x', (projX(target.lon) + 10).toFixed(1));
+    lbl.setAttribute('y', (projY(target.lat) - 9).toFixed(1));
+    lbl.textContent = target.name;
+    svg.appendChild(lbl);
+    labelNeighbours(svg, target);
+  }
+
+  const typed = val.toUpperCase().replace(/</g, '&lt;');
+  let banner;
+  if (ok) banner = `✓ <strong>SPRÁVNE</strong>`;
+  else if (other) banner = `✗ <strong>ZLE</strong> · ${other.name} je iný bod — tento je ${target.name}.`;
+  else banner = `✗ <strong>ZLE</strong> · napísal si: <span class="answer">${typed}</span> — správne: <span class="answer">${target.name}</span>`;
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
+  fb.innerHTML = `
+    <div class="feedback-banner">
+      <span>${banner}</span>
+      <button class="btn" id="next-btn">ĎALŠÍ ▶</button>
+    </div>
+    ${waypointRevealHTML(target)}
+  `;
+
   setTimeout(() => {
     const nb = document.getElementById('next-btn');
     if (nb) { nb.focus(); nb.onclick = nextQuestion; }
@@ -2344,27 +3945,47 @@ function renderFilters() {
       b.onclick = () => { state.filters.airportCat = b.dataset.apcat; startMode(state.mode); };
     });
   } else if (state.mode === 'callsign') {
+    const cat = state.filters.callsignCat, L = state.filters.csLetter;
+    /* písmená sa ponúkajú len tie, ktoré vo zvolenej kategórii naozaj sú */
+    const letters = [...new Set(CALLSIGNS.filter(c => cat === 'all' || c.cat === cat).map(c => c.icao.charAt(0)))].sort();
     el.innerHTML = `
       <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">CATEGORY:</span>
-      <button class="filter-chip ${state.filters.callsignCat==='all'?'on':''}" data-cscat="all">ALL</button>
-      <button class="filter-chip ${state.filters.callsignCat==='sk'?'on':''}" data-cscat="sk">CEZ SLOVENSKO</button>
-      <button class="filter-chip ${state.filters.callsignCat==='other'?'on':''}" data-cscat="other">OSTATNÉ</button>
+      <button class="filter-chip ${cat==='all'?'on':''}" data-cscat="all">ALL</button>
+      <button class="filter-chip ${cat==='sk'?'on':''}" data-cscat="sk">CEZ SLOVENSKO</button>
+      <button class="filter-chip ${cat==='other'?'on':''}" data-cscat="other">OSTATNÉ</button>
+      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:0 6px">PÍSMENO:</span>
+      <button class="filter-chip ${L==='all'?'on':''}" data-csl="all">VŠETKY</button>
+      ${letters.map(x => `<button class="filter-chip ${L===x?'on':''}" data-csl="${x}">${x}</button>`).join('')}
     `;
     el.querySelectorAll('[data-cscat]').forEach(b => {
-      b.onclick = () => { state.filters.callsignCat = b.dataset.cscat; startMode(state.mode); };
+      b.onclick = () => { state.filters.callsignCat = b.dataset.cscat; state.filters.csLetter = 'all'; startMode(state.mode); };
+    });
+    el.querySelectorAll('[data-csl]').forEach(b => {
+      b.onclick = () => { state.filters.csLetter = b.dataset.csl; startMode(state.mode); };
     });
   } else if (state.mode === 'waypoint') {
     const hard = state.filters.wpDiff === 'hard';
-    const study = state.filters.wpMode === 'study';
+    const wpm = state.filters.wpMode;
     const g = state.filters.wpGrp;
     const modeToggle = `
       <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">REŽIM:</span>
-      <button class="filter-chip ${!study?'on':''}" data-wpmode="quiz">KVÍZ</button>
-      <button class="filter-chip ${study?'on':''}" data-wpmode="study">ŠTÚDIUM</button>`;
-    const difficulty = study ? '' : `
+      <button class="filter-chip ${wpm==='quiz'?'on':''}" data-wpmode="quiz">NÁJDI BOD</button>
+      <button class="filter-chip ${wpm==='name'?'on':''}" data-wpmode="name">POMENUJ BOD</button>
+      <button class="filter-chip ${wpm==='blind'?'on':''}" data-wpmode="blind">SLEPÁ MAPA</button>
+      <button class="filter-chip ${wpm==='study'?'on':''}" data-wpmode="study">ŠTÚDIUM</button>`;
+    /* obtiažnosť znamená v každom režime niečo iné: pri hľadaní počet
+       kandidátov, pri pomenovaní to, koľko okolia dostaneš pomenovaného */
+    const diffLabels = wpm === 'name'
+      ? ['ĽAHKÁ (susedia s menami)', 'HARDCORE (celý sektor, bez mien)']
+      : ['ĽAHKÁ (5 bodov)', 'HARDCORE (všetky)'];
+    const difficulty = (wpm === 'study' || wpm === 'blind') ? '' : `
       <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:0 6px">OBTIAŽNOSŤ:</span>
-      <button class="filter-chip ${!hard?'on':''}" data-wpdiff="easy">ĽAHKÁ (5 bodov)</button>
-      <button class="filter-chip ${hard?'on':''}" data-wpdiff="hard">HARDCORE (všetky)</button>`;
+      <button class="filter-chip ${!hard?'on':''}" data-wpdiff="easy">${diffLabels[0]}</button>
+      <button class="filter-chip ${hard?'on':''}" data-wpdiff="hard">${diffLabels[1]}</button>`;
+    const borderPins = `
+      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:0 6px">BODY:</span>
+      <button class="filter-chip ${state.filters.wpBorder!=='border'?'on':''}" data-wpb="all">VŠETKY</button>
+      <button class="filter-chip ${state.filters.wpBorder==='border'?'on':''}" data-wpb="border">IBA HRANIČNÉ</button>`;
     const sectorPins = `
       <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:0 6px">SEKTOR:</span>
       <button class="filter-chip ${g==='all'?'on':''}" data-wpgrp="all">CELÁ FIR</button>
@@ -2372,15 +3993,19 @@ function renderFilters() {
       <button class="filter-chip ${g==='C'?'on':''}" data-wpgrp="C">CENTRAL</button>
       <button class="filter-chip ${g==='E'?'on':''}" data-wpgrp="E">EAST</button>
       <button class="filter-chip ${g==='NAV'?'on':''}" data-wpgrp="NAV">NAVAIDY</button>`;
-    el.innerHTML = modeToggle + difficulty + sectorPins;
+    el.innerHTML = modeToggle + difficulty + borderPins + sectorPins;
+    /* zmena výberu bodov zahodí rozpracovanú slepú mapu — čísla by už nesedeli */
+    el.querySelectorAll('[data-wpb]').forEach(b => {
+      b.onclick = () => { state.filters.wpBorder = b.dataset.wpb; state.blind = null; startMode(state.mode); };
+    });
     el.querySelectorAll('[data-wpmode]').forEach(b => {
-      b.onclick = () => { state.filters.wpMode = b.dataset.wpmode; startMode(state.mode); };
+      b.onclick = () => { state.filters.wpMode = b.dataset.wpmode; state.blind = null; startMode(state.mode); };
     });
     el.querySelectorAll('[data-wpdiff]').forEach(b => {
       b.onclick = () => { state.filters.wpDiff = b.dataset.wpdiff; startMode(state.mode); };
     });
     el.querySelectorAll('[data-wpgrp]').forEach(b => {
-      b.onclick = () => { state.filters.wpGrp = b.dataset.wpgrp; startMode(state.mode); };
+      b.onclick = () => { state.filters.wpGrp = b.dataset.wpgrp; state.blind = null; startMode(state.mode); };
     });
   }
 }
@@ -2433,16 +4058,26 @@ function renderReveal(q) {
     const cs = q.data;
     header = `
       <div class="reveal-title">${cs.icao} — "${cs.call}"</div>
-      <div class="reveal-sub">${cs.airline.toUpperCase()} <span style="color:var(--text-faint)">·</span> ${cs.country} · ${cs.type.toUpperCase()}</div>
+      <div class="reveal-sub">${cs.airline
+        ? `${cs.airline.toUpperCase()} <span style="color:var(--text-faint)">·</span> ${cs.country} · ${cs.type.toUpperCase()}`
+        : 'VOLACIA ZNAČKA PODĽA DOKUMENTU'}</div>
     `;
     grid = `
       <div class="item"><span class="item-label">ICAO 3LTR</span><span class="item-val"><strong>${cs.icao}</strong></span></div>
       <div class="item"><span class="item-label">CALLSIGN</span><span class="item-val"><strong>"${cs.call}"</strong></span></div>
+    `;
+    if (cs.airline) grid += `
       <div class="item"><span class="item-label">AIRLINE</span><span class="item-val">${cs.airline}</span></div>
       <div class="item"><span class="item-label">COUNTRY</span><span class="item-val">${cs.country}</span></div>
       <div class="item"><span class="item-label">TYPE</span><span class="item-val">${cs.type}</span></div>
     `;
-    extra = `<div class="reveal-ops"><strong>NOTE</strong>${cs.hint}</div>`;
+    if (cs.hint) extra = `<div class="reveal-ops"><strong>NOTE</strong>${cs.hint}</div>`;
+    /* duplicity z dokumentu — nech je vidieť, že platí viac odpovedí */
+    if (q.group && q.group.length > 1) {
+      extra += q.subtype === 'icao-to-call'
+        ? `<div class="reveal-ops"><strong>V DOKUMENTE MÁ TENTO KÓD VIAC VOLAČIEK</strong>${q.group.map(c => '"' + c.call + '"').join(' · ')}</div>`
+        : `<div class="reveal-ops"><strong>TÚTO VOLAČKU MAJÚ V DOKUMENTE VIACERÉ KÓDY</strong>${q.group.map(c => c.icao).join(' · ')}</div>`;
+    }
   }
 
   return `<div class="reveal">${header}<div class="reveal-grid">${grid}</div>${extra}</div>`;
@@ -2458,7 +4093,7 @@ function submitAnswer() {
   if (!val.trim()) return;
 
   const q = state.current;
-  const ok = matches(val, q.accept);
+  const ok = matches(val, q.accept) && !callsignClash(val, q);
   const fb = document.getElementById('feedback');
 
   if (ok) {
@@ -2536,7 +4171,7 @@ setInterval(tickClock, 1000); tickClock();
 
 document.querySelectorAll('.tab').forEach(t => { t.onclick = () => startMode(t.dataset.mode); });
 document.getElementById('btn-skip').onclick = () => {
-  if (state.mode === 'waypoint' && state.filters.wpMode === 'study') return; // no skipping in study
+  if (state.mode === 'waypoint' && (state.filters.wpMode === 'study' || state.filters.wpMode === 'blind')) return; // no skipping in study / blind map
   if (!state.current) return;
   state.mistakes[state.current.id] = (state.mistakes[state.current.id] || 0) + 1;
   state.streak = 0;
