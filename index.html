@@ -6,7 +6,7 @@
 <title>ATCO Trainer v2 // LPS SR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     /* Light theme — white background, readable green accent, high-contrast buttons */
@@ -336,6 +336,7 @@
   .cs-back .cs-photo { justify-content:center; text-align:left; font-family:var(--mono); font-weight:400; }
   .hint-text .cs-photo { display:inline-flex; margin:6px 0 0; padding:6px 8px; }
   .hint-text .cs-photo img { max-width:150px; max-height:80px; }
+  .cs-f { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--amber); background:var(--amber-bg); border:1px solid var(--amber); border-radius:999px; padding:0 6px; }
   .cs-a { color:var(--text-faint); font-size:10px; margin-left:auto; text-align:right; }
 
   /* ===== MOD 05 — hra na kurzy ===== */
@@ -374,6 +375,114 @@
   .hg-task strong { line-height:1.25; display:block; }
   .hg-btns { display:flex; gap:10px; margin-top:12px; }
   .hg-btns .btn { padding:10px 18px; }
+
+  /* ============================================================
+     VIZUÁL v3 — jednotný, čistejší vzhľad pre všetky moduly.
+     Len prepisuje vzhľad starších pravidiel vyššie; rozloženie
+     ani správanie sa nemení. Bežný text je v Inter, kódy a
+     štítky ostávajú v neproporcionálnom písme.
+     ============================================================ */
+  :root {
+    --bg:#f1f5f2; --panel-2:#f5f8f6; --border:#dde7e1; --border-bright:#b7cabf; --ink:#0f2219;
+    --ui:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --shadow:0 1px 2px rgba(15,34,25,0.05), 0 8px 24px rgba(15,34,25,0.06);
+    --shadow-btn:0 1px 2px rgba(15,34,25,0.14), 0 6px 14px rgba(10,157,92,0.22);
+  }
+  html, body { font-family:var(--ui); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+  body::before { background:radial-gradient(1100px 460px at 50% -8%, #d6f2e3 0%, transparent 62%); background-size:auto; }
+  .app { padding-top:18px; }
+  header { background:var(--ink); border:none; border-radius:14px; padding:14px 22px; box-shadow:0 10px 26px rgba(15,34,25,0.20); }
+  header::before, header::after { display:none; }
+  .brand-mark { color:#ffffff; font-family:var(--mono); font-size:14px; letter-spacing:0.16em; }
+  .brand-sub { color:#8db3a1; font-family:var(--mono); }
+  .clock { color:#a6ecc9; background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:999px; font-family:var(--mono); }
+  .tabs { gap:12px; }
+  .tab { border:1px solid var(--border); border-radius:12px; padding:14px 16px; font-family:var(--ui); letter-spacing:0; }
+  .tab .tab-num { font-family:var(--mono); font-size:10px; letter-spacing:0.16em; color:var(--green-dim); }
+  .tab .tab-label { font-size:13px; font-weight:700; letter-spacing:0.05em; color:var(--text); }
+  .tab:hover { border-color:var(--green-strong); box-shadow:0 6px 18px rgba(10,157,92,0.14); }
+  .tab.active { background:linear-gradient(135deg, #0cab65 0%, #07804b 100%); border-color:transparent; box-shadow:0 8px 20px rgba(10,157,92,0.30); }
+  .tab.active .tab-label { color:#ffffff; }
+  .tab.active .tab-num { color:#c9f3de; }
+  .panel { border-radius:16px; border:1px solid var(--border); }
+  .panel-head { background:#ffffff; padding:14px 22px; font-family:var(--mono); }
+  .stats { gap:10px; align-items:center; }
+  .stat { background:var(--panel-2); border:1px solid var(--border); border-radius:999px; padding:5px 12px; }
+  .qcard { padding:30px 32px; }
+  .qmeta, .prompt-hint, .map-difficulty, .study-tip, .mp-label, .item-label, .reveal-sub, .hint-label, .weak-title, .stat-label, .stat-val { font-family:var(--mono); }
+  .big-prompt { letter-spacing:0.02em; }
+  .input-row input { border-radius:12px; border-width:1.5px; }
+  .btn { border-radius:12px; font-family:var(--ui); font-size:13px; font-weight:700; letter-spacing:0.08em; background:linear-gradient(180deg, #0db069 0%, #0a9d5c 100%); }
+  .btn:hover { background:linear-gradient(180deg, #0a9d5c 0%, #07804b 100%); }
+  .btn.ghost { background:#ffffff; border:1px solid var(--border-bright); }
+  .btn.ghost:hover { background:var(--panel-2); }
+  .btn:disabled { opacity:0.45; cursor:default; transform:none; }
+  .btn-hint { border-radius:10px; font-family:var(--ui); letter-spacing:0.08em; }
+  .fs-btn { border-radius:10px; font-family:var(--ui); font-size:11.5px; letter-spacing:0.08em; }
+  .filter-chip { font-family:var(--ui); font-size:11.5px; font-weight:600; letter-spacing:0.04em; padding:7px 13px; border-width:1px; }
+  .filter-chip.on { background:linear-gradient(180deg, #0db069 0%, #0a9d5c 100%); }
+  .controls { background:#f7faf8; padding:16px 22px; gap:12px; }
+  .controls-left { row-gap:10px; }
+  .hint-row { border-radius:10px; }
+  .hint-text { font-size:13px; }
+  .feedback-banner { border-radius:10px 10px 0 0; font-size:13.5px; }
+  .reveal { background:#ffffff; border-radius:0 0 12px 12px; padding:20px 22px; }
+  .reveal-grid .item-val { font-size:13px; }
+  .reveal-ops { font-size:12px; }
+  .map-wrap { border-radius:14px; box-shadow:inset 0 0 0 1px #ffffff, 0 1px 2px rgba(15,34,25,0.04); }
+  .study-detail { border-radius:12px; }
+  .weak-section { border-radius:16px; padding:18px 22px; }
+  .weak-item { font-family:var(--mono); border-radius:8px; }
+  .mode-help { border-radius:10px; font-size:12.5px; }
+  .ac-chip { border-radius:8px; font-family:var(--mono); }
+  .choice-btn { border-radius:12px; border-width:1.5px; }
+  .aircraft-photo { border-radius:12px; }
+  .session-done h2 { font-family:var(--display); }
+  .cs-cell, .blind-in, .cs-pack { font-family:var(--mono); }
+  .hg-msg, .hg-task, .hint-row.empty { border-radius:10px; }
+  .tipbox { font-family:var(--ui); font-size:12px; border-radius:8px; }
+  .feedback-banner .btn { padding:9px 20px; }
+
+  /* ===== tabuľka filtrov: názov riadku vľavo, voľby vpravo, všetko v zákryte ===== */
+  .controls { display:block; }
+  .controls-left { display:block; }
+  .controls-right { justify-content:flex-end; margin-top:14px; }
+  .f-table { border:1px solid var(--border); border-radius:12px; background:#ffffff; overflow:hidden; margin-top:10px; }
+  .f-row { display:grid; grid-template-columns:170px minmax(0,1fr); align-items:center; border-top:1px solid var(--border); }
+  .f-row:first-child { border-top:none; }
+  .f-lab { align-self:stretch; display:flex; align-items:center; padding:10px 16px; background:var(--panel-2); border-right:1px solid var(--border); font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:0.16em; color:var(--text-dim); }
+  .f-opts { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:9px 14px; }
+  .f-row:first-child .f-lab { color:var(--green); }
+  .f-row:first-child .f-opts .filter-chip { font-size:12.5px; padding:8px 16px; font-weight:700; }
+  @media (max-width:760px) { .f-row { grid-template-columns:1fr; } .f-lab { border-right:none; padding:8px 14px 0; background:transparent; } }
+
+  /* ===== animácie — krátke, aby nezdržiavali; dajú sa vypnúť v systéme ===== */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  @keyframes popIn { 0% { opacity:0; transform:scale(0.97); } 100% { opacity:1; transform:none; } }
+  @keyframes pulseOk { 0% { box-shadow:0 0 0 0 rgba(10,157,92,0.45); } 100% { box-shadow:0 0 0 14px rgba(10,157,92,0); } }
+  @keyframes shakeNo { 0%,100% { transform:none; } 25% { transform:translateX(-5px); } 75% { transform:translateX(5px); } }
+  @keyframes dotIn { from { opacity:0; } to { opacity:1; } }
+  .qcard > * { animation:fadeUp 0.32s cubic-bezier(.2,.7,.2,1) both; }
+  .qcard > *:nth-child(2) { animation-delay:0.04s; }
+  .qcard > *:nth-child(3) { animation-delay:0.08s; }
+  .qcard > *:nth-child(4) { animation-delay:0.12s; }
+  .qcard > *:nth-child(n+5) { animation-delay:0.16s; }
+  .feedback.show { animation:popIn 0.26s ease both; }
+  .feedback.ok .feedback-banner { animation:pulseOk 0.7s ease-out; }
+  .feedback.no .feedback-banner { animation:shakeNo 0.28s ease; }
+  .choice-btn.ok { animation:pulseOk 0.7s ease-out; }
+  .choice-btn.no { animation:shakeNo 0.28s ease; }
+  .f-table { animation:fadeUp 0.3s ease both; }
+  .mode-help { animation:fadeUp 0.3s ease both; }
+  .tab, .btn, .filter-chip, .choice-btn, .btn-hint, .fs-btn { transition:transform 0.14s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease; }
+  .btn:active, .filter-chip:active, .choice-btn:active, .tab:active, .fs-btn:active { transform:scale(0.97); }
+  .filter-chip:hover { transform:translateY(-1px); box-shadow:0 3px 10px rgba(10,157,92,0.14); }
+  .stat-val { transition:color 0.2s ease; display:inline-block; }
+  .wp-dot, .hg-pl circle, .ap-st { animation:dotIn 0.4s ease both; }
+  .cs-back.open { animation:popIn 0.24s ease both; }
+  .cs-photo img, .aircraft-photo img { animation:dotIn 0.45s ease both; }
+  .weak-item { animation:popIn 0.25s ease both; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
 
   @media (max-width:760px) {
     .aircraft-display { grid-template-columns:1fr; }
@@ -1445,6 +1554,288 @@ const AIRCRAFT = [
     accept: ['C130','C-130','HERCULES','HERC','LOCKHEED C-130'],
     hints: ['Military FOUR-engine high-wing TURBOPROP with rear ramp.','Slovak airspace overflights regular.','Hercules.','Lockheed. C-130 family.'],
   },
+
+  // === ROZŠÍRENIE 2026-10: ďalších 35 bežných typov (obrázok overený na Wikipédii) ===
+  { icao: 'A321', name: 'Airbus A321-200', mfr: 'Airbus',
+    wiki: 'Airbus_A321',
+    wake: 'M', engines: '2× CFM56-5B / IAE V2500 turbofan', enginesCount: 2,
+    cruise: '450 kt (M0.78)', mmo: 'M0.82', vne: '350 kt IAS', stall: '~115 kt (clean)', ceiling: 'FL390',
+    mtow: '93.5 t', length: '44.5 m', wingspan: '34.1 m', range: '5,950 km', pax: '~220',
+    role: 'Stretched A320 family narrowbody (ceo)', operators: 'Lufthansa, Wizz Air, Turkish, AA, Delta',
+    accept: ['A321','A321-200','A321CEO','321'],
+    hints: ['Longest member of the classic A320 family.','Twin engines under wings, narrowbody.','Wizz Air and Lufthansa fly many.','Airbus. A320 family, stretched, classic engines.'] },
+  { icao: 'A318', name: 'Airbus A318', mfr: 'Airbus',
+    wiki: 'Airbus_A318',
+    wake: 'M', engines: '2× CFM56-5B / PW6000 turbofan', enginesCount: 2,
+    cruise: '447 kt (M0.78)', mmo: 'M0.82', vne: '350 kt IAS', stall: '~100 kt (clean)', ceiling: 'FL390',
+    mtow: '68 t', length: '31.4 m', wingspan: '34.1 m', range: '5,750 km', pax: '~110',
+    role: 'Smallest A320 family member', operators: 'Air France, TAROM (historical), BA (historical)',
+    accept: ['A318','318','Baby Bus'],
+    hints: ['Shortest Airbus narrowbody — looks stubby.','Tall fin compared with the short fuselage.','Twin under-wing engines.','Airbus. A320 family, smallest variant.'] },
+  { icao: 'A339', name: 'Airbus A330-900 (A330neo)', mfr: 'Airbus',
+    wiki: 'Airbus_A330neo',
+    wake: 'H', engines: '2× RR Trent 7000 turbofan', enginesCount: 2,
+    cruise: '470 kt (M0.82)', mmo: 'M0.86', vne: '360 kt IAS', stall: '~145 kt (clean)', ceiling: 'FL410',
+    mtow: '251 t', length: '63.7 m', wingspan: '64.0 m', range: '13,300 km', pax: '~287',
+    role: 'Re-engined A330 widebody', operators: 'TAP, Delta, Condor, Lion Air',
+    accept: ['A339','A330-900','A330NEO','A330 NEO','339'],
+    hints: ['Re-engined widebody twin with curved winglets.','Black cockpit "mask" like the A350.','TAP Air Portugal was launch operator.','Airbus. A330 family, neo generation.'] },
+  { icao: 'A343', name: 'Airbus A340-300', mfr: 'Airbus',
+    wiki: 'Airbus_A340',
+    wake: 'H', engines: '4× CFM56-5C turbofan', enginesCount: 4,
+    cruise: '470 kt (M0.82)', mmo: 'M0.86', vne: '330 kt IAS', stall: '~140 kt (clean)', ceiling: 'FL410',
+    mtow: '276.5 t', length: '63.7 m', wingspan: '60.3 m', range: '13,500 km', pax: '~295',
+    role: 'Four-engine long-haul widebody', operators: 'Lufthansa, Swiss, Edelweiss',
+    accept: ['A343','A340-300','A340','343'],
+    hints: ['FOUR small engines under the wings.','Same fuselage as the A330.','Lufthansa and Swiss still fly it.','Airbus. A340 family, -300.'] },
+  { icao: 'A306', name: 'Airbus A300-600', mfr: 'Airbus',
+    wiki: 'Airbus_A300',
+    wake: 'H', engines: '2× GE CF6-80 / PW4000 turbofan', enginesCount: 2,
+    cruise: '450 kt (M0.78)', mmo: 'M0.82', vne: '335 kt IAS', stall: '~135 kt (clean)', ceiling: 'FL400',
+    mtow: '171.7 t', length: '54.1 m', wingspan: '44.8 m', range: '7,500 km', pax: '~266 / cargo',
+    role: 'First twin-engine widebody, now mostly freighter', operators: 'DHL (EAT), UPS, FedEx',
+    accept: ['A306','A300-600','A300','A300F','306'],
+    hints: ['The first Airbus ever — twin widebody.','Today mostly night cargo: DHL, UPS, FedEx.','Two engines, wide round fuselage.','Airbus. A300 family.'] },
+  { icao: 'A400', name: 'Airbus A400M Atlas', mfr: 'Airbus Defence',
+    wiki: 'Airbus_A400M_Atlas',
+    wake: 'H', engines: '4× Europrop TP400-D6 turboprop', enginesCount: 4,
+    cruise: '420 kt (M0.72)', mmo: 'M0.72', vne: '300 kt IAS', stall: '~105 kt', ceiling: 'FL400',
+    mtow: '141 t', length: '45.1 m', wingspan: '42.4 m', range: '6,400 km (20 t)', pax: '~116 troops / cargo',
+    role: 'Military transport, four turboprops', operators: 'Luftwaffe, RAF, Armée de l\'Air, Spain, Turkey',
+    accept: ['A400','A400M','ATLAS','A-400M'],
+    hints: ['Military HIGH-WING transport with FOUR eight-bladed propellers.','T-tail and rear loading ramp.','German Air Force overflies often.','Airbus. A400M Atlas.'] },
+  { icao: 'B744', name: 'Boeing 747-400', mfr: 'Boeing',
+    wiki: 'Boeing_747-400',
+    wake: 'H', engines: '4× GE CF6 / PW4000 / RR RB211 turbofan', enginesCount: 4,
+    cruise: '490 kt (M0.85)', mmo: 'M0.92', vne: '365 kt IAS', stall: '~155 kt (clean)', ceiling: 'FL450',
+    mtow: '397 t', length: '70.7 m', wingspan: '64.4 m', range: '13,450 km', pax: '~416 / cargo',
+    role: 'Classic jumbo jet, now mostly freighter', operators: 'Lufthansa, Atlas Air, Cargolux, UPS, Kalitta',
+    accept: ['B744','747-400','747400','JUMBO','744'],
+    hints: ['Upper-deck hump and FOUR engines.','Winglets — the older 747s had none.','Mostly cargo today.','Boeing. 747 family, -400.'] },
+  { icao: 'B734', name: 'Boeing 737-400', mfr: 'Boeing',
+    wiki: 'Boeing_737_Classic',
+    wake: 'M', engines: '2× CFM56-3 turbofan', enginesCount: 2,
+    cruise: '430 kt (M0.745)', mmo: 'M0.82', vne: '340 kt IAS', stall: '~110 kt (clean)', ceiling: 'FL370',
+    mtow: '68 t', length: '36.4 m', wingspan: '28.9 m', range: '4,200 km', pax: '~168 / cargo',
+    role: '737 Classic, now common as freighter', operators: 'ASL Airlines, Swiftair, West Atlantic',
+    accept: ['B734','737-400','737 CLASSIC','734'],
+    hints: ['Older 737 with FLATTENED engine intakes ("hamster pouch").','No winglets on most.','Night cargo for ASL / Swiftair.','Boeing. 737 Classic, -400.'] },
+  { icao: 'MD11', name: 'McDonnell Douglas MD-11', mfr: 'McDonnell Douglas',
+    wiki: 'McDonnell_Douglas_MD-11',
+    wake: 'H', engines: '3× GE CF6-80 / PW4460 turbofan', enginesCount: 3,
+    cruise: '480 kt (M0.83)', mmo: 'M0.88', vne: '365 kt IAS', stall: '~155 kt (clean)', ceiling: 'FL430',
+    mtow: '286 t', length: '61.2 m', wingspan: '51.7 m', range: '12,450 km', pax: 'cargo',
+    role: 'Trijet widebody freighter', operators: 'FedEx, UPS, Western Global',
+    accept: ['MD11','MD-11','MD 11'],
+    hints: ['THREE engines: two under wings, one in the TAIL.','Widebody with winglets.','Cargo only today.','McDonnell Douglas. MD-11.'] },
+  { icao: 'E145', name: 'Embraer ERJ-145', mfr: 'Embraer',
+    wiki: 'Embraer_ERJ_family',
+    wake: 'M', engines: '2× RR AE 3007 turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '450 kt (M0.78)', mmo: 'M0.78', vne: '320 kt IAS', stall: '~105 kt', ceiling: 'FL370',
+    mtow: '22 t', length: '29.9 m', wingspan: '20.0 m', range: '2,870 km', pax: '~50',
+    role: '50-seat regional jet', operators: 'Loganair, Amelia, US regionals',
+    accept: ['E145','ERJ145','ERJ-145','EMB145','145'],
+    hints: ['Very slim "pencil" regional jet.','Rear-mounted engines, T-tail.','About 50 seats.','Embraer. ERJ family.'] },
+  { icao: 'CRJ2', name: 'Bombardier CRJ-200', mfr: 'Bombardier',
+    wiki: 'Bombardier_CRJ100/200',
+    wake: 'M', engines: '2× GE CF34-3B1 turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '424 kt (M0.74)', mmo: 'M0.85', vne: '335 kt IAS', stall: '~110 kt', ceiling: 'FL410',
+    mtow: '24 t', length: '26.8 m', wingspan: '21.2 m', range: '3,000 km', pax: '~50',
+    role: '50-seat regional jet', operators: 'SkyWest, Air Nostrum, RusLine',
+    accept: ['CRJ2','CRJ-200','CRJ200','CRJ 200'],
+    hints: ['Short regional jet with T-tail and rear engines.','No leading-edge slats, small winglets.','Based on the Challenger bizjet.','Bombardier. CRJ100/200.'] },
+  { icao: 'F100', name: 'Fokker 100', mfr: 'Fokker',
+    wiki: 'Fokker_100',
+    wake: 'M', engines: '2× RR Tay 650 turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '456 kt (M0.77)', mmo: 'M0.77', vne: '320 kt IAS', stall: '~110 kt', ceiling: 'FL350',
+    mtow: '45.8 t', length: '35.5 m', wingspan: '28.1 m', range: '3,170 km', pax: '~107',
+    role: 'Dutch regional jet', operators: 'Alliance, Carpatair (historical), Austrian (historical)',
+    accept: ['F100','FOKKER 100','FOKKER100','FK100'],
+    hints: ['Dutch regional jet, T-tail, rear engines.','Clamshell AIRBRAKE in the tail cone.','About 100 seats.','Fokker. 100.'] },
+  { icao: 'F70', name: 'Fokker 70', mfr: 'Fokker',
+    wiki: 'Fokker_70',
+    wake: 'M', engines: '2× RR Tay 620 turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '456 kt (M0.77)', mmo: 'M0.77', vne: '320 kt IAS', stall: '~105 kt', ceiling: 'FL350',
+    mtow: '38 t', length: '30.9 m', wingspan: '28.1 m', range: '3,400 km', pax: '~80',
+    role: 'Shortened Fokker 100', operators: 'KLM Cityhopper (historical), Austrian (historical)',
+    accept: ['F70','FOKKER 70','FOKKER70','FK70'],
+    hints: ['Shorter sibling of the Fokker 100.','T-tail, rear engines.','About 80 seats.','Fokker. 70.'] },
+  { icao: 'SF34', name: 'Saab 340', mfr: 'Saab',
+    wiki: 'Saab_340',
+    wake: 'M', engines: '2× GE CT7 turboprop', enginesCount: 2,
+    cruise: '250 kt', mmo: '250 kt VMO', vne: '250 kt', stall: '~90 kt', ceiling: 'FL250',
+    mtow: '13.2 t', length: '19.7 m', wingspan: '21.4 m', range: '1,700 km', pax: '~34',
+    role: 'Small regional turboprop, LOW wing', operators: 'Loganair, NyxAir, cargo operators',
+    accept: ['SF34','SAAB 340','SAAB340','340'],
+    hints: ['LOW-WING twin turboprop — unlike ATR and Dash 8.','About 34 seats.','Swedish-built.','Saab. 340.'] },
+  { icao: 'SB20', name: 'Saab 2000', mfr: 'Saab',
+    wiki: 'Saab_2000',
+    wake: 'M', engines: '2× RR AE 2100 turboprop', enginesCount: 2,
+    cruise: '360 kt', mmo: 'M0.62', vne: '270 kt IAS', stall: '~95 kt', ceiling: 'FL310',
+    mtow: '22.8 t', length: '27.3 m', wingspan: '24.8 m', range: '2,180 km', pax: '~50',
+    role: 'Fast regional turboprop', operators: 'NyxAir, Meregrass, air forces (AEW)',
+    accept: ['SB20','SAAB 2000','SAAB2000','2000'],
+    hints: ['Long LOW-WING turboprop with six-bladed props.','One of the fastest turboprops.','Swedish-built, stretched Saab 340.','Saab. 2000.'] },
+  { icao: 'B190', name: 'Beechcraft 1900D', mfr: 'Beechcraft',
+    wiki: 'Beechcraft_1900',
+    wake: 'M', engines: '2× PT6A-67D turboprop', enginesCount: 2,
+    cruise: '280 kt', mmo: '248 kt VMO', vne: '248 kt', stall: '~88 kt', ceiling: 'FL250',
+    mtow: '7.8 t', length: '17.6 m', wingspan: '17.7 m', range: '1,300 km', pax: '19',
+    role: '19-seat commuter turboprop', operators: 'Twin Jet, Air Georgian, charter operators',
+    accept: ['B190','BEECH 1900','BEECH1900','1900D','B1900'],
+    hints: ['19-seat twin turboprop with a tall "stand-up" cabin.','T-tail with extra small fins (tailets).','Low wing.','Beechcraft. 1900D.'] },
+  { icao: 'BE20', name: 'Beechcraft King Air 200', mfr: 'Beechcraft',
+    wiki: 'Beechcraft_Super_King_Air',
+    wake: 'L', engines: '2× PT6A-42 turboprop', enginesCount: 2,
+    cruise: '290 kt', mmo: '260 kt VMO', vne: '260 kt', stall: '~75 kt', ceiling: 'FL350',
+    mtow: '5.67 t', length: '13.3 m', wingspan: '16.6 m', range: '3,300 km', pax: '~8',
+    role: 'Twin turboprop business / utility aircraft', operators: 'Air ambulance, calibration flights, private owners',
+    accept: ['BE20','KING AIR','KING AIR 200','B200','SUPER KING AIR'],
+    hints: ['Twin turboprop with a T-TAIL, low wing.','Classic executive and air-ambulance aircraft.','Round cabin windows.','Beechcraft. Super King Air 200.'] },
+  { icao: 'C208', name: 'Cessna 208 Caravan', mfr: 'Cessna',
+    wiki: 'Cessna_208_Caravan',
+    wake: 'L', engines: '1× PT6A-114A turboprop', enginesCount: 1,
+    cruise: '185 kt', mmo: '175 kt VMO', vne: '175 kt', stall: '~61 kt', ceiling: 'FL250',
+    mtow: '3.97 t', length: '11.5 m', wingspan: '15.9 m', range: '1,980 km', pax: '~9–13',
+    role: 'Single turboprop utility aircraft', operators: 'Parachute clubs, FedEx Feeder, bush operators',
+    accept: ['C208','CARAVAN','CESSNA 208','GRAND CARAVAN','208'],
+    hints: ['HIGH-WING SINGLE turboprop with fixed gear.','Often a cargo pod under the belly.','Parachute dropping and small freight.','Cessna. 208 Caravan.'] },
+  { icao: 'C510', name: 'Cessna Citation Mustang', mfr: 'Cessna',
+    wiki: 'Cessna_Citation_Mustang',
+    wake: 'L', engines: '2× PW615F turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '340 kt', mmo: 'M0.63', vne: '250 kt IAS', stall: '~73 kt', ceiling: 'FL410',
+    mtow: '3.93 t', length: '12.4 m', wingspan: '13.2 m', range: '2,160 km', pax: '~4',
+    role: 'Very-light jet', operators: 'GlobeAir, owner-pilots',
+    accept: ['C510','MUSTANG','CITATION MUSTANG','510'],
+    hints: ['Tiny bizjet — four passengers.','T-tail, rear engines, straight wing.','GlobeAir (Austria) has a big fleet.','Cessna. Citation Mustang.'] },
+  { icao: 'C750', name: 'Cessna Citation X', mfr: 'Cessna',
+    wiki: 'Cessna_Citation_X',
+    wake: 'M', engines: '2× RR AE 3007C turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '525 kt (M0.90)', mmo: 'M0.935', vne: '350 kt IAS', stall: '~115 kt', ceiling: 'FL510',
+    mtow: '16.4 t', length: '22.0 m', wingspan: '19.4 m', range: '6,400 km', pax: '~9',
+    role: 'Very fast super-midsize bizjet', operators: 'NetJets, private owners',
+    accept: ['C750','CITATION X','CITATION 10','CITATION TEN','750'],
+    hints: ['One of the FASTEST civil aircraft — M0.935.','Highly swept wing, big rear engines, T-tail.','Flies at FL450–FL510.','Cessna. Citation X.'] },
+  { icao: 'GLF5', name: 'Gulfstream G550', mfr: 'Gulfstream',
+    wiki: 'Gulfstream_G550',
+    wake: 'M', engines: '2× RR BR710 turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '488 kt (M0.85)', mmo: 'M0.885', vne: '340 kt IAS', stall: '~110 kt', ceiling: 'FL510',
+    mtow: '41.3 t', length: '29.4 m', wingspan: '28.5 m', range: '12,500 km', pax: '~16',
+    role: 'Long-range bizjet', operators: 'Governments, corporations, air forces',
+    accept: ['GLF5','G550','GULFSTREAM 550','GULFSTREAM G550','G-V','G5'],
+    hints: ['Long-range bizjet with SIX or seven big oval windows per side.','T-tail, rear engines, winglets.','Smaller sibling of the G650.','Gulfstream. G550.'] },
+  { icao: 'CL60', name: 'Bombardier Challenger 604/605', mfr: 'Bombardier',
+    wiki: 'Bombardier_Challenger_600_series',
+    wake: 'M', engines: '2× GE CF34-3B turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '459 kt (M0.80)', mmo: 'M0.85', vne: '348 kt IAS', stall: '~110 kt', ceiling: 'FL410',
+    mtow: '21.9 t', length: '20.9 m', wingspan: '19.6 m', range: '7,400 km', pax: '~10',
+    role: 'Wide-cabin bizjet', operators: 'VistaJet, air ambulance, governments',
+    accept: ['CL60','CHALLENGER 604','CHALLENGER 605','CHALLENGER 600','CL604','CL605'],
+    hints: ['Bizjet with a noticeably FAT fuselage.','T-tail, rear engines, winglets.','The CRJ regional jets grew out of it.','Bombardier. Challenger 600 series.'] },
+  { icao: 'E55P', name: 'Embraer Phenom 300', mfr: 'Embraer',
+    wiki: 'Embraer_Phenom_300',
+    wake: 'M', engines: '2× PW535E turbofan (rear-mounted)', enginesCount: 2,
+    cruise: '453 kt (M0.78)', mmo: 'M0.78', vne: '320 kt IAS', stall: '~95 kt', ceiling: 'FL450',
+    mtow: '8.15 t', length: '15.9 m', wingspan: '15.9 m', range: '3,650 km', pax: '~7',
+    role: 'Light bizjet — best-selling of its class', operators: 'NetJets, Flexjet, private owners',
+    accept: ['E55P','PHENOM 300','PHENOM300','EMB-505','PHENOM'],
+    hints: ['Light bizjet with a swept wing and winglets.','T-tail, rear engines.','Brazilian-built.','Embraer. Phenom 300.'] },
+  { icao: 'IL76', name: 'Ilyushin Il-76', mfr: 'Ilyushin',
+    wiki: 'Ilyushin_Il-76',
+    wake: 'H', engines: '4× Soloviev D-30KP turbofan', enginesCount: 4,
+    cruise: '430 kt', mmo: 'M0.77', vne: '325 kt IAS', stall: '~120 kt', ceiling: 'FL390',
+    mtow: '190 t', length: '46.6 m', wingspan: '50.5 m', range: '4,400 km (50 t)', pax: 'cargo',
+    role: 'Soviet heavy military / cargo transport', operators: 'Silk Way, Volga-Dnepr, air forces',
+    accept: ['IL76','IL-76','ILYUSHIN 76','IL 76','CANDID'],
+    hints: ['HIGH-WING FOUR-jet transport with a T-tail.','Glazed navigator nose under the cockpit.','Rear loading ramp.','Ilyushin. Il-76.'] },
+  { icao: 'A124', name: 'Antonov An-124 Ruslan', mfr: 'Antonov',
+    wiki: 'Antonov_An-124_Ruslan',
+    wake: 'H', engines: '4× Progress D-18T turbofan', enginesCount: 4,
+    cruise: '430 kt', mmo: 'M0.77', vne: '330 kt IAS', stall: '~130 kt', ceiling: 'FL390',
+    mtow: '402 t', length: '69.1 m', wingspan: '73.3 m', range: '4,500 km (120 t)', pax: 'cargo',
+    role: 'Giant outsize-cargo transport', operators: 'Antonov Airlines, Volga-Dnepr',
+    accept: ['A124','AN-124','AN124','ANTONOV 124','RUSLAN'],
+    hints: ['One of the BIGGEST aircraft in the world.','High wing, four engines, nose opens upward.','Conventional (low) tail — not a T-tail.','Antonov. An-124 Ruslan.'] },
+  { icao: 'AN12', name: 'Antonov An-12', mfr: 'Antonov',
+    wiki: 'Antonov_An-12',
+    wake: 'M', engines: '4× Ivchenko AI-20 turboprop', enginesCount: 4,
+    cruise: '310 kt', mmo: 'N/A', vne: '290 kt IAS', stall: '~95 kt', ceiling: 'FL330',
+    mtow: '61 t', length: '33.1 m', wingspan: '38.0 m', range: '3,600 km', pax: 'cargo',
+    role: 'Soviet four-turboprop freighter', operators: 'Cavok Air, Ukraine Air Alliance, Motor Sich',
+    accept: ['AN12','AN-12','ANTONOV 12','AN 12','CUB'],
+    hints: ['FOUR turboprops on a HIGH wing — the "Soviet Hercules".','Glazed nose and a tail gunner position.','Old cargo operators from Ukraine.','Antonov. An-12.'] },
+  { icao: 'C17', name: 'Boeing C-17 Globemaster III', mfr: 'Boeing',
+    wiki: 'Boeing_C-17_Globemaster_III',
+    wake: 'H', engines: '4× PW F117 turbofan', enginesCount: 4,
+    cruise: '450 kt (M0.76)', mmo: 'M0.825', vne: '350 kt IAS', stall: '~115 kt', ceiling: 'FL450',
+    mtow: '265 t', length: '53.0 m', wingspan: '51.8 m', range: '4,500 km (70 t)', pax: 'cargo / troops',
+    role: 'Strategic military transport', operators: 'USAF, RAF, NATO SAC (Pápa, Hungary)',
+    accept: ['C17','C-17','GLOBEMASTER','GLOBEMASTER III'],
+    hints: ['HIGH-WING FOUR-jet military transport, T-tail.','Winglets and a very fat fuselage.','NATO fleet is based at Pápa in Hungary.','Boeing. C-17 Globemaster III.'] },
+  { icao: 'C27J', name: 'Alenia C-27J Spartan', mfr: 'Leonardo (Alenia)',
+    wiki: 'Alenia_C-27J_Spartan',
+    wake: 'M', engines: '2× RR AE 2100-D2A turboprop', enginesCount: 2,
+    cruise: '315 kt', mmo: 'N/A', vne: '325 kt', stall: '~105 kt', ceiling: 'FL300',
+    mtow: '31.8 t', length: '22.7 m', wingspan: '28.7 m', range: '1,850 km (10 t)', pax: '~60 troops / cargo',
+    role: 'Tactical military transport', operators: 'Slovak Air Force, Italy, Romania, Bulgaria',
+    accept: ['C27J','C-27J','SPARTAN','C27'],
+    hints: ['HIGH-WING twin turboprop with six-bladed props and a rear ramp.','The SLOVAK Air Force flies two.','Looks like a small Hercules with two engines.','Leonardo. C-27J Spartan.'] },
+  { icao: 'F16', name: 'General Dynamics F-16 Fighting Falcon', mfr: 'General Dynamics / Lockheed Martin',
+    wiki: 'General_Dynamics_F-16_Fighting_Falcon',
+    wake: 'M', engines: '1× GE F110 / PW F100 turbofan with afterburner', enginesCount: 1,
+    cruise: '~500 kt', mmo: 'M2.0', vne: '800 kt IAS', stall: '~120 kt', ceiling: 'FL500+',
+    mtow: '19.2 t', length: '15.0 m', wingspan: '9.96 m', range: '~4,200 km ferry', pax: '1–2 crew',
+    role: 'Single-engine multirole fighter', operators: 'Slovak Air Force (Block 70), Poland, Romania, USAF',
+    accept: ['F16','F-16','FIGHTING FALCON','VIPER','FALCON'],
+    hints: ['Single-engine fighter with a big AIR INTAKE under the nose.','Bubble canopy, one fin.','New fighter of the SLOVAK Air Force.','General Dynamics / Lockheed Martin. F-16.'] },
+  { icao: 'L39', name: 'Aero L-39 Albatros', mfr: 'Aero Vodochody (Czech Republic)',
+    wiki: 'Aero_L-39_Albatros',
+    wake: 'L', engines: '1× Ivchenko AI-25TL turbofan', enginesCount: 1,
+    cruise: '~380 kt', mmo: 'M0.80', vne: '490 kt IAS', stall: '~90 kt', ceiling: 'FL360',
+    mtow: '4.7 t', length: '12.1 m', wingspan: '9.46 m', range: '1,100 km', pax: '2 crew',
+    role: 'Jet trainer', operators: 'Slovak Air Force, Czech Air Force, civilian owners',
+    accept: ['L39','L-39','ALBATROS','ALBATROSS','AERO L-39'],
+    hints: ['CZECHOSLOVAK jet trainer, tandem seats.','Fuel tanks on the wingtips.','Slovak Air Force trains on it at Sliač / Košice.','Aero Vodochody. L-39 Albatros.'] },
+  { icao: 'A139', name: 'AgustaWestland AW139', mfr: 'Leonardo Helicopters',
+    wiki: 'AgustaWestland_AW139',
+    wake: 'M', engines: '2× PT6C-67C turboshaft', enginesCount: 2,
+    cruise: '165 kt', mmo: 'N/A', vne: '167 kt', stall: 'N/A (rotorcraft)', ceiling: '20,000 ft',
+    mtow: '6.4–7.0 t', length: '16.7 m', wingspan: 'rotor 13.8 m', range: '1,060 km', pax: '~15',
+    role: 'Medium twin helicopter (SAR, HEMS, offshore, VIP)', operators: 'Coast guards, police, offshore operators',
+    accept: ['A139','AW139','AW 139','AB139'],
+    hints: ['Medium TWIN helicopter with a five-blade main rotor.','Retractable wheels, not skids.','Rescue, offshore and VIP work.','Leonardo. AW139.'] },
+  { icao: 'H60', name: 'Sikorsky UH-60 Black Hawk', mfr: 'Sikorsky',
+    wiki: 'Sikorsky_UH-60_Black_Hawk',
+    wake: 'M', engines: '2× GE T700 turboshaft', enginesCount: 2,
+    cruise: '150 kt', mmo: 'N/A', vne: '193 kt', stall: 'N/A (rotorcraft)', ceiling: '19,000 ft',
+    mtow: '10 t', length: '19.8 m', wingspan: 'rotor 16.4 m', range: '590 km', pax: '~11 troops',
+    role: 'Military utility helicopter', operators: 'Slovak Air Force (UH-60M), US Army, Poland',
+    accept: ['H60','UH-60','UH60','BLACK HAWK','BLACKHAWK','S-70'],
+    hints: ['Military twin helicopter, four-blade rotor, fixed tailwheel.','Low, wide, angular fuselage.','The SLOVAK Air Force replaced its Mi-17 with it.','Sikorsky. UH-60 Black Hawk.'] },
+  { icao: 'MI8', name: 'Mil Mi-8 / Mi-17', mfr: 'Mil',
+    wiki: 'Mil_Mi-8',
+    wake: 'M', engines: '2× Klimov TV3-117 turboshaft', enginesCount: 2,
+    cruise: '120 kt', mmo: 'N/A', vne: '135 kt', stall: 'N/A (rotorcraft)', ceiling: '15,000 ft',
+    mtow: '12–13 t', length: '18.2 m', wingspan: 'rotor 21.3 m', range: '500 km', pax: '~24',
+    role: 'Soviet medium transport helicopter', operators: 'Slovak Ministry of Interior, many air forces, UN operators',
+    accept: ['MI8','MI-8','MI-17','MI17','MI 8','HIP'],
+    hints: ['Big Soviet helicopter with a five-blade rotor.','Round glazed nose, clamshell doors at the rear.','Most-produced helicopter in history.','Mil. Mi-8 / Mi-17.'] },
+  { icao: 'EC45', name: 'Airbus H145 (EC145)', mfr: 'Airbus Helicopters',
+    wiki: 'Eurocopter_EC145',
+    wake: 'L', engines: '2× Turbomeca Arriel turboshaft', enginesCount: 2,
+    cruise: '130 kt', mmo: 'N/A', vne: '145 kt', stall: 'N/A (rotorcraft)', ceiling: '18,000 ft',
+    mtow: '3.6–3.8 t', length: '13.0 m', wingspan: 'rotor 11.0 m', range: '680 km', pax: '~9',
+    role: 'Light twin helicopter (HEMS, police)', operators: 'ADAC, DRF Luftrettung, Air Transport Europe (SK HEMS)',
+    accept: ['EC45','H145','EC145','BK117','EUROCOPTER 145'],
+    hints: ['TWIN light helicopter with rear clamshell doors.','Skids; a larger cabin than the EC135.','Air ambulance across central Europe.','Airbus Helicopters. EC145 / H145.'] },
+  { icao: 'R44', name: 'Robinson R44', mfr: 'Robinson',
+    wiki: 'Robinson_R44',
+    wake: 'L', engines: '1× Lycoming O-540 / IO-540 piston', enginesCount: 1,
+    cruise: '110 kt', mmo: 'N/A', vne: '130 kt', stall: 'N/A (rotorcraft)', ceiling: '14,000 ft',
+    mtow: '1.13 t', length: '11.7 m', wingspan: 'rotor 10.1 m', range: '560 km', pax: '4 seats',
+    role: 'Light piston helicopter — trainer and private', operators: 'Flight schools, private owners',
+    accept: ['R44','ROBINSON','ROBINSON R44','ROBINSON 44'],
+    hints: ['Small PISTON helicopter with a two-blade rotor.','Rotor sits on a tall mast above the cabin.','World\'s best-selling light helicopter.','Robinson. R44.'] },
 ];
 
 
@@ -1568,6 +1959,118 @@ const AIRPORTS = [
   { cat:'other', icao:'KSFO', city:'San Francisco', country:'US', name:'SFO', hint:'Bay Area, United hub.' },
   { cat:'other', icao:'KDFW', city:'Dallas', country:'US', name:'Dallas/Fort Worth', hint:'Texas, American Airlines hub.' },
   { cat:'other', icao:'CYYZ', city:'Toronto', country:'CA', name:'Pearson', hint:'Najväčšie kanadské letisko.' },
+  // === ROZŠÍRENIE 2026-10: susedné štáty ===
+  { cat:'neigh', icao:'LKCS', city:'České Budějovice', country:'CZ', name:'České Budějovice', hint:'Juh Čiech.' },
+  { cat:'neigh', icao:'LKKU', city:'Kunovice', country:'CZ', name:'Kunovice', hint:'Pri Uherskom Hradišti, výroba L-410.' },
+  { cat:'neigh', icao:'LKVO', city:'Vodochody', country:'CZ', name:'Praha-Vodochody', hint:'Továrenské letisko Aero, sever od Prahy.' },
+  { cat:'neigh', icao:'LOAN', city:'Viedenské Nové Mesto', country:'AT', name:'Wiener Neustadt Ost', hint:'GA letisko, sídlo Diamond Aircraft.' },
+  { cat:'neigh', icao:'LHUD', city:'Szeged', country:'HU', name:'Szeged', hint:'Juh Maďarska.' },
+  { cat:'neigh', icao:'LHPR', city:'Győr', country:'HU', name:'Győr-Pér', hint:'Medzi Bratislavou a Budapešťou.' },
+  { cat:'neigh', icao:'LHNY', city:'Nyíregyháza', country:'HU', name:'Nyíregyháza', hint:'Severovýchod Maďarska, letecká škola.' },
+  { cat:'neigh', icao:'LHPA', city:'Pápa', country:'HU', name:'Pápa (voj.)', hint:'Vojenská základňa, flotila NATO C-17.' },
+  { cat:'neigh', icao:'EPRZ', city:'Rzeszów', country:'PL', name:'Rzeszów-Jasionka', hint:'Juhovýchod Poľska, blízko Ukrajiny.' },
+  { cat:'neigh', icao:'EPMO', city:'Varšava Modlin', country:'PL', name:'Warszawa-Modlin', hint:'Low-cost letisko pri Varšave.' },
+  { cat:'neigh', icao:'EPSC', city:'Štetín', country:'PL', name:'Szczecin-Goleniów', hint:'Severozápad Poľska.' },
+  { cat:'neigh', icao:'EPLL', city:'Lodž', country:'PL', name:'Łódź', hint:'Stredné Poľsko.' },
+  { cat:'neigh', icao:'EPBY', city:'Bydgošť', country:'PL', name:'Bydgoszcz', hint:'Sever stredného Poľska.' },
+  { cat:'neigh', icao:'UKLU', city:'Užhorod', country:'UA', name:'Uzhhorod', hint:'Hneď za slovenskou hranicou.' },
+  { cat:'neigh', icao:'UKKK', city:'Kyjev Žuľany', country:'UA', name:'Kyiv Zhuliany', hint:'Mestské letisko Kyjeva.' },
+  { cat:'neigh', icao:'UKHH', city:'Charkov', country:'UA', name:'Kharkiv', hint:'Východ Ukrajiny.' },
+  { cat:'neigh', icao:'UKLI', city:'Ivano-Frankivsk', country:'UA', name:'Ivano-Frankivsk', hint:'Západná Ukrajina, pod Karpatmi.' },
+  { cat:'neigh', icao:'UKDD', city:'Dnipro', country:'UA', name:'Dnipro', hint:'Stredná Ukrajina.' },
+  // === ROZŠÍRENIE 2026-10: ďalšie známe letiská ===
+  { cat:'other', icao:'EDDV', city:'Hannover', country:'DE', name:'Hannover', hint:'Dolné Sasko.' },
+  { cat:'other', icao:'EDDP', city:'Lipsko', country:'DE', name:'Leipzig/Halle', hint:'DHL hub, nočné cargo.' },
+  { cat:'other', icao:'EDDW', city:'Brémy', country:'DE', name:'Bremen', hint:'Severné Nemecko.' },
+  { cat:'other', icao:'EDDC', city:'Drážďany', country:'DE', name:'Dresden', hint:'Sasko.' },
+  { cat:'other', icao:'EHRD', city:'Rotterdam', country:'NL', name:'Rotterdam The Hague', hint:'Druhé holandské mesto.' },
+  { cat:'other', icao:'EHEH', city:'Eindhoven', country:'NL', name:'Eindhoven', hint:'Low-cost letisko, juh Holandska.' },
+  { cat:'other', icao:'EBCI', city:'Charleroi', country:'BE', name:'Brussels South Charleroi', hint:'Ryanair základňa pri Bruseli.' },
+  { cat:'other', icao:'ELLX', city:'Luxemburg', country:'LU', name:'Luxembourg Findel', hint:'Cargolux hub.' },
+  { cat:'other', icao:'EGPH', city:'Edinburgh', country:'UK', name:'Edinburgh', hint:'Hlavné mesto Škótska.' },
+  { cat:'other', icao:'EGPF', city:'Glasgow', country:'UK', name:'Glasgow', hint:'Západné Škótsko.' },
+  { cat:'other', icao:'EGBB', city:'Birmingham', country:'UK', name:'Birmingham', hint:'Stredné Anglicko.' },
+  { cat:'other', icao:'EGGW', city:'Londýn Luton', country:'UK', name:'Luton', hint:'Wizz Air a easyJet základňa.' },
+  { cat:'other', icao:'EGLC', city:'Londýn City', country:'UK', name:'London City', hint:'Krátka dráha v centre mesta.' },
+  { cat:'other', icao:'EINN', city:'Shannon', country:'IE', name:'Shannon', hint:'Západ Írska.' },
+  { cat:'other', icao:'LFPO', city:'Paríž Orly', country:'FR', name:'Orly', hint:'Druhé parížske letisko.' },
+  { cat:'other', icao:'LFLL', city:'Lyon', country:'FR', name:'Lyon Saint-Exupéry', hint:'Juhovýchod Francúzska.' },
+  { cat:'other', icao:'LFML', city:'Marseille', country:'FR', name:'Marseille Provence', hint:'Stredomorské pobrežie.' },
+  { cat:'other', icao:'LFBO', city:'Toulouse', country:'FR', name:'Toulouse-Blagnac', hint:'Sídlo a továreň Airbusu.' },
+  { cat:'other', icao:'LFSB', city:'Bazilej', country:'FR', name:'EuroAirport Basel-Mulhouse', hint:'Na hranici FR/CH/DE.' },
+  { cat:'other', icao:'LIML', city:'Miláno Linate', country:'IT', name:'Linate', hint:'Mestské letisko Milána.' },
+  { cat:'other', icao:'LIME', city:'Bergamo', country:'IT', name:'Orio al Serio', hint:'Ryanair základňa pri Miláne.' },
+  { cat:'other', icao:'LIPE', city:'Bologna', country:'IT', name:'Bologna', hint:'Emilia-Romagna.' },
+  { cat:'other', icao:'LICC', city:'Catania', country:'IT', name:'Catania Fontanarossa', hint:'Sicília, pod Etnou.' },
+  { cat:'other', icao:'LIRA', city:'Rím Ciampino', country:'IT', name:'Ciampino', hint:'Druhé rímske letisko.' },
+  { cat:'other', icao:'LEMG', city:'Málaga', country:'ES', name:'Málaga', hint:'Costa del Sol.' },
+  { cat:'other', icao:'LEAL', city:'Alicante', country:'ES', name:'Alicante-Elche', hint:'Costa Blanca.' },
+  { cat:'other', icao:'LEZL', city:'Sevilla', country:'ES', name:'Sevilla', hint:'Andalúzia.' },
+  { cat:'other', icao:'LEVC', city:'Valencia', country:'ES', name:'Valencia', hint:'Východné pobrežie Španielska.' },
+  { cat:'other', icao:'LEIB', city:'Ibiza', country:'ES', name:'Ibiza', hint:'Baleárske ostrovy.' },
+  { cat:'other', icao:'LPPR', city:'Porto', country:'PT', name:'Porto', hint:'Sever Portugalska.' },
+  { cat:'other', icao:'LPFR', city:'Faro', country:'PT', name:'Faro', hint:'Algarve, juh Portugalska.' },
+  { cat:'other', icao:'LGTS', city:'Solún', country:'GR', name:'Thessaloniki Makedonia', hint:'Severné Grécko.' },
+  { cat:'other', icao:'LGIR', city:'Heraklion', country:'GR', name:'Heraklion', hint:'Kréta.' },
+  { cat:'other', icao:'LGRP', city:'Rodos', country:'GR', name:'Rhodes Diagoras', hint:'Ostrov pri tureckom pobreží.' },
+  { cat:'other', icao:'LBSF', city:'Sofia', country:'BG', name:'Sofia', hint:'Hlavné mesto Bulharska.' },
+  { cat:'other', icao:'LBBG', city:'Burgas', country:'BG', name:'Burgas', hint:'Čiernomorské pobrežie, charter.' },
+  { cat:'other', icao:'LBWN', city:'Varna', country:'BG', name:'Varna', hint:'Čiernomorské pobrežie.' },
+  { cat:'other', icao:'LYBE', city:'Belehrad', country:'RS', name:'Nikola Tesla', hint:'Hlavné mesto Srbska.' },
+  { cat:'other', icao:'LDZA', city:'Záhreb', country:'HR', name:'Zagreb', hint:'Hlavné mesto Chorvátska.' },
+  { cat:'other', icao:'LDSP', city:'Split', country:'HR', name:'Split', hint:'Dalmácia.' },
+  { cat:'other', icao:'LDDU', city:'Dubrovník', country:'HR', name:'Dubrovnik', hint:'Juh Chorvátska.' },
+  { cat:'other', icao:'LJLJ', city:'Ľubľana', country:'SI', name:'Ljubljana Jože Pučnik', hint:'Hlavné mesto Slovinska.' },
+  { cat:'other', icao:'LQSA', city:'Sarajevo', country:'BA', name:'Sarajevo', hint:'Hlavné mesto Bosny a Hercegoviny.' },
+  { cat:'other', icao:'LWSK', city:'Skopje', country:'MK', name:'Skopje', hint:'Hlavné mesto Severného Macedónska.' },
+  { cat:'other', icao:'LATI', city:'Tirana', country:'AL', name:'Tirana Nënë Tereza', hint:'Hlavné mesto Albánska.' },
+  { cat:'other', icao:'LYPG', city:'Podgorica', country:'ME', name:'Podgorica', hint:'Hlavné mesto Čiernej Hory.' },
+  { cat:'other', icao:'BKPR', city:'Priština', country:'XK', name:'Pristina', hint:'Kosovo — prefix BK, nie L.' },
+  { cat:'other', icao:'LUKK', city:'Kišiňov', country:'MD', name:'Chișinău', hint:'Hlavné mesto Moldavska.' },
+  { cat:'other', icao:'LRCL', city:'Kluž', country:'RO', name:'Cluj-Napoca', hint:'Sedmohradsko.' },
+  { cat:'other', icao:'LRTR', city:'Temešvár', country:'RO', name:'Timișoara', hint:'Západ Rumunska.' },
+  { cat:'other', icao:'LCLK', city:'Larnaka', country:'CY', name:'Larnaca', hint:'Cyprus.' },
+  { cat:'other', icao:'LMML', city:'Malta', country:'MT', name:'Malta Luqa', hint:'Ostrovný štát v Stredomorí.' },
+  { cat:'other', icao:'LLBG', city:'Tel Aviv', country:'IL', name:'Ben Gurion', hint:'Izrael — prefix LL.' },
+  { cat:'other', icao:'LTAI', city:'Antalya', country:'TR', name:'Antalya', hint:'Turecká riviéra, charter.' },
+  { cat:'other', icao:'LTAC', city:'Ankara', country:'TR', name:'Ankara Esenboğa', hint:'Hlavné mesto Turecka.' },
+  { cat:'other', icao:'LTBJ', city:'Izmir', country:'TR', name:'Izmir Adnan Menderes', hint:'Egejské pobrežie Turecka.' },
+  { cat:'other', icao:'EVRA', city:'Riga', country:'LV', name:'Riga', hint:'Hlavné mesto Lotyšska, airBaltic hub.' },
+  { cat:'other', icao:'EYVI', city:'Vilnius', country:'LT', name:'Vilnius', hint:'Hlavné mesto Litvy.' },
+  { cat:'other', icao:'EETN', city:'Tallinn', country:'EE', name:'Tallinn', hint:'Hlavné mesto Estónska.' },
+  { cat:'other', icao:'ENBR', city:'Bergen', country:'NO', name:'Bergen Flesland', hint:'Západné pobrežie Nórska.' },
+  { cat:'other', icao:'ESGG', city:'Göteborg', country:'SE', name:'Göteborg Landvetter', hint:'Západné Švédsko.' },
+  { cat:'other', icao:'EKBI', city:'Billund', country:'DK', name:'Billund', hint:'Jutsko, pri Legolande.' },
+  { cat:'other', icao:'BIKF', city:'Reykjavík', country:'IS', name:'Keflavík', hint:'Island — prefix BI.' },
+  { cat:'other', icao:'UMMS', city:'Minsk', country:'BY', name:'Minsk National', hint:'Hlavné mesto Bieloruska.' },
+  { cat:'other', icao:'UUEE', city:'Moskva Šeremetievo', country:'RU', name:'Sheremetyevo', hint:'Aeroflot hub.' },
+  { cat:'other', icao:'UUDD', city:'Moskva Domodedovo', country:'RU', name:'Domodedovo', hint:'Druhé moskovské letisko.' },
+  { cat:'other', icao:'ULLI', city:'Petrohrad', country:'RU', name:'Pulkovo', hint:'Severozápad Ruska.' },
+  { cat:'other', icao:'GMMN', city:'Casablanca', country:'MA', name:'Mohammed V', hint:'Maroko.' },
+  { cat:'other', icao:'DAAG', city:'Alžír', country:'DZ', name:'Houari Boumediene', hint:'Hlavné mesto Alžírska.' },
+  { cat:'other', icao:'DTTA', city:'Tunis', country:'TN', name:'Tunis-Carthage', hint:'Hlavné mesto Tuniska.' },
+  { cat:'other', icao:'HECA', city:'Káhira', country:'EG', name:'Cairo', hint:'Hlavné mesto Egypta.' },
+  { cat:'other', icao:'OMSJ', city:'Šardža', country:'AE', name:'Sharjah', hint:'Air Arabia hub.' },
+  { cat:'other', icao:'OEJN', city:'Džidda', country:'SA', name:'King Abdulaziz', hint:'Brána do Mekky.' },
+  { cat:'other', icao:'OKBK', city:'Kuvajt', country:'KW', name:'Kuwait', hint:'Kuwait Airways hub.' },
+  { cat:'other', icao:'OBBI', city:'Bahrajn', country:'BH', name:'Bahrain', hint:'Gulf Air hub.' },
+  { cat:'other', icao:'OIIE', city:'Teherán', country:'IR', name:'Imam Khomeini', hint:'Hlavné mesto Iránu.' },
+  { cat:'other', icao:'VIDP', city:'Dillí', country:'IN', name:'Indira Gandhi', hint:'Hlavné mesto Indie.' },
+  { cat:'other', icao:'VABB', city:'Bombaj', country:'IN', name:'Chhatrapati Shivaji', hint:'Západná India.' },
+  { cat:'other', icao:'VTBS', city:'Bangkok', country:'TH', name:'Suvarnabhumi', hint:'Hlavné mesto Thajska.' },
+  { cat:'other', icao:'ZSPD', city:'Šanghaj', country:'CN', name:'Pudong', hint:'Najväčšie čínske mesto.' },
+  { cat:'other', icao:'ZGGG', city:'Kanton', country:'CN', name:'Guangzhou Baiyun', hint:'Južná Čína.' },
+  { cat:'other', icao:'YSSY', city:'Sydney', country:'AU', name:'Kingsford Smith', hint:'Austrália, Qantas hub.' },
+  { cat:'other', icao:'FAOR', city:'Johannesburg', country:'ZA', name:'O. R. Tambo', hint:'Južná Afrika.' },
+  { cat:'other', icao:'SBGR', city:'São Paulo', country:'BR', name:'Guarulhos', hint:'Brazília.' },
+  { cat:'other', icao:'MMMX', city:'Mexiko', country:'MX', name:'Benito Juárez', hint:'Hlavné mesto Mexika.' },
+  { cat:'other', icao:'KBOS', city:'Boston', country:'US', name:'Logan', hint:'Severovýchod USA.' },
+  { cat:'other', icao:'KIAD', city:'Washington', country:'US', name:'Dulles', hint:'Hlavné mesto USA.' },
+  { cat:'other', icao:'KSEA', city:'Seattle', country:'US', name:'Seattle-Tacoma', hint:'Severozápad USA, Boeing.' },
+  { cat:'other', icao:'KDEN', city:'Denver', country:'US', name:'Denver', hint:'Colorado, Skalnaté hory.' },
+  { cat:'other', icao:'KLAS', city:'Las Vegas', country:'US', name:'Harry Reid', hint:'Nevada.' },
+  { cat:'other', icao:'CYVR', city:'Vancouver', country:'CA', name:'Vancouver', hint:'Západná Kanada.' },
+  { cat:'other', icao:'CYUL', city:'Montreal', country:'CA', name:'Trudeau', hint:'Québec.' },
 ];
 
 /* ============================================================
@@ -2822,6 +3325,22 @@ const WAYPOINTS = [
   { name:'LEKMO', lat:48.99167, lon:20.19944, type:'I', kind:'pt', grp:'STRED' },
   { name:'ABULI', lat:48.48417, lon:20.48667, type:'I', kind:'pt', grp:'STRED' },
   { name:'PITOK', lat:48.32472, lon:20.37167, type:'I', kind:'pt', grp:'STRED' },
+  /* Body z mapy AIP ENR 6.1, ktoré v pôvodnom zozname chýbali. Súradnice sú
+     z tabuľky na mape; typ bodu (A/D/E/I/X) mapa neuvádza, preto je prázdny. */
+  { name:'ADAMA', lat:47.98778, lon:17.34139, type:'', kind:'pt', grp:'JUH', src:'ENR 6.1' },
+  { name:'EPEDA', lat:48.87361, lon:19.95722, type:'', kind:'pt', grp:'STRED', src:'ENR 6.1' },
+  { name:'EVULA', lat:48.66250, lon:21.69306, type:'', kind:'pt', grp:'VYCHOD', src:'ENR 6.1' },
+  { name:'GUPLU', lat:48.71861, lon:17.23917, type:'', kind:'pt', grp:'ZAPAD', src:'ENR 6.1' },
+  { name:'KOXER', lat:48.12750, lon:17.04833, type:'', kind:'pt', grp:'ZAPAD', src:'ENR 6.1' },
+  { name:'LEDRI', lat:48.09083, lon:17.18278, type:'', kind:'pt', grp:'ZAPAD', src:'ENR 6.1' },
+  { name:'LIPTY', lat:49.23556, lon:19.33167, type:'', kind:'pt', grp:'STRED', src:'ENR 6.1' },
+  { name:'LOLKA', lat:49.22000, lon:20.10000, type:'', kind:'pt', grp:'SEVER', src:'ENR 6.1' },
+  { name:'MARKA', lat:48.88944, lon:20.67722, type:'', kind:'pt', grp:'STRED', src:'ENR 6.1' },
+  { name:'ORLAN', lat:49.28639, lon:20.88722, type:'', kind:'pt', grp:'SEVER', src:'ENR 6.1' },
+  { name:'REKLU', lat:48.58750, lon:16.93778, type:'', kind:'pt', grp:'ZAPAD', src:'ENR 6.1' },
+  { name:'SOMID', lat:48.50528, lon:17.71722, type:'', kind:'pt', grp:'STRED', src:'ENR 6.1' },
+  { name:'TOKAJ', lat:48.65583, lon:21.83278, type:'', kind:'pt', grp:'VYCHOD', src:'ENR 6.1' },
+  { name:'UDREL', lat:49.01028, lon:20.83611, type:'', kind:'pt', grp:'STRED', src:'ENR 6.1' },
   { name:'TATRY', lat:49.06472, lon:20.35, type:'ADI', kind:'nav', grp:'NAV', nav:'VOR/DME 112.1 (PPD)' },
   { name:'NITRA', lat:48.29056, lon:18.05056, type:'ADI', kind:'nav', grp:'NAV', nav:'VOR/DME 116.5 (NIT)' },
   { name:'SLIAC', lat:48.45333, lon:19.11583, type:'ADI', kind:'nav', grp:'NAV', nav:'VOR/DME 114.0 (SLC)' },
@@ -2829,7 +3348,7 @@ const WAYPOINTS = [
   { name:'JANOVCE', lat:48.17861, lon:17.54472, type:'D', kind:'nav', grp:'NAV', nav:'VOR/DME 110.8 (JAN)' },
   { name:'KOSICE', lat:48.68306, lon:21.24806, type:'AD', kind:'nav', grp:'NAV', nav:'VOR/DME 108.2 (KSC)' },
 ];
-// total points: 88 (82 FRA significant points + 6 navaids) — verified vs AIP ENR 4.4
+// total points: 102 (82 FRA significant points z ENR 4.4 + 14 bodov z mapy ENR 6.1 + 6 navaids)
 
 /* City / airport anchors (always visible reference points) */
 const WP_CITIES = [
@@ -2919,7 +3438,7 @@ const state = {
   queue: [], current: null, index: 0, total: 0,
   correct: 0, wrong: 0, streak: 0, bestStreak: 0,
   mistakes: {},
-  filters: { hgMode: 'move', hgDiff: 'easy', hgKind: 'gate', hgNames: 'on', hgRose: 'off', wake: 'all', airportCat: 'all', apMode: 'quiz', apAns: 'type', apPx: 'doc', apWeak: false, callsignCat: 'all', wpDiff: 'easy', csLetter: 'all', csMode: 'quiz', csAns: 'type', csDir: 'both', csKind: 'all', csPack: 0, csWeak: false, wpGrp: 'all', wpMode: 'quiz', wpBorder: 'all' },
+  filters: { hgMode: 'static', hgDiff: 'easy', hgKind: 'gate', hgNames: 'on', hgRose: 'off', wake: 'all', airportCat: 'all', apMode: 'quiz', apAns: 'choice', acAns: 'choice', apPx: 'doc', apWeak: false, callsignCat: 'all', wpDiff: 'easy', csLetter: 'all', csOrder: 'freq', csMode: 'quiz', csAns: 'choice', csDir: 'both', csKind: 'all', csPack: 0, csWeak: false, wpGrp: 'all', wpMode: 'quiz', wpBorder: 'all' },
   hintsUsed: 0,
   apOk: {},       // MOD 02: koľkokrát po sebe správne (ukladá sa)
 };
@@ -3002,6 +3521,22 @@ const AP_POS = {
   LEMD:[40.472,-3.561], LEBL:[41.297,2.078], LEPA:[39.552,2.739], LPPT:[38.774,-9.134], LSZH:[47.458,8.548], LSGG:[46.238,6.109],
   EBBR:[50.901,4.484], EKCH:[55.618,12.656], ESSA:[59.652,17.919], ENGM:[60.194,11.100], EFHK:[60.317,24.963],
   LGAV:[37.936,23.944], LROP:[44.571,26.085], LTBA:[40.977,28.821], LTFM:[41.262,28.742], LTFJ:[40.898,29.309],
+  /* rozšírenie 2026-10 */
+  LKCS:[48.946,14.428], LKKU:[49.029,17.440], LKVO:[50.217,14.396], LOAN:[47.843,16.260], LHUD:[46.247,20.091], LHPR:[47.624,17.814],
+  LHNY:[47.984,21.692], LHPA:[47.364,17.501], EPRZ:[50.110,22.019], EPMO:[52.451,20.652], EPSC:[53.585,14.902], EPLL:[51.722,19.398],
+  EPBY:[53.097,17.978], UKLU:[48.634,22.263], UKKK:[50.402,30.450], UKHH:[49.925,36.290], UKLI:[48.884,24.686], UKDD:[48.357,35.100],
+  EDDV:[52.461,9.685], EDDP:[51.424,12.236], EDDW:[53.047,8.787], EDDC:[51.133,13.767], EHRD:[51.957,4.437], EHEH:[51.450,5.375],
+  EBCI:[50.459,4.454], ELLX:[49.627,6.204], EGPH:[55.950,-3.373], EGPF:[55.872,-4.433], EGBB:[52.454,-1.748], EGGW:[51.875,-0.368],
+  EGLC:[51.505,0.055], EINN:[52.702,-8.925], LFPO:[48.723,2.379], LFLL:[45.726,5.091], LFML:[43.436,5.215], LFBO:[43.629,1.364],
+  LFSB:[47.590,7.529], LIML:[45.445,9.277], LIME:[45.674,9.704], LIPE:[44.535,11.289], LICC:[37.467,15.066], LIRA:[41.799,12.595],
+  LEMG:[36.675,-4.499], LEAL:[38.282,-0.558], LEZL:[37.418,-5.893], LEVC:[39.489,-0.482], LEIB:[38.873,1.373], LPPR:[41.248,-8.681],
+  LPFR:[37.014,-7.966], LGTS:[40.520,22.971], LGIR:[35.340,25.180], LGRP:[36.405,28.086], LBSF:[42.695,23.406], LBBG:[42.570,27.515],
+  LBWN:[43.232,27.825], LYBE:[44.818,20.309], LDZA:[45.743,16.069], LDSP:[43.539,16.298], LDDU:[42.561,18.268], LJLJ:[46.224,14.458],
+  LQSA:[43.825,18.331], LWSK:[41.962,21.621], LATI:[41.415,19.721], LYPG:[42.359,19.252], BKPR:[42.573,21.036], LUKK:[46.928,28.931],
+  LRCL:[46.785,23.686], LRTR:[45.810,21.338], LCLK:[34.875,33.625], LMML:[35.857,14.478], LLBG:[32.011,34.887], LTAI:[36.899,30.800],
+  LTAC:[40.128,32.995], LTBJ:[38.292,27.157], EVRA:[56.924,23.971], EYVI:[54.634,25.286], EETN:[59.413,24.833], ENBR:[60.294,5.218],
+  ESGG:[57.663,12.280], EKBI:[55.740,9.152], BIKF:[63.985,-22.606], UMMS:[53.882,28.031], UUEE:[55.973,37.415], UUDD:[55.409,37.906],
+  ULLI:[59.800,30.263], GMMN:[33.368,-7.590], DAAG:[36.691,3.215], DTTA:[36.851,10.227],
 };
 function airportOnMap(ap) {
   const p = AP_POS[ap.icao];
@@ -3021,7 +3556,8 @@ const ICAO_AREAS = {
 const ICAO_AREAS_FAR = [
   ['H', 'Severovýchodná Afrika — HL Líbya, HE Egypt'],
   ['K', 'USA (kontinentálne) — KJFK, KLAX'], ['C', 'Kanada — CYYZ'], ['Z', 'Čína — ZBAA'],
-  ['R', 'Japonsko, Kórea, Filipíny — RJTT, RKSI'], ['V', 'Južná Ázia — VHHH Hong Kong'], ['W', 'Juhovýchodná Ázia — WSSS Singapur'],
+  ['R', 'Japonsko, Kórea, Filipíny — RJTT, RKSI'], ['V', 'Južná Ázia — VHHH Hong Kong, VIDP Dillí, VTBS Bangkok'], ['W', 'Juhovýchodná Ázia — WSSS Singapur'],
+  ['Y', 'Austrália — YSSY Sydney'], ['F', 'Južná a stredná Afrika — FAOR Johannesburg'], ['S', 'Južná Amerika — SBGR São Paulo'], ['M', 'Mexiko a Stredná Amerika — MMMX'],
 ];
 
 /* 2. písmeno = štát. seeds = body [lat, lon] vnútri štátu, odkiaľ sa
@@ -3296,6 +3832,8 @@ const ICAO_STATES_EXTRA = [
 const ICAO_STATES_FAR = {
   OM:'Spojené arabské emiráty', OT:'Katar', OE:'Saudská Arábia', VH:'Hongkong', WS:'Singapur',
   RJ:'Japonsko', RK:'Južná Kórea', ZB:'Čína', CY:'Kanada',
+  OK:'Kuvajt', OB:'Bahrajn', VI:'India', VA:'India', VT:'Thajsko', ZS:'Čína', ZG:'Čína',
+  YS:'Austrália', FA:'Južná Afrika', SB:'Brazília', MM:'Mexiko', UU:'Rusko', UL:'Rusko',
 };
 /* ďalšie uznané názvy pri písaní */
 const PX_ALT = {
@@ -3347,7 +3885,7 @@ function icaoBreakdownHTML(ap) {
 const AP_STORE = 'atcoTrainerV2.mod02';   // názov kľúča ostal, ukladá sa doň MOD 02 aj MOD 03
 function apIsMod02(id) { return id.indexOf('AP_') === 0 || id.indexOf('PX_') === 0; }
 function apIsMod03(id) { return id.indexOf('CS_') === 0; }
-function apIsMine(id) { return apIsMod02(id) || apIsMod03(id); }
+function apIsMine(id) { return apIsMod02(id) || apIsMod03(id) || id.indexOf('AC_') === 0; }
 function apSaveProgress() {
   try {
     const m = {};
@@ -3428,6 +3966,7 @@ function apMapMark(svg, x, y, w, text, ok) {
 function apMapReveal(q, ok) {
   const svg = document.getElementById('map-svg');
   if (!svg || q.type !== 'airport') return;
+  if (state.filters.apMode !== 'map') return;
   svg.querySelectorAll('.wp-ring').forEach(r => r.remove());
   const dot = svg.querySelector('#tgt-dot');
   if (dot) { dot.classList.remove('tgt'); dot.classList.add(ok ? 'reveal-correct' : 'wrong'); }
@@ -3471,7 +4010,12 @@ function apFinish(q, ok, shown) {
    štátu (LOWW / LOWS / LOWL), pri meste mestá tej istej krajiny. */
 function choiceSet(q) {
   let correct, cands;
-  if (q.type === 'callsign') {
+  if (q.type === 'aircraft') {
+    /* podobné = rovnaká kategória turbulencie a počet motorov, potom aspoň kategória */
+    const a = q.data, lbl = x => x.icao + ' — ' + x.name;
+    correct = lbl(a);
+    cands = AIRCRAFT.filter(x => x.icao !== a.icao).map(x => ({ v: lbl(x), t: (x.wake === a.wake ? 0 : 2) + (x.enginesCount === a.enginesCount ? 0 : 1) }));
+  } else if (q.type === 'callsign') {
     /* podobné = susedia v abecede: rovnaké prvé dve písmená kódu, potom rovnaké prvé */
     const cs = q.data, i2c = q.subtype === 'icao-to-call';
     const tier = c => c.icao.substring(0,2) === cs.icao.substring(0,2) ? 0 : c.icao.charAt(0) === cs.icao.charAt(0) ? 1 : 2;
@@ -3510,6 +4054,7 @@ function renderChoiceQuestion(q, card, body) {
     <div class="feedback" id="feedback"></div>
   `;
   apRetryBadge(q);
+  if (q.type === 'aircraft') loadAircraftPhoto(q.data);
   document.getElementById('btn-hint').onclick = useHint;
   const btns = card.querySelectorAll('.choice-btn');
   btns.forEach(b => {
@@ -3528,7 +4073,9 @@ function renderChoiceQuestion(q, card, body) {
 /* ---------- KLIK DO MAPY ---------- */
 const EU_KM_PX = 6.1;     // mapa Európy: 1 px ≈ 6,1 km
 const SK_KM_PX = 0.44;    // mapa Slovenska: 1 px ≈ 0,44 km
-const CLICK_KM = { eu: 100, sk: 15 };
+/* tolerancia kliku v km: ĽAHKÁ / HARDCORE */
+const CLICK_KM_ALL = { easy: { eu: 100, sk: 15 }, hard: { eu: 50, sk: 8 } };
+const CLICK_KM = { get eu() { return CLICK_KM_ALL[state.filters.apAns === 'type' ? 'hard' : 'easy'].eu; }, get sk() { return CLICK_KM_ALL[state.filters.apAns === 'type' ? 'hard' : 'easy'].sk; } };
 function svgPoint(svg, e) {
   const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
   const p = pt.matrixTransform(svg.getScreenCTM().inverse());
@@ -3625,6 +4172,21 @@ function csLogical(cs) {
   return i === 3;
 }
 CALLSIGNS.forEach(cs => { cs.logical = csLogical(cs); });
+
+/* Ako často sa prevádzkovateľ objavil na simulátore (počet lietadiel).
+   Čím vyššie číslo, tým dôležitejšie je volačku vedieť: v cvičení príde
+   skôr a tie najčastejšie aj viackrát. Kto v tabuľke nie je, má váhu 1.
+   V tabuľke bolo aj 56 kódov, ktoré v dokumente s volačkami nie sú
+   (väčšinou registračné značky) — tie tu chýbajú, lebo nemajú volačku. */
+const CS_FREQ = { AUA:132, WZZ:100, RYR:93, AFL:64, TVS:60, AUI:53, THY:43, SAS:41, DLH:36, BAW:32, LOT:32, BER:31, FIN:30, EZY:28, ENT:26, IBK:25, KLM:25, NAX:24, UAE:24, ABG:23, CSA:23, GWI:21, KTK:19, QTR:19, AFR:17, BMS:17, BUC:17, ABW:16, AEE:16, ABP:14, BCS:14, JTG:14, RCH:14, AAR:13, CAL:13, ETD:12, LLP:12, PBD:12, AOJ:11, EXS:11, BEL:10, RRR:10, SBI:9, AAB:8, ASL:8, AZA:8, FDB:8, NJE:8, NWS:8, AIC:7, BTI:7, CCA:7, EWG:7, KKK:7, NVR:7, SDM:7, SXS:7, TRA:7, VKG:7, ACA:6, BGH:6, CAI:6, CFG:6, DTR:6, LDM:6, MLD:6, PRI:6, SVR:6, TVQ:6, AXY:5, EAT:5, PGT:5, VIM:5, ADR:4, AZI:4, BRU:4, DWT:4, ELY:4, FRF:4, GZP:4, LLC:4, OHY:4, QGA:4, TVP:4, UAL:4, AAL:3, ADN:3, AHO:3, AMQ:3, AYY:3, BAF:3, BPS:3, BRK:3, CCC:3, CLX:3, EIN:3, EVA:3, JSY:3, LZB:3, MON:3, MSA:3, PLF:3, QQE:3, RLX:3, ROT:3, SCW:3, TAY:3, THA:3, TWI:3, ABF:2, AUL:2, BLX:2, CMB:2, DCS:2, ELJ:2, ETI:2, FTL:2, GAF:2, GLP:2, GMI:2, HVN:2, JAI:2, JBC:2, JEI:2, JSH:2, KAR:2, LLM:2, MAR:2, MJF:2, MLM:2, MOZ:2, OMA:2, RJA:2, ROF:2, SIA:2, SOO:2, SVA:2, TIE:2, TTJ:2, TVF:2, TYA:2, UTA:2, VLG:2, VMP:2, AIZ:1, AZE:1, BOH:1, BOX:1, CKS:1, CPA:1, CTM:1, CVK:1, DFC:1, FNY:1, GDK:1, GFA:1, GIA:1, GLJ:1, IRA:1, JAR:1, JDI:1, KAL:1, KRP:1, LXG:1, MAS:1, MGX:1, MHV:1, MLT:1, MMD:1, MNB:1, NFA:1, PNC:1, QFA:1, RSY:1, SQF:1, SSG:1, SVW:1, SXD:1, TCX:1, TFL:1, TWG:1, TYW:1, UKN:1, ULC:1, UPS:1, VJT:1, VPC:1 };
+CALLSIGNS.forEach(cs => { cs.freq = CS_FREQ[cs.icao] || 1; cs.sim = cs.icao in CS_FREQ; });
+function csInCat(c, cat) { return cat === 'all' || (cat === 'top' ? c.sim : c.cat === cat); }
+/* Vážené žrebovanie poradia: každá otázka dostane kľúč náhoda^(1/váha)
+   a radí sa od najväčšieho. Váha 132 teda takmer vždy predbehne váhu 2,
+   ale poradie nie je zakaždým rovnaké. */
+function csWeightedOrder(list) {
+  return list.map(q => ({ q, k: Math.pow(Math.random(), 1 / q.w) })).sort((a, b) => b.k - a.k).map(x => x.q);
+}
 function csHighlight(cs) {
   if (!cs.logical) return cs.call;
   let i = 0;
@@ -3634,10 +4196,12 @@ function csHighlight(cs) {
 function csSelection() {
   const F = state.filters;
   let pool = CALLSIGNS;
-  if (F.callsignCat !== 'all') pool = pool.filter(c => c.cat === F.callsignCat);
+  if (F.callsignCat !== 'all') pool = pool.filter(c => csInCat(c, F.callsignCat));
   if (F.csLetter !== 'all') pool = pool.filter(c => c.icao.charAt(0) === F.csLetter);
   if (F.csKind === 'logical') pool = pool.filter(c => c.logical);
   if (F.csKind === 'hard') pool = pool.filter(c => !c.logical);
+  /* podľa dôležitosti: najčastejšie sú hore, takže balíček 1 = 20 najpoužívanejších */
+  if (F.csOrder === 'freq') pool = pool.slice().sort((a, b) => b.freq - a.freq);
   return pool;
 }
 function csPool() {
@@ -3666,6 +4230,7 @@ function csCardShow() {
   const i2c = q.subtype === 'icao-to-call', cs = q.data;
   back.innerHTML = (i2c ? q.group.map(c => '"' + csHighlight(c) + '"').join(' / ') : q.group.map(c => c.icao).join(' / ')) +
     (cs.airline ? `<small>${cs.airline} · ${cs.country}</small>` : '') +
+    (cs.sim ? `<small>na simulátore ${cs.freq}×</small>` : '') +
     (cs.logical ? '' : '<small class="hard">kód sa z volačky nedá vyčítať — treba ho vedieť</small>') +
     csPhotoSlot(cs);
   back.classList.add('open');
@@ -3707,13 +4272,14 @@ function renderCsList(card) {
   const cells = sel.map(cs => `<div class="cs-cell${cs.logical ? '' : ' hard'}">
       <span class="cs-i${hide === 'icao' ? ' hid' : ''}">${cs.icao}</span>
       <span class="cs-c${hide === 'call' ? ' hid' : ''}">${csHighlight(cs)}</span>
+      ${cs.sim ? `<span class="cs-f" data-tipx="1">${cs.freq}×</span>` : ''}
       ${hide === 'none' && cs.airline ? `<span class="cs-a">${cs.airline}</span>` : ''}
     </div>`).join('');
   const b = (v, t) => `<button class="filter-chip ${hide === v ? 'on' : ''}" data-cshide="${v}">${t}</button>`;
   card.innerHTML = `
     <div class="qmeta">OPERATOR CALL <span class="sep">·</span> ZOZNAM NA UČENIE</div>
     <div class="cs-list-bar">${b('none', 'UKÁZAŤ VŠETKO')}${b('call', 'ZAKRYŤ VOLAČKY')}${b('icao', 'ZAKRYŤ KÓDY')}</div>
-    <div class="study-tip" style="text-align:left;margin:8px 0 12px">Zakryté políčko odkryješ kliknutím. Oranžový pruh = kód sa z volačky nedá vyčítať. Podčiarknuté písmená = kód ukrytý vo volačke.</div>
+    <div class="study-tip" style="text-align:left;margin:8px 0 12px">Zakryté políčko odkryješ kliknutím. Oranžový pruh = kód sa z volačky nedá vyčítať. Podčiarknuté písmená = kód ukrytý vo volačke. Číslo s × = koľkokrát sa prevádzkovateľ objavil na simulátore.</div>
     <div class="cs-list">${cells || '<span class="weak-empty">— vo výbere nie je žiadna volačka —</span>'}</div>
   `;
   card.querySelectorAll('[data-cshide]').forEach(x => { x.onclick = () => { state.csHide = x.dataset.cshide; renderQuestion(); }; });
@@ -3730,22 +4296,22 @@ function renderCsList(card) {
    ním podržíš myš.
    ============================================================ */
 const MODE_HELP = {
-  'heading.static': 'Lietadlo stojí na mieste a na mape je oranžový bod. Napíš kurz, ktorý od lietadla vedie na bod, a stlač Enter. Lietadlo sa natočí a uvidíš, či to sedí. Ďalší Enter dá novú úlohu.',
+  'heading.static': 'Lietadlo stojí na mieste a na mape je oranžový bod. Napíš kurz po 5°, ktorý od lietadla vedie na bod (správny je vždy násobok 5), a stlač Enter. Lietadlo sa natočí a uvidíš, či to sedí. Ďalší Enter dá novú úlohu.',
   'heading.gate': 'Lietadlo letí samo. Napíš kurz po 5° (napr. 245) a stlač Enter — lietadlo hneď zatočí. Prelet medzi stĺpikmi oranžovej bránky je zásah a hneď sa objaví ďalšia.',
   'heading.city': 'Lietadlo letí samo. Hore vpravo je miesto, nad ktoré máš preletieť. Napíš kurz po 5° a stlač Enter. Keď názvy na mape vypneš, musíš vedieť, kde miesto leží.',
   'heading.fra':  'To isté ako MIESTA, ale ciele sú význačné body FRA z MOD 04 — precvičíš kurzy aj polohu bodov naraz.',
-  aircraft: 'Na fotke je lietadlo. Napíš jeho ICAO označenie typu (napr. B738) alebo bežný názov a potvrď Enterom. Keď nevieš, HINT ti napovedá po krokoch.',
-  'airport.quiz':   'Dostaneš ICAO kód a napíšeš mesto, alebo dostaneš mesto a napíšeš štvorpísmenový ICAO kód. Potvrdíš Enterom, ďalším Enterom ideš na ďalšiu otázku.',
+  aircraft: 'Na fotke je lietadlo. V ĽAHKEJ verzii vyberieš typ zo štyroch možností, v HARDCORE napíšeš jeho ICAO označenie (napr. B738) alebo názov a potvrdíš Enterom. HINT napovedá po krokoch.',
+  'airport.quiz':   'Dostaneš ICAO kód a určíš mesto, alebo dostaneš mesto a určíš štvorpísmenový ICAO kód. ĽAHKÁ: vyberáš zo štyroch možností. HARDCORE: píšeš z hlavy a potvrdíš Enterom.',
   'airport.map':    'To isté ako KVÍZ, ale vľavo na mape svieti miesto, kde letisko leží. Odpovedáš vpravo — kód si tak spojíš s polohou.',
-  'airport.click':  'Dostaneš kód alebo mesto a klikneš do mapy tam, kde letisko leží. Uzná sa klik do 100 km (na mape Slovenska do 15 km).',
+  'airport.click':  'Dostaneš kód alebo mesto a klikneš do mapy tam, kde letisko leží. ĽAHKÁ uzná klik do 100 km (na mape Slovenska do 15 km), HARDCORE do 50 km (8 km).',
   'airport.prefix': 'Prvé dve písmená ICAO kódu určujú štát. Dostaneš prefix (napr. LO) a napíšeš štát, alebo dostaneš štát a napíšeš prefix.',
   'airport.study':  'Tu sa nič neskúša. Mapa ukazuje, ktorá časť Európy má ktoré prvé písmeno kódu. Klikni na dvojpísmenový kód štátu pre detail.',
-  'callsign.quiz':  'Dostaneš trojpísmenový kód prevádzkovateľa (BAW) a napíšeš volací znak (SPEEDBIRD), alebo naopak. Výber si zmenši filtrom PÍSMENO a BALÍČEK — všetkých je vyše tisíc.',
+  'callsign.quiz':  'Dostaneš trojpísmenový kód prevádzkovateľa (BAW) a určíš volací znak (SPEEDBIRD), alebo naopak — v ĽAHKEJ verzii výberom zo štyroch, v HARDCORE písaním. Najskôr idú volačky, ktoré sa na simulátore používajú najčastejšie. Výber si zmenši cez VÝBER, PÍSMENO a BALÍČEK — všetkých je vyše tisíc.',
   'callsign.cards': 'Kartička ukáže kód alebo volačku. Odpoveď si povedz nahlas, odkry ju medzerníkom a ohodnoť sa: 1 = vedel som, 2 = nevedel som. Nič nepíšeš.',
   'callsign.list':  'Tu sa nič neskúša. Je to zoznam na čítanie — zakry si stĺpec volačiek alebo kódov a odkrývaj políčka kliknutím.',
   'waypoint.quiz':  'Dostaneš názov bodu a klikneš na krúžok na mape, kde bod leží.',
   'waypoint.name':  'Na mape svieti jeden bod. Napíš jeho názov a potvrď Enterom.',
-  'waypoint.blind': 'Na mape sú očíslované body bez mien. Do políčok pod mapou napíš názov ku každému číslu a daj VYHODNOTIŤ — nemusíš vyplniť všetky.',
+  'waypoint.blind': 'Na mape sú očíslované body bez mien. Do políčok pod mapou napíš názov ku každému číslu a daj VYHODNOTIŤ — nemusíš vyplniť všetky. V ĽAHKEJ verzii je v políčku prvé písmeno.',
   'waypoint.study': 'Tu sa nič neskúša. Mapa ukazuje všetky body s menami, farebne podľa sektora. Klikni na bod pre detail.',
 };
 function modeHelpKey() {
@@ -3770,8 +4336,8 @@ const TIPS = {
   'mode=heading': 'MOD 05 — navádzanie jedného lietadla kurzami po 5° cez bránky alebo nad miesta.',
   'hgkind=gate': 'Ciele sú náhodné bránky na mape.', 'hgkind=city': 'Ciele sú slovenské mestá a letiská.', 'hgkind=fra': 'Ciele sú význačné body FRA z MOD 04.',
   'hgmode=move': 'Lietadlo letí a ty ho kurzami navádzaš cez ciele.', 'hgmode=static': 'Lietadlo stojí; len určíš kurz na bod a hneď vidíš, či je správny.',
-  'hgdiff=easy': 'Ľahšia verzia: pomalšie lietadlo a širšia bránka, resp. kurz po 5° s toleranciou ±5°.',
-  'hgdiff=hard': 'Hardcore: rýchle lietadlo a úzka bránka, resp. kurz na stupeň s toleranciou ±2°.',
+  'hgdiff=easy': 'Ľahšia verzia: pomalšie lietadlo a širšia bránka; v statickom režime sa uzná aj kurz o 5° vedľa.',
+  'hgdiff=hard': 'Hardcore: rýchle lietadlo a úzka bránka; v statickom režime sa uzná len presný kurz.',
   '#hs-next': 'Nová úloha. To isté spraví Enter.',
   'hgnames=on': 'Miesta sú na mape pomenované a cieľ je zvýraznený.', 'hgnames=off': 'Na mape sú len bodky bez mien — polohu cieľa musíš vedieť.',
   'hgrose=on': 'Zapne okolo lietadla kruh s kurzami — pomôcka na odhad.', 'hgrose=off': 'Bez kruhu okolo lietadla — kurz odhaduješ z hlavy.',
@@ -3781,7 +4347,7 @@ const TIPS = {
   'mode=airport':  'MOD 02 — ICAO kódy letísk, mapa Európy a prefixy štátov.',
   'mode=callsign': 'MOD 03 — trojpísmenové kódy prevádzkovateľov a ich volacie znaky.',
   'mode=waypoint': 'MOD 04 — význačné body FRA v FIR Bratislava na mape.',
-  '#btn-fs':    'Roztiahne cvičenie s mapou na celú obrazovku, aby bola mapa čo najväčšia. Späť klávesom Esc.',
+  '#btn-fs':    'Roztiahne cvičenie na celú obrazovku. Späť klávesom Esc.',
   '#btn-skip':  'Preskočí otázku. Počíta sa ako chyba a zapíše sa do slabých miest. V MOD 05 dá nový cieľ.',
   '#btn-reset': 'Začne cvičenie odznova s tými istými filtrami a vynuluje skóre hore.',
   '#btn-hint':  'Ukáže ďalšiu nápovedu. Nápovedy idú od najmenšej po najväčšiu.',
@@ -3804,8 +4370,9 @@ const TIPS = {
   'apmode=click':  'Ty klikáš do mapy, kde letisko leží.',
   'apmode=prefix': 'Učíš sa prvé dve písmená kódu — ktorý štát má ktorý prefix. Bez mapy.',
   'apmode=study':  'Mapa oblastí ICAO na prezeranie, nič sa neskúša.',
-  'apans=choice':  'Vyberáš zo štyroch možností. Nesprávne sú zámerne podobné.',
-  'apans=type':    'Odpoveď píšeš z hlavy. Ťažšie, ale tak sa to naozaj naučíš.',
+  'acans=choice':  'Ľahká verzia: vyberáš typ lietadla zo štyroch podobných možností.', 'acans=type': 'Hardcore: typ lietadla píšeš z hlavy.',
+  'apans=choice':  'Ľahká verzia: vyberáš zo štyroch podobných možností; pri klikaní do mapy väčšia tolerancia.',
+  'apans=type':    'Hardcore: odpoveď píšeš z hlavy; pri klikaní do mapy polovičná tolerancia.',
   'apcat=all':     'Všetky letiská.', 'apcat=sk': 'Len slovenské letiská.',
   'apcat=neigh':   'Len letiská susedných štátov (CZ, AT, HU, PL, UA).',
   'apcat=other':   'Ostatné letiská — zvyšok Európy a svet (v režimoch s mapou len Európa).',
@@ -3817,9 +4384,12 @@ const TIPS = {
   'csmode=quiz':   'Kvíz: kód ↔ volačka, písaním alebo výberom z možností.',
   'csmode=cards':  'Kartičky: odpoveď si povieš sám, odkryješ ju a ohodnotíš sa.',
   'csmode=list':   'Zoznam na čítanie so zakrývaním stĺpcov.',
-  'csans=choice':  'Vyberáš zo štyroch možností — susedov v abecede.',
-  'csans=type':    'Odpoveď píšeš z hlavy.',
+  'csans=choice':  'Ľahká verzia: vyberáš zo štyroch možností — susedov v abecede.',
+  'csans=type':    'Hardcore: odpoveď píšeš z hlavy.',
   'csdir=both':    'Otázky idú oboma smermi.', 'csdir=i2c': 'Len kód → volačka (BAW → ?).', 'csdir=c2i': 'Len volačka → kód (SPEEDBIRD → ?).',
+  'cscat=top':     'Len prevádzkovatelia z tabuľky zo simulátora — tí, ktorých naozaj stretneš.',
+  'csorder=freq':  'Čím častejšie sa prevádzkovateľ objavuje na simulátore, tým skôr príde na rad; najčastejší prídu aj viackrát. Balíček 1 je potom 20 najpoužívanejších.',
+  'csorder=rand':  'Čisto náhodné poradie, bez ohľadu na to, ako často sa volačka používa. Balíčky sú podľa abecedy.',
   'cscat=all':     'Všetky volačky z dokumentu.', 'cscat=sk': 'Len 25 dopravcov, ktorí bežne lietajú cez Slovensko. Dobrý začiatok.',
   'cscat=other':   'Všetci ostatní dopravcovia.',
   'cskind=all':    'Všetky volačky vo výbere.',
@@ -3888,11 +4458,8 @@ function tipFor(el) {
   new MutationObserver(fit).observe(card, { childList: true });
   fit();
 })();
-function modeHasMap() {
-  const F = state.filters;
-  if (state.mode === 'waypoint' || state.mode === 'heading') return true;
-  return state.mode === 'airport' && (F.apMode === 'map' || F.apMode === 'click' || F.apMode === 'study');
-}
+/* celá obrazovka je dostupná v každom module */
+function modeHasMap() { return true; }
 function fsActive() {
   const p = document.querySelector('.panel');
   return document.fullscreenElement === p || p.classList.contains('fs');
@@ -3933,7 +4500,7 @@ const HG_SPEED = { easy: 20, hard: 40 };              // px za sekundu (ĽAHKÁ 
 const HG_TURN  = 90;                                 // ° za sekundu — skoro hneď, ale zatáčku ešte vidno
 const HG_DELAY = 0;                                  // bez oneskorenia: lietadlo točí hneď po Enteri
 const HG_GATE  = { easy: 30, hard: 16 };              // polomer bránky v px
-const HS_TOL   = { easy: 5, hard: 2 };                // statický režim: o koľko stupňov smieš byť vedľa
+const HS_TOL   = { easy: 5, hard: 0 };                // statický režim: o koľko stupňov smieš byť vedľa
 const HG_POINT_R = 14;                               // do akej vzdialenosti sa ráta prelet miesta
 const HG = { raf: 0, run: false, built: false };
 
@@ -4005,21 +4572,23 @@ function hgRoseSVG() {
    STATICKÝ REŽIM
    Lietadlo stojí na mieste, niekde na Slovensku je bod. Napíšeš
    kurz, ktorý na bod vedie; lietadlo sa naň natočí a ukáže sa,
-   či to sedí. ĽAHKÁ: kurz po 5°, uzná sa ±5°. HARDCORE: kurz na
-   stupeň, uzná sa ±2° (presnejšie sa z mapy odhadnúť nedá).
+   či to sedí. Kurzy sú len násobky 5 (230, 235…), nikdy 232.
+   ĽAHKÁ: uzná sa aj susedný kurz (±5°). HARDCORE: len presný kurz.
    ------------------------------------------------------------ */
 const HS = {};
+/* Správny kurz je VŽDY násobok 5: najprv sa vyžrebuje kurz (005…360),
+   potom vzdialenosť, a bod sa položí presne v tom smere od lietadla. */
 function hsNew() {
-  const rnd = () => {
-    for (let i = 0; i < 400; i++) {
-      const x = 60 + Math.random() * 880, y = 40 + Math.random() * 450;
-      if (hgInside(x, y)) return [x, y];
-    }
-    return [500, 267];
-  };
-  let a = rnd(), t = rnd();
-  for (let i = 0; i < 60 && Math.hypot(a[0] - t[0], a[1] - t[1]) < 160; i++) t = rnd();
-  Object.assign(HS, { ax: a[0], ay: a[1], tx: t[0], ty: t[1], brg: hgBearing(a[0], a[1], t[0], t[1]), done: false });
+  for (let i = 0; i < 2000; i++) {
+    const ax = 60 + Math.random() * 880, ay = 40 + Math.random() * 450;
+    if (!hgInside(ax, ay)) continue;
+    const brg = 5 * (1 + Math.floor(Math.random() * 72)), d = 160 + Math.random() * 380, a = brg * Math.PI / 180;
+    const tx = ax + Math.sin(a) * d, ty = ay - Math.cos(a) * d;
+    if (tx < 30 || ty < 25 || tx > 970 || ty > 510 || !hgInside(tx, ty)) continue;
+    Object.assign(HS, { ax, ay, tx, ty, brg, done: false });
+    return;
+  }
+  Object.assign(HS, { ax: 300, ay: 300, tx: 600, ty: 300, brg: 90, done: false });
 }
 function hsRender(card) {
   const F = state.filters, P = MAP_PROJ, hard = F.hgDiff === 'hard';
@@ -4042,10 +4611,10 @@ function hsRender(card) {
     </svg></div>
     <div class="hg-task"><span>ÚLOHA</span><strong>Aký kurz vedie od lietadla na oranžový bod?</strong></div>
     <div class="input-row">
-      <input type="text" id="hg-in" inputmode="numeric" maxlength="3" placeholder="${hard ? 'KURZ NA STUPEŇ (napr. 247)' : 'KURZ PO 5° (napr. 245)'}" autocomplete="off">
+      <input type="text" id="hg-in" inputmode="numeric" maxlength="3" placeholder="KURZ PO 5° (napr. 245)" autocomplete="off">
       <button class="btn" id="hg-go">POTVRDIŤ ▶</button>
     </div>
-    <div class="hg-msg" id="hg-msg">${hard ? 'HARDCORE: napíš kurz na stupeň presne. Uzná sa odchýlka do ±' + HS_TOL.hard + '°.' : 'Napíš kurz po 5°. Uzná sa odchýlka do ±' + HS_TOL.easy + '°.'}</div>
+    <div class="hg-msg" id="hg-msg">${hard ? 'HARDCORE: napíš kurz po 5°. Uzná sa len presný kurz.' : 'Napíš kurz po 5°. Uzná sa aj kurz o 5° vedľa.'}</div>
     <div class="hg-hdgs" id="hs-res" style="display:none">
       <div><span>TVOJ KURZ</span><b id="hs-you" class="set">—</b></div>
       <div><span>SPRÁVNY KURZ</span><b id="hs-true">—</b></div>
@@ -4065,7 +4634,7 @@ function hsAnswer() {
   const inp = document.getElementById('hg-in'), raw = inp.value.trim(), n = Number(raw);
   if (!raw) return;
   if (!/^\d{1,3}$/.test(raw) || n > 360) { hgMsg(`„${raw}“ nie je kurz. Zadaj číslo 001 až 360.`, 'no'); inp.value = ''; return; }
-  if (!hard && n % 5 !== 0) { hgMsg(`${hgPad(n)} nie je po 5°. Skús ${hgPad(Math.floor(n / 5) * 5)} alebo ${hgPad(Math.ceil(n / 5) * 5)}.`, 'no'); inp.value = ''; return; }
+  if (n % 5 !== 0) { hgMsg(`${hgPad(n)} nie je po 5°. Skús ${hgPad(Math.floor(n / 5) * 5)} alebo ${hgPad(Math.ceil(n / 5) * 5)}.`, 'no'); inp.value = ''; return; }
   const you = hgNorm(n), err = Math.abs(hgDiff(you, HS.brg)), ok = err <= HS_TOL[F.hgDiff] + 0.5;
   HS.done = true;
   if (ok) { state.correct++; state.streak++; if (state.streak > state.bestStreak) state.bestStreak = state.streak; }
@@ -4333,7 +4902,19 @@ function buildCallsignQuestions() {
     if (weak.length) list = weak;
     else { F.csWeak = false; state.csNote = 'V tomto výbere nemáš žiadne slabé miesta — idú všetky otázky.'; }
   }
-  return shuffle(list);
+  if (F.csOrder !== 'freq') return shuffle(list);
+  /* váha otázky = najvyššia frekvencia v jej skupine; veľmi časté
+     volačky (20+ a 60+) sa v cvičení objavia dva- až trikrát */
+  list.forEach(q => { q.w = Math.max.apply(null, q.group.map(c => c.freq)); });
+  const extra = [];
+  list.forEach(q => {
+    const n = q.w >= 60 ? 2 : q.w >= 20 ? 1 : 0;
+    for (let k = 1; k <= n; k++) extra.push(Object.assign({}, q, { w: q.w / (3 * k), again: true }));
+  });
+  /* najprv všetko, čo je v tabuľke zo simulátora (vážene podľa počtu),
+     až potom zvyšok dokumentu v náhodnom poradí */
+  const inSim = q => q.group.some(c => c.sim);
+  return csWeightedOrder(list.filter(inSim).concat(extra)).concat(shuffle(list.filter(q => !inSim(q))));
 }
 /* Volačiek je vyše tisíc a mnohé sa líšia jediným písmenom
    (BEXJET / BEEJET). Tolerancia preklepov preto nesmie uznať odpoveď,
@@ -4492,7 +5073,7 @@ function renderWaypointBlind(card) {
     return `<div class="blind-cell">
       <span class="blind-n">${i + 1}</span>
       <input class="${cls}" data-bi="${i}" value="${shown.replace(/"/g,'&quot;')}"
-             ${B.checked ? 'disabled' : ''} autocomplete="off" spellcheck="false" maxlength="10">
+             ${B.checked ? 'disabled' : ''} placeholder="${state.filters.wpDiff === 'hard' ? '' : w.name.charAt(0) + '····'}" autocomplete="off" spellcheck="false" maxlength="10">
       ${was}
     </div>`;
   }).join('');
@@ -4832,7 +5413,8 @@ function renderQuestion() {
   }
 
   /* MOD 02 — výber z možností namiesto písania */
-  if (((q.type === 'airport' || q.type === 'prefix') && state.filters.apAns === 'choice') ||
+  if ((q.type === 'aircraft' && state.filters.acAns === 'choice') ||
+      ((q.type === 'airport' || q.type === 'prefix') && state.filters.apAns === 'choice') ||
       (q.type === 'callsign' && state.filters.csAns === 'choice')) {
     renderChoiceQuestion(q, card, body);
     return;
@@ -5492,7 +6074,10 @@ function renderFilters() {
   const el = document.getElementById('filters');
   if (state.mode === 'aircraft') {
     el.innerHTML = `
-      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">WAKE FILTER:</span>
+      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">OBTIAŽNOSŤ:</span>
+      <button class="filter-chip ${state.filters.acAns==='choice'?'on':''}" data-acans="choice">ĽAHKÁ (výber zo 4 možností)</button>
+      <button class="filter-chip ${state.filters.acAns==='type'?'on':''}" data-acans="type">HARDCORE (písanie)</button>
+      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">TURBULENCIA V ÚPLAVE:</span>
       <button class="filter-chip ${state.filters.wake==='all'?'on':''}" data-wake="all">ALL</button>
       <button class="filter-chip ${state.filters.wake==='L'?'on':''}" data-wake="L">LIGHT</button>
       <button class="filter-chip ${state.filters.wake==='M'?'on':''}" data-wake="M">MEDIUM</button>
@@ -5502,6 +6087,9 @@ function renderFilters() {
     el.querySelectorAll('[data-wake]').forEach(b => {
       b.onclick = () => { state.filters.wake = b.dataset.wake; startMode(state.mode); };
     });
+    el.querySelectorAll('[data-acans]').forEach(b => {
+      b.onclick = () => { state.filters.acAns = b.dataset.acans; startMode(state.mode); };
+    });
   } else if (state.mode === 'airport') {
     const F = state.filters, apm = F.apMode, c = F.airportCat;
     const lab = (t, first) => `<span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:${first ? '0 6px 0 0' : '0 6px'}">${t}</span>`;
@@ -5510,9 +6098,11 @@ function renderFilters() {
       chip(apm==='quiz', 'apmode', 'quiz', 'KVÍZ') + chip(apm==='map', 'apmode', 'map', 'MAPA') +
       chip(apm==='click', 'apmode', 'click', 'KLIKNI NA MAPU') + chip(apm==='prefix', 'apmode', 'prefix', 'PREFIXY ŠTÁTOV') +
       chip(apm==='study', 'apmode', 'study', 'ŠTÚDIUM');
-    if (apm === 'quiz' || apm === 'map' || apm === 'prefix') {
-      h += '<span class="filter-break"></span>' + lab('ODPOVEĎ:', true) +
-        chip(F.apAns==='choice', 'apans', 'choice', 'VÝBER Z MOŽNOSTÍ (ľahšie)') + chip(F.apAns==='type', 'apans', 'type', 'PÍSANIE');
+    if (apm !== 'study') {
+      const ck = apm === 'click';
+      h += '<span class="filter-break"></span>' + lab('OBTIAŽNOSŤ:', true) +
+        chip(F.apAns==='choice', 'apans', 'choice', ck ? 'ĽAHKÁ (uzná sa do 100 km)' : 'ĽAHKÁ (výber zo 4 možností)') +
+        chip(F.apAns==='type', 'apans', 'type', ck ? 'HARDCORE (uzná sa do 50 km)' : 'HARDCORE (písanie)');
     }
     if (apm === 'quiz' || apm === 'map' || apm === 'click') {
       const eu = apm !== 'quiz';
@@ -5549,14 +6139,15 @@ function renderFilters() {
     const chip = (on, attr, val, txt) => `<button class="filter-chip ${on ? 'on' : ''}" data-${attr}="${val}">${txt}</button>`;
     const br = '<span class="filter-break"></span>';
     /* písmená sa ponúkajú len tie, ktoré vo zvolenej kategórii naozaj sú */
-    const inCat = CALLSIGNS.filter(c => cat === 'all' || c.cat === cat);
+    const inCat = CALLSIGNS.filter(c => csInCat(c, cat));
     const letters = [...new Set(inCat.map(c => c.icao.charAt(0)))].sort();
     const sel = csSelection(), packs = Math.ceil(sel.length / CS_PACK);
     const byL = inCat.filter(c => L === 'all' || c.icao.charAt(0) === L);
     let h = lab('REŽIM:') + chip(m==='quiz', 'csmode', 'quiz', 'KVÍZ') + chip(m==='cards', 'csmode', 'cards', 'KARTIČKY') + chip(m==='list', 'csmode', 'list', 'ZOZNAM');
-    if (m === 'quiz') h += br + lab('ODPOVEĎ:') + chip(F.csAns==='choice', 'csans', 'choice', 'VÝBER Z MOŽNOSTÍ (ľahšie)') + chip(F.csAns==='type', 'csans', 'type', 'PÍSANIE');
+    if (m === 'quiz') h += br + lab('OBTIAŽNOSŤ:') + chip(F.csAns==='choice', 'csans', 'choice', 'ĽAHKÁ (výber zo 4 možností)') + chip(F.csAns==='type', 'csans', 'type', 'HARDCORE (písanie)');
     if (m !== 'list') h += br + lab('SMER:') + chip(F.csDir==='both', 'csdir', 'both', 'OBOJE') + chip(F.csDir==='i2c', 'csdir', 'i2c', 'KÓD → VOLAČKA') + chip(F.csDir==='c2i', 'csdir', 'c2i', 'VOLAČKA → KÓD');
-    h += br + lab('CATEGORY:') + chip(cat==='all', 'cscat', 'all', 'ALL') + chip(cat==='sk', 'cscat', 'sk', 'CEZ SLOVENSKO') + chip(cat==='other', 'cscat', 'other', 'OSTATNÉ');
+    h += br + lab('VÝBER:') + chip(cat==='all', 'cscat', 'all', `VŠETKY (${CALLSIGNS.length})`) + chip(cat==='top', 'cscat', 'top', `NAJPOUŽÍVANEJŠIE NA SIMULÁTORE (${CALLSIGNS.filter(c => c.sim).length})`) + chip(cat==='sk', 'cscat', 'sk', 'CEZ SLOVENSKO') + chip(cat==='other', 'cscat', 'other', 'OSTATNÉ');
+    h += br + lab('PORADIE:') + chip(F.csOrder==='freq', 'csorder', 'freq', 'NAJPOUŽÍVANEJŠIE AKO PRVÉ') + chip(F.csOrder==='rand', 'csorder', 'rand', 'NÁHODNE');
     h += br + lab('TYP:') + chip(F.csKind==='all', 'cskind', 'all', `VŠETKY (${byL.length})`) +
       chip(F.csKind==='hard', 'cskind', 'hard', `BEZ SÚVISU — TREBA VEDIEŤ (${byL.filter(c => !c.logical).length})`) +
       chip(F.csKind==='logical', 'cskind', 'logical', `KÓD VO VOLAČKE (${byL.filter(c => c.logical).length})`);
@@ -5585,6 +6176,7 @@ function renderFilters() {
     /* zmena výberu zmení aj hranice balíčkov, takže sa začína od celku */
     on('cscat',  v => { F.callsignCat = v; F.csLetter = 'all'; F.csPack = 0; go(); });
     on('cskind', v => { F.csKind = v; F.csPack = 0; go(); });
+    on('csorder', v => { F.csOrder = v; F.csPack = 0; go(); });
     on('csl',    v => { F.csLetter = v; F.csPack = 0; go(); });
     on('cspk',   v => { F.csPack = v === 'next' ? (F.csPack % packs) + 1 : (F.csPack > 1 ? F.csPack - 1 : packs); go(); });
     on('csweak', () => { F.csWeak = !F.csWeak; go(); });
@@ -5608,8 +6200,9 @@ function renderFilters() {
        kandidátov, pri pomenovaní to, koľko okolia dostaneš pomenovaného */
     const diffLabels = wpm === 'name'
       ? ['ĽAHKÁ (susedia s menami)', 'HARDCORE (celý sektor, bez mien)']
+      : wpm === 'blind' ? ['ĽAHKÁ (prvé písmeno ako nápoveda)', 'HARDCORE (bez nápovede)']
       : ['ĽAHKÁ (5 bodov)', 'HARDCORE (všetky)'];
-    const difficulty = (wpm === 'study' || wpm === 'blind') ? '' : `
+    const difficulty = (wpm === 'study') ? '' : `
       <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:0 6px">OBTIAŽNOSŤ:</span>
       <button class="filter-chip ${!hard?'on':''}" data-wpdiff="easy">${diffLabels[0]}</button>
       <button class="filter-chip ${hard?'on':''}" data-wpdiff="hard">${diffLabels[1]}</button>`;
@@ -5644,9 +6237,9 @@ function renderFilters() {
     const chip = (on, attr, val, txt) => `<button class="filter-chip ${on ? 'on' : ''}" data-${attr}="${val}">${txt}</button>`;
     const br = '<span class="filter-break"></span>';
     const mv = F.hgMode === 'move';
-    let h = lab('REŽIM:') + chip(mv, 'hgmode', 'move', 'POHYBLIVÝ') + chip(!mv, 'hgmode', 'static', 'STATICKÝ');
-    h += br + lab('OBTIAŽNOSŤ:') + chip(F.hgDiff==='easy', 'hgdiff', 'easy', mv ? 'ĽAHKÁ (pomalšie, široká bránka)' : 'ĽAHKÁ (po 5°, ±5°)') +
-      chip(F.hgDiff==='hard', 'hgdiff', 'hard', mv ? 'HARDCORE (rýchlo, úzka bránka)' : 'HARDCORE (na stupeň, ±2°)');
+    let h = lab('REŽIM:') + chip(!mv, 'hgmode', 'static', 'STATICKÝ') + chip(mv, 'hgmode', 'move', 'POHYBLIVÝ');
+    h += br + lab('OBTIAŽNOSŤ:') + chip(F.hgDiff==='easy', 'hgdiff', 'easy', mv ? 'ĽAHKÁ (pomalšie, široká bránka)' : 'ĽAHKÁ (uzná aj o 5° vedľa)') +
+      chip(F.hgDiff==='hard', 'hgdiff', 'hard', mv ? 'HARDCORE (rýchlo, úzka bránka)' : 'HARDCORE (len presný kurz)');
     if (mv) {
       h += br + lab('CIEĽ:') + chip(F.hgKind==='gate', 'hgkind', 'gate', 'BRÁNKY') + chip(F.hgKind==='city', 'hgkind', 'city', 'MIESTA') + chip(F.hgKind==='fra', 'hgkind', 'fra', 'BODY FRA');
       if (F.hgKind !== 'gate') h += br + lab('NÁZVY NA MAPE:') + chip(F.hgNames==='on', 'hgnames', 'on', 'ZAPNUTÉ') + chip(F.hgNames==='off', 'hgnames', 'off', 'VYPNUTÉ (ťažšie)');
@@ -5659,6 +6252,35 @@ function renderFilters() {
     });
   }
   renderModeHelp();
+  layoutFilters();
+}
+
+/* Filtre sa skladajú ako rad štítkov a tlačidiel; tu sa preskupia do
+   tabuľky: v ľavom stĺpci názov riadku, v pravom jeho voľby. Presúvajú
+   sa existujúce prvky, takže ich ovládanie ostáva funkčné. */
+function layoutFilters() {
+  const el = document.getElementById('filters');
+  const nodes = Array.prototype.slice.call(el.children);
+  const table = document.createElement('div');
+  table.className = 'f-table';
+  let help = null, opts = null;
+  nodes.forEach(n => {
+    if (n.classList.contains('mode-help')) { help = n; return; }
+    if (n.classList.contains('filter-break')) return;
+    const isLabel = n.tagName === 'SPAN' && !n.className && /:\s*$/.test(n.textContent);
+    if (isLabel || !opts) {
+      const row = document.createElement('div'); row.className = 'f-row';
+      const lab = document.createElement('div'); lab.className = 'f-lab';
+      lab.textContent = isLabel ? n.textContent.replace(/:\s*$/, '') : '';
+      opts = document.createElement('div'); opts.className = 'f-opts';
+      row.appendChild(lab); row.appendChild(opts); table.appendChild(row);
+      if (isLabel) return;
+    }
+    opts.appendChild(n);
+  });
+  el.innerHTML = '';
+  if (help) el.appendChild(help);
+  if (table.children.length) el.appendChild(table);
 }
 
 /* ============================================================
@@ -5718,6 +6340,7 @@ function renderReveal(q) {
     grid = `
       <div class="item"><span class="item-label">ICAO 3LTR</span><span class="item-val"><strong>${cs.icao}</strong></span></div>
       <div class="item"><span class="item-label">CALLSIGN</span><span class="item-val"><strong>"${csHighlight(cs)}"</strong></span></div>
+      <div class="item"><span class="item-label">NA SIMULÁTORE</span><span class="item-val">${cs.sim ? `<strong>${cs.freq}×</strong> v tabuľke` : 'nie je v tabuľke (váha 1)'}</span></div>
       <div class="item"><span class="item-label">POMÔCKA</span><span class="item-val">${cs.logical ? 'písmená kódu sú vo volačke (podčiarknuté)' : 'kód sa z volačky nedá vyčítať — treba ho vedieť'}</span></div>
     `;
     if (cs.airline) grid += `
@@ -5764,7 +6387,7 @@ function submitAnswer() {
   renderWeak();
 
   input.disabled = true;
-  if (q.type === 'airport' || q.type === 'prefix' || q.type === 'callsign') apAfterAnswer(q, ok);
+  if (q.type === 'aircraft' || q.type === 'airport' || q.type === 'prefix' || q.type === 'callsign') apAfterAnswer(q, ok);
   const sb = document.getElementById('submit-btn');
   sb.disabled = true; sb.style.opacity = '0.4';
   const hb = document.getElementById('btn-hint'); if (hb) hb.disabled = true;
