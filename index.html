@@ -226,8 +226,8 @@
   .ap-label { font-family:var(--mono); font-size:11px; font-weight:800; pointer-events:none; paint-order:stroke; stroke:#fbfdfc; stroke-width:3px; stroke-linejoin:round; }
   .ap-label.ok { fill:var(--green); }
   .ap-label.no { fill:var(--red); }
-  .ap-st { font-family:var(--mono); font-size:10px; font-weight:800; fill:#16221c; text-anchor:middle; cursor:pointer; paint-order:stroke; stroke:#ffffff; stroke-width:2.6px; stroke-linejoin:round; }
-  .ap-st:hover, .ap-st.sel { fill:var(--red); font-size:12px; }
+  .ap-st { font-family:var(--mono); font-size:12px; font-weight:800; fill:#16221c; text-anchor:middle; cursor:pointer; paint-order:stroke; stroke:#ffffff; stroke-width:3.2px; stroke-linejoin:round; }
+  .ap-st:hover, .ap-st.sel { fill:var(--red); font-size:15px; }
   .ap-struct { display:flex; gap:18px; align-items:center; margin-top:14px; padding:14px 18px; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; flex-wrap:wrap; }
   .ap-struct-code { display:flex; gap:4px; }
   .ap-struct-code span { font-family:var(--display); font-size:30px; font-weight:700; color:#fff; background:var(--green-strong); width:40px; height:46px; display:flex; align-items:center; justify-content:center; border-radius:6px; }
@@ -282,6 +282,51 @@
   .controls-right .btn { padding:9px 24px; }
   .cs-pack { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; font-weight:600; color:var(--text-dim); background:#fff; border:1.5px solid var(--border-bright); border-radius:20px; padding:6px 10px; }
 
+  /* ===== popis režimu + nápovedy k tlačidlám ===== */
+  .mode-help { flex-basis:100%; display:flex; gap:14px; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; background:#ffffff; border:1px solid var(--border); border-left:4px solid var(--green-strong); border-radius:0 6px 6px 0; padding:10px 14px; margin-bottom:4px; font-size:12px; line-height:1.6; color:var(--text); }
+  .mode-help > div:first-child { flex:1; min-width:260px; }
+  .mode-help strong { display:block; font-size:9px; letter-spacing:0.2em; color:var(--green); margin-bottom:2px; }
+  .mode-help-tip { font-size:10.5px; color:var(--text-faint); white-space:nowrap; align-self:center; }
+  .tipbox { position:fixed; z-index:50; display:none; max-width:320px; background:#16221c; color:#ffffff; font-family:var(--mono); font-size:11px; line-height:1.5; letter-spacing:0.02em; padding:8px 11px; border-radius:6px; box-shadow:0 4px 14px rgba(16,40,28,0.25); pointer-events:none; }
+
+  /* ===== MOD 02 — mapa vľavo, otázka a odpoveď vpravo ===== */
+  /* V režime s mapou sa hlavička a karty modulov stiahnu, aby mapa
+     dostala čo najviac výšky a stále sa zmestila na jednu obrazovku. */
+  .app.wide { max-width:min(97vw, 1800px); padding-top:10px; }
+  .app.wide header { padding:8px 18px; margin-bottom:10px; }
+  .app.wide .tabs { margin-bottom:10px; }
+  .app.wide .tab { padding:8px 14px; }
+  .app.wide .tab .tab-num { display:inline; margin:0 10px 0 0; }
+  .qcard.split { --mapoff:196px; container-type:inline-size; display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:28px; align-items:start; align-content:start; padding:20px 24px; }
+  .qcard.split > * { grid-column:2; }
+  /* šírka mapy = čo dovolí výška okna (cez pomer strán --ar), najviac
+     68 % karty, aby vpravo ostalo miesto na otázku */
+  .qcard.split > .map-wrap { grid-column:1; grid-row:1 / span 30; position:sticky; top:10px; margin-top:0;
+    width:min(calc((100vh - var(--mapoff)) * var(--ar, 1.2)), 68cqw); }
+  .qcard.split .big-prompt { margin-top:18px; }
+  /* ŠTÚDIUM vpravo od mapy: väčšie písmo, nech sa to dá čítať z diaľky */
+  .qcard.split .study-detail { margin-top:6px; }
+  .qcard.split .study-detail .reveal-title { font-size:28px; }
+  .qcard.split .ap-area { font-size:12.5px; }
+  .qcard.split .ap-struct-txt { font-size:12.5px; }
+  .qcard.split .ap-areas { grid-template-columns:1fr; }
+  .qcard.split .reveal-grid { grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); }
+  @media (max-width:1100px) {
+    .qcard.split { display:block; }
+    .qcard.split > .map-wrap { position:static; width:auto; }
+  }
+
+  /* ===== celá obrazovka pre režimy s mapou ===== */
+  .fs-btn { background:var(--green-strong); border:1.5px solid var(--green-strong); color:#ffffff; padding:8px 16px; font-family:var(--mono); font-size:12px; letter-spacing:0.12em; font-weight:700; cursor:pointer; border-radius:6px; box-shadow:var(--shadow-btn); }
+  .fs-btn:hover { background:var(--green); border-color:var(--green); }
+  .panel:fullscreen, .panel.fs { border:none; border-radius:0; overflow:auto; background:var(--panel); }
+  .panel.fs { position:fixed; inset:0; z-index:40; }
+  .panel:fullscreen .qcard, .panel.fs .qcard { min-height:calc(100vh - 46px); }
+  .panel:fullscreen .qcard.split, .panel.fs .qcard.split { --mapoff:92px; }
+  /* mapy, ktoré nie sú vedľa otázky (MOD 04, ŠTÚDIUM): zväčšia sa na výšku okna */
+  .panel:fullscreen .qcard:not(.split) .map-wrap, .panel.fs .qcard:not(.split) .map-wrap {
+    width:min(100%, calc((100vh - 240px) * var(--ar, 1.87))); margin-left:auto; margin-right:auto; }
+
   @media (max-width:760px) {
     .aircraft-display { grid-template-columns:1fr; }
     .big-prompt { font-size:44px; }
@@ -315,6 +360,7 @@
     <div class="panel-head">
       <div><span id="mode-label">AIRCRAFT TYPE</span> <span style="margin-left:10px;color:var(--text-faint)">QUESTION <span id="qnum">1</span> / <span id="qtotal">--</span></span></div>
       <div class="stats">
+        <button class="fs-btn" id="btn-fs" style="display:none">⛶ CELÁ OBRAZOVKA</button>
         <div class="stat"><span class="stat-label">CORRECT</span><span class="stat-val" id="stat-correct">0</span></div>
         <div class="stat"><span class="stat-label">WRONG</span><span class="stat-val red" id="stat-wrong">0</span></div>
         <div class="stat"><span class="stat-label">STREAK</span><span class="stat-val amber" id="stat-streak">0</span></div>
@@ -3060,8 +3106,23 @@ const EU = { plain:'', colored:'', ready:false, hit:{}, stateAt:null };
   img.src = EU_IMG_SRC;
 })();
 
-function euMapSVG(kind, inner) {
-  return `<svg viewBox="0 0 ${EU_W} ${EU_H}" xmlns="http://www.w3.org/2000/svg" id="map-svg">
+/* Výrez mapy pre kvíz: len časť, kde ležia letiská zo zoznamu (bez
+   prázdneho Atlantiku a Ruska) — na rovnakej ploche je všetko väčšie. */
+let EU_CROP_CACHE = null;
+function euCrop() {
+  if (EU_CROP_CACHE) return EU_CROP_CACHE;
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  AIRPORTS.filter(a => a.cat !== 'sk' && airportOnMap(a)).forEach(a => {
+    const p = AP_POS[a.icao], xy = euXY(p[0], p[1]);
+    x0 = Math.min(x0, xy[0]); x1 = Math.max(x1, xy[0]); y0 = Math.min(y0, xy[1]); y1 = Math.max(y1, xy[1]);
+  });
+  const pad = 42;
+  x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(EU_W, x1 + pad); y1 = Math.min(EU_H, y1 + pad);
+  return (EU_CROP_CACHE = { x: Math.round(x0), y: Math.round(y0), w: Math.round(x1 - x0), h: Math.round(y1 - y0) });
+}
+function euMapSVG(kind, inner, crop) {
+  const c = crop ? euCrop() : { x: 0, y: 0, w: EU_W, h: EU_H };
+  return `<svg viewBox="${c.x} ${c.y} ${c.w} ${c.h}" xmlns="http://www.w3.org/2000/svg" id="map-svg">
     <rect x="0" y="0" width="${EU_W}" height="${EU_H}" fill="#fbfdfc"></rect>
     <image data-eu="${kind}" href="${EU[kind]}" x="0" y="0" width="${EU_W}" height="${EU_H}"></image>
     ${inner}
@@ -3086,11 +3147,12 @@ function airportMapXY(ap) {
   const p = AP_POS[ap.icao];
   if (ap.cat === 'sk') return { sk: true, x: projX(p[1]), y: projY(p[0]), w: MAP_PROJ.w };
   const [x, y] = euXY(p[0], p[1]);
-  return { sk: false, x, y, w: EU_W };
+  const c = euCrop();
+  return { sk: false, x, y, w: c.x + c.w };
 }
 function airportMapHTML(ap) {
   const m = airportMapXY(ap);
-  if (!m.sk) return `<div class="map-wrap">${euMapSVG('plain', litPoint(m.x, m.y))}</div>`;
+  if (!m.sk) return `<div class="map-wrap">${euMapSVG('plain', litPoint(m.x, m.y), true)}</div>`;
   const P = MAP_PROJ;
   return `<div class="map-wrap"><svg viewBox="0 0 ${P.w} ${P.h.toFixed(0)}" xmlns="http://www.w3.org/2000/svg" id="map-svg">
     <rect x="0" y="0" width="${P.w}" height="${P.h.toFixed(0)}" fill="#fbfdfc"></rect>
@@ -3442,7 +3504,7 @@ function renderClickQuestion(q, card) {
       <div class="mp-name">${q.subtype === 'icao-to-city' ? q.data.icao : q.data.city}</div>
       <div class="mp-sub">uzná sa klik do ${sk ? CLICK_KM.sk : CLICK_KM.eu} km od letiska${q.subtype === 'city-to-icao' ? ' · ' + q.data.country : ''}</div>
     </div>
-    <div class="map-wrap click">${sk ? skMapSVG('') : euMapSVG('plain', '')}</div>
+    <div class="map-wrap click">${sk ? skMapSVG('') : euMapSVG('plain', '', true)}</div>
     <div class="feedback" id="feedback"></div>
   `;
   apRetryBadge(q);
@@ -3580,6 +3642,188 @@ function renderCsList(card) {
     if (t) t.classList.remove('hid');
   });
 }
+
+/* ============================================================
+   POPISY REŽIMOV A NÁPOVEDY K TLAČIDLÁM
+   Nad filtrami je vždy veta o tom, čo sa v zvolenom režime robí.
+   Každé tlačidlo má krátke vysvetlenie, ktoré sa ukáže, keď nad
+   ním podržíš myš.
+   ============================================================ */
+const MODE_HELP = {
+  aircraft: 'Na fotke je lietadlo. Napíš jeho ICAO označenie typu (napr. B738) alebo bežný názov a potvrď Enterom. Keď nevieš, HINT ti napovedá po krokoch.',
+  'airport.quiz':   'Dostaneš ICAO kód a napíšeš mesto, alebo dostaneš mesto a napíšeš štvorpísmenový ICAO kód. Potvrdíš Enterom, ďalším Enterom ideš na ďalšiu otázku.',
+  'airport.map':    'To isté ako KVÍZ, ale vľavo na mape svieti miesto, kde letisko leží. Odpovedáš vpravo — kód si tak spojíš s polohou.',
+  'airport.click':  'Dostaneš kód alebo mesto a klikneš do mapy tam, kde letisko leží. Uzná sa klik do 100 km (na mape Slovenska do 15 km).',
+  'airport.prefix': 'Prvé dve písmená ICAO kódu určujú štát. Dostaneš prefix (napr. LO) a napíšeš štát, alebo dostaneš štát a napíšeš prefix.',
+  'airport.study':  'Tu sa nič neskúša. Mapa ukazuje, ktorá časť Európy má ktoré prvé písmeno kódu. Klikni na dvojpísmenový kód štátu pre detail.',
+  'callsign.quiz':  'Dostaneš trojpísmenový kód prevádzkovateľa (BAW) a napíšeš volací znak (SPEEDBIRD), alebo naopak. Výber si zmenši filtrom PÍSMENO a BALÍČEK — všetkých je vyše tisíc.',
+  'callsign.cards': 'Kartička ukáže kód alebo volačku. Odpoveď si povedz nahlas, odkry ju medzerníkom a ohodnoť sa: 1 = vedel som, 2 = nevedel som. Nič nepíšeš.',
+  'callsign.list':  'Tu sa nič neskúša. Je to zoznam na čítanie — zakry si stĺpec volačiek alebo kódov a odkrývaj políčka kliknutím.',
+  'waypoint.quiz':  'Dostaneš názov bodu a klikneš na krúžok na mape, kde bod leží.',
+  'waypoint.name':  'Na mape svieti jeden bod. Napíš jeho názov a potvrď Enterom.',
+  'waypoint.blind': 'Na mape sú očíslované body bez mien. Do políčok pod mapou napíš názov ku každému číslu a daj VYHODNOTIŤ — nemusíš vyplniť všetky.',
+  'waypoint.study': 'Tu sa nič neskúša. Mapa ukazuje všetky body s menami, farebne podľa sektora. Klikni na bod pre detail.',
+};
+function modeHelpKey() {
+  const F = state.filters, m = state.mode;
+  if (m === 'airport')  return 'airport.' + F.apMode;
+  if (m === 'callsign') return 'callsign.' + F.csMode;
+  if (m === 'waypoint') return 'waypoint.' + F.wpMode;
+  return m;
+}
+function renderModeHelp() {
+  const el = document.getElementById('filters');
+  if (!el) return;
+  el.insertAdjacentHTML('afterbegin', `<div class="mode-help">
+      <div><strong>ČO TU ROBÍŠ</strong>${MODE_HELP[modeHelpKey()] || ''}</div>
+      <div class="mode-help-tip">💡 Podrž myš nad ktorýmkoľvek tlačidlom — ukáže sa, čo robí.</div>
+    </div>`);
+}
+
+/* kľúč = „atribút=hodnota" z data-* tlačidla, alebo jeho id s # */
+const TIPS = {
+  'mode=aircraft': 'MOD 01 — spoznávanie typov lietadiel podľa fotky.',
+  'mode=airport':  'MOD 02 — ICAO kódy letísk, mapa Európy a prefixy štátov.',
+  'mode=callsign': 'MOD 03 — trojpísmenové kódy prevádzkovateľov a ich volacie znaky.',
+  'mode=waypoint': 'MOD 04 — význačné body FRA v FIR Bratislava na mape.',
+  '#btn-fs':    'Roztiahne cvičenie s mapou na celú obrazovku, aby bola mapa čo najväčšia. Späť klávesom Esc.',
+  '#btn-skip':  'Preskočí otázku. Počíta sa ako chyba a zapíše sa do slabých miest.',
+  '#btn-reset': 'Začne cvičenie odznova s tými istými filtrami a vynuluje skóre hore.',
+  '#btn-hint':  'Ukáže ďalšiu nápovedu. Nápovedy idú od najmenšej po najväčšiu.',
+  '#submit-btn': 'Odošle odpoveď. To isté spraví kláves Enter.',
+  '#next-btn':  'Ďalšia otázka. To isté spraví kláves Enter.',
+  '#restart-btn': 'Spustí rovnaké cvičenie znova.',
+  '#blind-check': 'Vyhodnotí slepú mapu. Prázdne a nesprávne políčka sa doplnia červeným.',
+  '#blind-reset': 'Vymaže všetky políčka slepej mapy.',
+  '#cs-show':   'Odkryje odpoveď. To isté spraví medzerník.',
+  '#cs-yes':    'Vedel som — kartička sa započíta ako správna. Kláves 1.',
+  '#cs-no':     'Nevedel som — kartička sa vráti neskôr v cvičení. Kláves 2.',
+  '#cs-pack':   'Rozdelí výber na dávky po 20 volačiek, aby si sa učil po malých kúskoch.',
+  '.choice-btn': 'Klikni na odpoveď, ktorú považuješ za správnu.',
+  /* MOD 01 */
+  'wake=all': 'Všetky lietadlá.', 'wake=L': 'Len kategória turbulencie v úplave LIGHT.', 'wake=M': 'Len MEDIUM.',
+  'wake=H': 'Len HEAVY.', 'wake=J': 'Len SUPER (A380).',
+  /* MOD 02 */
+  'apmode=quiz':   'Klasický kvíz: kód → mesto a mesto → kód.',
+  'apmode=map':    'Kvíz s mapou: vľavo svieti poloha letiska, vpravo odpovedáš.',
+  'apmode=click':  'Ty klikáš do mapy, kde letisko leží.',
+  'apmode=prefix': 'Učíš sa prvé dve písmená kódu — ktorý štát má ktorý prefix. Bez mapy.',
+  'apmode=study':  'Mapa oblastí ICAO na prezeranie, nič sa neskúša.',
+  'apans=choice':  'Vyberáš zo štyroch možností. Nesprávne sú zámerne podobné.',
+  'apans=type':    'Odpoveď píšeš z hlavy. Ťažšie, ale tak sa to naozaj naučíš.',
+  'apcat=all':     'Všetky letiská.', 'apcat=sk': 'Len slovenské letiská.',
+  'apcat=neigh':   'Len letiská susedných štátov (CZ, AT, HU, PL, UA).',
+  'apcat=other':   'Ostatné letiská — zvyšok Európy a svet (v režimoch s mapou len Európa).',
+  'appx=doc':      'Len kódy, ktoré sú na mape v prezentácii „3.6 Zobrazovanie dát".',
+  'appx=all':      'Aj kódy, ktoré v prezentácii nie sú, ale sú v ICAO Doc 7910 (Albánsko, Moldavsko, Bielorusko…).',
+  'apweak':        'Zapne cvičenie len z otázok, ktoré si pokazil. Číslo v zátvorke je ich počet.',
+  'apclear':       'Vymaže uložené slabé miesta a počítadlo ZVLÁDNUTÉ pre MOD 02.',
+  /* MOD 03 */
+  'csmode=quiz':   'Kvíz: kód ↔ volačka, písaním alebo výberom z možností.',
+  'csmode=cards':  'Kartičky: odpoveď si povieš sám, odkryješ ju a ohodnotíš sa.',
+  'csmode=list':   'Zoznam na čítanie so zakrývaním stĺpcov.',
+  'csans=choice':  'Vyberáš zo štyroch možností — susedov v abecede.',
+  'csans=type':    'Odpoveď píšeš z hlavy.',
+  'csdir=both':    'Otázky idú oboma smermi.', 'csdir=i2c': 'Len kód → volačka (BAW → ?).', 'csdir=c2i': 'Len volačka → kód (SPEEDBIRD → ?).',
+  'cscat=all':     'Všetky volačky z dokumentu.', 'cscat=sk': 'Len 25 dopravcov, ktorí bežne lietajú cez Slovensko. Dobrý začiatok.',
+  'cscat=other':   'Všetci ostatní dopravcovia.',
+  'cskind=all':    'Všetky volačky vo výbere.',
+  'cskind=hard':   'Len volačky, z ktorých sa kód nedá vyčítať (BAW → SPEEDBIRD). Tie sa treba naučiť naspamäť.',
+  'cskind=logical': 'Len volačky, v ktorých sú písmená kódu (RYR → RYANAIR). Tie sú ľahké.',
+  'csl=all':       'Všetky začiatočné písmená kódu.', 'csl': 'Len kódy, ktoré sa začínajú týmto písmenom.',
+  'cspk=prev':     'Predchádzajúci balíček.', 'cspk=next': 'Ďalší balíček 20 volačiek.',
+  'csweak':        'Zapne cvičenie len z volačiek, ktoré si pokazil.',
+  'csclear':       'Vymaže uložené slabé miesta a počítadlo ZVLÁDNUTÉ pre MOD 03.',
+  'cshide=none':   'Ukáže kódy aj volačky.', 'cshide=call': 'Zakryje volačky — skúšaš sa z nich, odkrývaš klikom.',
+  'cshide=icao':   'Zakryje kódy — skúšaš sa z nich, odkrývaš klikom.',
+  /* MOD 04 */
+  'wpmode=quiz':   'Dostaneš názov a klikáš na bod na mape.',
+  'wpmode=name':   'Na mape svieti bod a ty píšeš jeho názov.',
+  'wpmode=blind':  'Všetky body naraz bez mien — vypĺňaš názvy k číslam.',
+  'wpmode=study':  'Mapa so všetkými názvami na prezeranie, nič sa neskúša.',
+  'wpdiff=easy':   'Ľahšia verzia: menej bodov na mape, resp. susedné body sú pomenované.',
+  'wpdiff=hard':   'Ťažšia verzia: na mape sú všetky body a nič nie je pomenované.',
+  'wpb=all':       'Všetky body.', 'wpb=border': 'Len body, ktoré ležia na hranici FIR (do 2 NM).',
+  'wpgrp=all':     'Body z celej FIR Bratislava.', 'wpgrp=W': 'Len sektor WEST.', 'wpgrp=C': 'Len sektor CENTRAL.',
+  'wpgrp=E':       'Len sektor EAST.', 'wpgrp=NAV': 'Len navigačné zariadenia (VOR/DME, NDB).',
+};
+function tipFor(el) {
+  if (el.id && TIPS['#' + el.id]) return TIPS['#' + el.id];
+  for (const k in el.dataset) {
+    const t = TIPS[k + '=' + el.dataset[k]] || TIPS[k];
+    if (t) return t;
+  }
+  if (el.classList.contains('choice-btn')) return TIPS['.choice-btn'];
+  return '';
+}
+(function tipInit() {
+  const box = document.createElement('div');
+  box.className = 'tipbox';
+  /* v paneli, nie v body — inak by na celej obrazovke nebolo nápovedu vidno */
+  document.querySelector('.panel').appendChild(box);
+  const hide = () => { box.style.display = 'none'; };
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest ? e.target.closest('button, select') : null;
+    const t = el ? tipFor(el) : '';
+    if (!t) { hide(); return; }
+    box.textContent = t;
+    box.style.display = 'block';
+    const r = el.getBoundingClientRect();
+    let top = r.top - box.offsetHeight - 8;
+    if (top < 8) top = r.bottom + 8;
+    box.style.top = top + 'px';
+    box.style.left = Math.max(8, Math.min(r.left, window.innerWidth - box.offsetWidth - 8)) + 'px';
+  });
+  document.addEventListener('mousedown', hide);
+  window.addEventListener('scroll', hide, true);
+})();
+
+/* ============================================================
+   VEĽKOSŤ MAPY A CELÁ OBRAZOVKA
+   ============================================================ */
+/* Každá mapa si do CSS zapíše svoj pomer strán (--ar), aby sa dala
+   zväčšiť presne na výšku okna bez orezania. */
+(function mapSizing() {
+  const card = document.getElementById('qcard');
+  const fit = () => card.querySelectorAll('.map-wrap').forEach(w => {
+    const svg = w.querySelector('svg'); if (!svg) return;
+    const vb = (svg.getAttribute('viewBox') || '').split(/\s+/).map(Number);
+    if (vb.length === 4 && vb[3]) w.style.setProperty('--ar', (vb[2] / vb[3]).toFixed(4));
+  });
+  new MutationObserver(fit).observe(card, { childList: true });
+  fit();
+})();
+function modeHasMap() {
+  const F = state.filters;
+  if (state.mode === 'waypoint') return true;
+  return state.mode === 'airport' && (F.apMode === 'map' || F.apMode === 'click' || F.apMode === 'study');
+}
+function fsActive() {
+  const p = document.querySelector('.panel');
+  return document.fullscreenElement === p || p.classList.contains('fs');
+}
+function fsSync() {
+  const b = document.getElementById('btn-fs');
+  b.style.display = (modeHasMap() || fsActive()) ? '' : 'none';
+  b.textContent = fsActive() ? '✕ ZAVRIEŤ CELÚ OBRAZOVKU' : '⛶ CELÁ OBRAZOVKA';
+}
+function fsToggle() {
+  const p = document.querySelector('.panel');
+  if (fsActive()) {
+    p.classList.remove('fs');
+    if (document.fullscreenElement) document.exitFullscreen();
+  } else if (p.requestFullscreen) {
+    /* keď prehliadač celú obrazovku nepovolí, panel sa aspoň roztiahne cez okno */
+    p.requestFullscreen().catch(() => { p.classList.add('fs'); fsSync(); });
+  } else p.classList.add('fs');
+  fsSync();
+}
+document.getElementById('btn-fs').onclick = fsToggle;
+document.addEventListener('fullscreenchange', fsSync);
+document.addEventListener('keydown', e => {
+  const p = document.querySelector('.panel');
+  if (e.key === 'Escape' && p.classList.contains('fs')) { p.classList.remove('fs'); fsSync(); }
+});
 
 /* ============================================================
    QUESTION BUILDERS
@@ -4001,6 +4245,12 @@ async function loadAircraftPhoto(ac) {
 function renderQuestion() {
   const q = state.current;
   const card = document.getElementById('qcard');
+  /* MOD 02 s mapou (aj ŠTÚDIUM): mapa vľavo, text vpravo — všetko na jednej obrazovke */
+  const apm = state.filters.apMode;
+  const split = state.mode === 'airport' && (apm === 'study' || (!!q && (apm === 'map' || apm === 'click')));
+  card.classList.toggle('split', split);
+  document.querySelector('.app').classList.toggle('wide', split);
+  fsSync();
   document.getElementById('qnum').textContent = state.index + 1;
   document.getElementById('qtotal').textContent = state.total;
   document.getElementById('mode-label').textContent =
@@ -4940,6 +5190,7 @@ function renderFilters() {
       b.onclick = () => { state.filters.wpGrp = b.dataset.wpgrp; state.blind = null; startMode(state.mode); };
     });
   }
+  renderModeHelp();
 }
 
 /* ============================================================
