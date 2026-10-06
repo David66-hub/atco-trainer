@@ -645,7 +645,9 @@
   .site-foot strong { color:#e8f5ee; }
   .site-foot button { background:#12c274; border:none; color:#04140d; font-family:var(--ui); font-weight:800; font-size:11.5px; letter-spacing:0.06em; padding:7px 14px; border-radius:99px; cursor:pointer; }
   .site-foot button:hover { background:#3fe39a; }
-  .app { padding-bottom:70px; }
+  .app { padding-bottom:24px; }
+  body.on-home .app { padding-bottom:70px; }
+  body:not(.on-home) .site-foot { display:none; }
   @media (max-width:760px) { .home-dash { grid-template-columns:1fr; } .home-cta { flex-direction:column; align-items:flex-start; } .exam-list > div { grid-template-columns:1fr; } .site-foot span { display:none; } .site-foot { justify-content:center; } }
 
   /* ============================================================
@@ -6898,6 +6900,7 @@ function renderQuestion() {
   const q = state.current;
   const card = document.getElementById('qcard');
   card.dataset.mode = state.mode;
+  document.body.classList.toggle('on-home', state.mode === 'home');
   /* MOD 02 s mapou (aj ŠTÚDIUM): mapa vľavo, text vpravo — všetko na jednej obrazovke */
   const apm = state.filters.apMode;
   const com = state.filters.coMode;
