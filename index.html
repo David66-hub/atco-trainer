@@ -5826,7 +5826,7 @@ function poolAll() {
   P.airport = withFilters({ airportCat: 'all', apMode: 'quiz', apWeak: false }, buildAirportQuestions)
     .concat(withFilters({ apMode: 'prefix', apPx: 'doc', apWeak: false }, buildAirportQuestions));
   /* z volačiek len tie zo simulátora — zvyšných 950 by tréning zahltilo */
-  P.callsign = withFilters({ callsignCat: 'top', csLetter: 'all', csKind: 'all', csPack: 0, csDir: 'both', csWeak: false, csOrder: 'rand' }, buildCallsignQuestions);
+  P.callsign = withFilters({ callsignCat: 'top', csLetter: 'all', csKind: 'all', csPack: 0, csDir: 'both', csWeak: false, csOrder: 'rand', csOnce: false }, buildCallsignQuestions);
   P.waypoint = withFilters({ wpMode: 'quiz', wpBorder: 'all', wpGrp: 'all' }, buildWaypointQuestions);
   P.coord = [];
   ['cop', 'freq', 'vert', 'level'].forEach(m => { P.coord = P.coord.concat(withFilters({ coMode: m, coNb: 'all', coWeak: false }, buildCoordQuestions)); });
@@ -6521,19 +6521,26 @@ function buildCallsignQuestions() {
     if (weak.length) list = weak;
     else { F.csWeak = false; state.csNote = 'V tomto výbere nemáš žiadne slabé miesta — idú všetky otázky.'; }
   }
-  if (F.csOrder !== 'freq') return shuffle(list);
-  /* váha otázky = najvyššia frekvencia v jej skupine; veľmi časté
-     volačky (20+ a 60+) sa v cvičení objavia dva- až trikrát */
-  list.forEach(q => { q.w = Math.max.apply(null, q.group.map(c => c.freq)); });
-  const extra = [];
-  list.forEach(q => {
-    const n = q.w >= 60 ? 2 : q.w >= 20 ? 1 : 0;
-    for (let k = 1; k <= n; k++) extra.push(Object.assign({}, q, { w: q.w / (3 * k), again: true }));
+  /* každá volačka len RAZ za cvičenie: pri oboch smeroch sa vyberie jeden
+     (prednosť má ten, ktorý ešte nevieš) */
+  const today = dayNow();
+  const known = q => { const r = state.sr[q.id]; return !!(r && r.b > 0 && r.due > today && !(state.mistakes[q.id] > 0)); };
+  const byCs = {}, doneCs = {};
+  list.forEach(q => { const k = q.data.icao + '|' + q.data.call; (byCs[k] = byCs[k] || []).push(q); if (known(q)) doneCs[k] = 1; });
+  /* stačí jeden správne zodpovedaný smer a volačka sa berie ako hotová */
+  const done = q => !!doneCs[q.data.icao + '|' + q.data.call];
+  if (F.csOnce !== false) list = Object.keys(byCs).map(k => {
+    const g = shuffle(byCs[k]);
+    return g.find(q => !known(q)) || g[0];
   });
-  /* najprv všetko, čo je v tabuľke zo simulátora (vážene podľa počtu),
-     až potom zvyšok dokumentu v náhodnom poradí */
-  const inSim = q => q.group.some(c => c.sim);
-  return csWeightedOrder(list.filter(inSim).concat(extra)).concat(shuffle(list.filter(q => !inSim(q))));
+  /* čo si už zodpovedal správne (a ešte neprišiel čas na opakovanie), ide až na koniec */
+  const order = l => F.csOrder !== 'freq' ? shuffle(l) : (() => {
+    /* frekvencia zo simulátora dáva len PREDNOSŤ v poradí — nič sa neopakuje */
+    l.forEach(q => { q.w = Math.max.apply(null, q.group.map(c => c.freq)); });
+    const inSim = q => q.group.some(c => c.sim);
+    return csWeightedOrder(l.filter(inSim)).concat(shuffle(l.filter(q => !inSim(q))));
+  })();
+  return order(list.filter(q => !done(q))).concat(order(list.filter(done)));
 }
 /* Volačiek je vyše tisíc a mnohé sa líšia jediným písmenom
    (BEXJET / BEEJET). Tolerancia preklepov preto nesmie uznať odpoveď,
