@@ -261,6 +261,27 @@
   .ap-note { flex-basis:100%; font-size:10.5px; color:var(--amber); letter-spacing:0.05em; }
   .filter-break { flex-basis:100%; height:0; }
 
+  /* ===== MOD 03 — rozšírenia ===== */
+  .cs-back { text-align:center; font-family:var(--display); font-size:34px; font-weight:700; color:var(--text-faint); border:2px dashed var(--border-bright); border-radius:10px; padding:22px 14px; margin:8px auto 0; max-width:640px; }
+  .cs-back.open { color:var(--green); border-style:solid; border-color:var(--green-strong); background:var(--green-bg); }
+  .cs-back small { display:block; font-family:var(--mono); font-size:11px; font-weight:400; letter-spacing:0.1em; color:var(--text-dim); margin-top:8px; }
+  .cs-back small.hard { color:var(--amber); }
+  .cs-back u, .cs-c u, .reveal u { text-decoration-color:var(--amber); text-decoration-thickness:2px; text-underline-offset:3px; }
+  .cs-acts { display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+  .cs-acts .btn { padding:14px 22px; }
+  .cs-key { font-size:9px; opacity:0.75; border:1px solid currentColor; border-radius:4px; padding:1px 5px; margin-left:8px; letter-spacing:0.08em; }
+  .cs-list-bar { display:flex; gap:8px; flex-wrap:wrap; }
+  .cs-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:6px; }
+  .cs-cell { display:flex; gap:10px; align-items:baseline; padding:7px 10px; background:var(--panel-2); border:1px solid var(--border); border-left:4px solid var(--green-strong); border-radius:6px; font-size:12px; }
+  .cs-cell.hard { border-left-color:var(--amber); }
+  .cs-i { font-weight:800; color:var(--green); min-width:34px; }
+  .cs-c { color:var(--text); }
+  .cs-cell .hid { color:transparent; background:var(--border); border-radius:4px; cursor:pointer; user-select:none; }
+  .cs-cell .hid u { text-decoration:none; }
+  /* filtre majú teraz viac riadkov — SKIP/RESET nesmú spľasnúť, keď sa zalomia pod ne */
+  .controls-right .btn { padding:9px 24px; }
+  .cs-pack { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; font-weight:600; color:var(--text-dim); background:#fff; border:1.5px solid var(--border-bright); border-radius:20px; padding:6px 10px; }
+
   @media (max-width:760px) {
     .aircraft-display { grid-template-columns:1fr; }
     .big-prompt { font-size:44px; }
@@ -2799,7 +2820,7 @@ const state = {
   queue: [], current: null, index: 0, total: 0,
   correct: 0, wrong: 0, streak: 0, bestStreak: 0,
   mistakes: {},
-  filters: { wake: 'all', airportCat: 'all', apMode: 'quiz', apAns: 'type', apPx: 'doc', apWeak: false, callsignCat: 'all', wpDiff: 'easy', csLetter: 'all', wpGrp: 'all', wpMode: 'quiz', wpBorder: 'all' },
+  filters: { wake: 'all', airportCat: 'all', apMode: 'quiz', apAns: 'type', apPx: 'doc', apWeak: false, callsignCat: 'all', wpDiff: 'easy', csLetter: 'all', csMode: 'quiz', csAns: 'type', csDir: 'both', csKind: 'all', csPack: 0, csWeak: false, wpGrp: 'all', wpMode: 'quiz', wpBorder: 'all' },
   hintsUsed: 0,
   apOk: {},       // MOD 02: koľkokrát po sebe správne (ukladá sa)
 };
@@ -3173,8 +3194,6 @@ function pxShort(st)  { return st.name.split(' (')[0]; }
 function pxAsk(st)    { return st.ask || (st.p === 'ED' ? 'Nemecko — civilné letiská' : pxShort(st)); }
 function pxAccept(st) { return [pxShort(st)].concat(PX_ALT[st.p] || []); }
 function pxPos(st)    { return st.seeds ? st.seeds[0] : st.pos; }
-/* na klikanie musí mať štát na mape rozumnú plochu (Luxembursko má 7 px) */
-function pxClickable(st) { return !!st.seeds && EU.ready && EU.hit[st.p] >= 100; }
 function icaoAreaName(L) {
   if (ICAO_AREAS[L]) return ICAO_AREAS[L].name;
   const far = ICAO_AREAS_FAR.find(f => f[0] === L);
@@ -3210,8 +3229,10 @@ function icaoBreakdownHTML(ap) {
 }
 
 /* ---------- pokrok: uloženie, opakovanie chýb ---------- */
-const AP_STORE = 'atcoTrainerV2.mod02';
-function apIsMine(id) { return id.indexOf('AP_') === 0 || id.indexOf('PX_') === 0; }
+const AP_STORE = 'atcoTrainerV2.mod02';   // názov kľúča ostal, ukladá sa doň MOD 02 aj MOD 03
+function apIsMod02(id) { return id.indexOf('AP_') === 0 || id.indexOf('PX_') === 0; }
+function apIsMod03(id) { return id.indexOf('CS_') === 0; }
+function apIsMine(id) { return apIsMod02(id) || apIsMod03(id); }
 function apSaveProgress() {
   try {
     const m = {};
@@ -3227,10 +3248,10 @@ function apLoadProgress() {
     state.apOk = d.ok || {};
   } catch (e) {}
 }
-function apClearProgress() {
-  Object.keys(state.mistakes).filter(apIsMine).forEach(k => { delete state.mistakes[k]; });
-  state.apOk = {};
-  try { localStorage.removeItem(AP_STORE); } catch (e) {}
+function apClearProgress(mine) {
+  Object.keys(state.mistakes).filter(mine).forEach(k => { delete state.mistakes[k]; });
+  Object.keys(state.apOk).filter(mine).forEach(k => { delete state.apOk[k]; });
+  apSaveProgress();
   renderWeak();
 }
 /* zvládnuté = dvakrát po sebe správne */
@@ -3248,9 +3269,9 @@ function apRetryBadge(q) {
   if (m) m.insertAdjacentHTML('beforeend', ' <span class="ap-retry">↻ OPAKOVANIE CHYBY</span>');
 }
 
-/* Spoločný krok po každej odpovedi v MOD 02.
-   Chyba sa vráti o 4 otázky a ešte raz o ďalších 7 — tesne po sebe by
-   si odpoveď len opísal z pamäti, o pár otázok ju už musíš vedieť. */
+/* Spoločný krok po každej odpovedi v MOD 02 a MOD 03.
+   Chyba sa vráti až neskôr v tom istom cvičení — hneď po sebe by si
+   odpoveď len opísal z pamäti. */
 function apAfterAnswer(q, ok) {
   if (ok) {
     state.apOk[q.id] = (state.apOk[q.id] || 0) + 1;
@@ -3263,8 +3284,12 @@ function apAfterAnswer(q, ok) {
     state.apOk[q.id] = 0;
     const r = q.retry || 0;
     if (r < 2) {
-      state.queue.splice(Math.min(state.index + 4, state.queue.length), 0, Object.assign({}, q, { retry: r + 1 }));
-      if (!r) state.queue.splice(Math.min(state.index + 11, state.queue.length), 0, Object.assign({}, q, { retry: 2 }));
+      /* vráti sa až v druhej polovici toho, čo ešte zostáva (najmenej
+         o 12 otázok), na náhodnom mieste; pri krátkom zvyšku na konci */
+      const left = state.queue.length - state.index - 1;
+      const from = state.index + 1 + Math.min(left, Math.max(12, Math.floor(left / 2)));
+      const pos = from + Math.floor(Math.random() * (state.queue.length - from + 1));
+      state.queue.splice(pos, 0, Object.assign({}, q, { retry: r + 1 }));
       state.total = state.queue.length;
       document.getElementById('qtotal').textContent = state.total;
     }
@@ -3287,17 +3312,12 @@ function apMapMark(svg, x, y, w, text, ok) {
 }
 function apMapReveal(q, ok) {
   const svg = document.getElementById('map-svg');
-  if (!svg) return;
+  if (!svg || q.type !== 'airport') return;
   svg.querySelectorAll('.wp-ring').forEach(r => r.remove());
   const dot = svg.querySelector('#tgt-dot');
   if (dot) { dot.classList.remove('tgt'); dot.classList.add(ok ? 'reveal-correct' : 'wrong'); }
-  if (q.type === 'airport') {
-    const m = airportMapXY(q.data);
-    apMapMark(svg, m.x, m.y, m.w, q.data.icao + ' · ' + q.data.city, ok);
-  } else {
-    const p = pxPos(q.data), xy = euXY(p[0], p[1]);
-    apMapMark(svg, xy[0], xy[1], EU_W, q.data.p + ' · ' + pxShort(q.data), ok);
-  }
+  const m = airportMapXY(q.data);
+  apMapMark(svg, m.x, m.y, m.w, q.data.icao + ' · ' + q.data.city, ok);
 }
 
 /* vyhodnotenie pre výber z možností a klik do mapy — to isté, čo
@@ -3336,7 +3356,14 @@ function apFinish(q, ok, shown) {
    štátu (LOWW / LOWS / LOWL), pri meste mestá tej istej krajiny. */
 function choiceSet(q) {
   let correct, cands;
-  if (q.type === 'airport') {
+  if (q.type === 'callsign') {
+    /* podobné = susedia v abecede: rovnaké prvé dve písmená kódu, potom rovnaké prvé */
+    const cs = q.data, i2c = q.subtype === 'icao-to-call';
+    const tier = c => c.icao.substring(0,2) === cs.icao.substring(0,2) ? 0 : c.icao.charAt(0) === cs.icao.charAt(0) ? 1 : 2;
+    correct = i2c ? cs.call : cs.icao;
+    cands = CALLSIGNS.filter(c => q.accept.indexOf(i2c ? c.call : c.icao) < 0 && c.call !== cs.call && c.icao !== cs.icao)
+      .map(c => ({ v: i2c ? c.call : c.icao, t: tier(c) }));
+  } else if (q.type === 'airport') {
     const ap = q.data, rest = AIRPORTS.filter(a => a.city !== ap.city);
     if (q.subtype === 'icao-to-city') {
       correct = ap.city;
@@ -3407,18 +3434,13 @@ function svgAdd(svg, tag, attrs) {
   return el;
 }
 function renderClickQuestion(q, card) {
-  const isPx = q.type === 'prefix';
-  const sk = !isPx && q.data.cat === 'sk';
-  const name = isPx ? q.data.p : (q.subtype === 'icao-to-city' ? q.data.icao : q.data.city);
-  const label = isPx ? 'KLIKNI NA ŠTÁT S TÝMTO PREFIXOM' : 'KLIKNI, KDE LETISKO LEŽÍ';
-  const sub = isPx ? `oblasť ${q.data.p.charAt(0)} — ${icaoAreaName(q.data.p.charAt(0))}`
-    : `uzná sa klik do ${sk ? CLICK_KM.sk : CLICK_KM.eu} km od letiska` + (q.subtype === 'city-to-icao' ? ` · ${q.data.country}` : '');
+  const sk = q.data.cat === 'sk';
   card.innerHTML = `
-    <div class="qmeta">${isPx ? 'ICAO PREFIX' : 'AIRPORT ID'} <span class="sep">·</span> KLIKNI NA MAPU</div>
+    <div class="qmeta">AIRPORT ID <span class="sep">·</span> KLIKNI NA MAPU</div>
     <div class="map-prompt">
-      <span class="mp-label">${label}</span>
-      <div class="mp-name">${name}</div>
-      <div class="mp-sub">${sub}</div>
+      <span class="mp-label">KLIKNI, KDE LETISKO LEŽÍ</span>
+      <div class="mp-name">${q.subtype === 'icao-to-city' ? q.data.icao : q.data.city}</div>
+      <div class="mp-sub">uzná sa klik do ${sk ? CLICK_KM.sk : CLICK_KM.eu} km od letiska${q.subtype === 'city-to-icao' ? ' · ' + q.data.country : ''}</div>
     </div>
     <div class="map-wrap click">${sk ? skMapSVG('') : euMapSVG('plain', '')}</div>
     <div class="feedback" id="feedback"></div>
@@ -3430,7 +3452,7 @@ function renderClickQuestion(q, card) {
     svg.dataset.done = '1';
     svg.parentElement.classList.remove('click');
     const xy = svgPoint(svg, e);
-    if (isPx) pxClickEval(q, xy[0], xy[1], svg); else apClickEval(q, xy[0], xy[1], svg, sk);
+    apClickEval(q, xy[0], xy[1], svg, sk);
   });
 }
 function apClickEval(q, x, y, svg, sk) {
@@ -3444,17 +3466,119 @@ function apClickEval(q, x, y, svg, sk) {
   const dist = '≈ ' + Math.round(km) + ' km od letiska';
   apFinish(q, ok, ok ? dist : dist.toUpperCase());
 }
-function pxClickEval(q, x, y, svg) {
-  const st = q.data, X = Math.round(x), Y = Math.round(y);
-  const idx = (X >= 0 && Y >= 0 && X < EU_W && Y < EU_H) ? EU.stateAt[Y * EU_W + X] : 0;
-  const picked = idx ? ICAO_STATES[idx - 1] : null;
-  const sxy = euXY(st.seeds[0][0], st.seeds[0][1]);
-  /* malé štáty: stačí trafiť tesne vedľa */
-  const ok = picked === st || Math.hypot(x - sxy[0], y - sxy[1]) < 12;
-  svgAdd(svg, 'path', { d: `M ${x-5},${y-5} L ${x+5},${y+5} M ${x-5},${y+5} L ${x+5},${y-5}`, class: 'ap-x' });
-  svgAdd(svg, 'circle', { cx: sxy[0], cy: sxy[1], r: 5, class: 'wp-dot ' + (ok ? 'reveal-correct' : 'wrong') });
-  apMapMark(svg, sxy[0], sxy[1], EU_W, st.p + ' · ' + pxShort(st), ok);
-  apFinish(q, ok, ok ? '' : (picked ? picked.p + ' ' + pxShort(picked).toUpperCase() : 'MIMO ŠTÁTOV'));
+/* ============================================================
+   MOD 03 — ROZŠÍRENIA
+   balíčky po 20 · kartičky · zoznam · výber z možností · smer ·
+   delenie na „kód vo volačke" a „bez súvisu" · opakovanie chýb
+   ------------------------------------------------------------
+   Vyše tisíc volačiek sa naraz naučiť nedá. Preto sa dajú krájať
+   na malé balíčky a oddeliť tie, kde kód vidno priamo vo volačke
+   (RYR → RYANAIR), od tých, ktoré treba naozaj vedieť naspamäť
+   (BAW → SPEEDBIRD).
+   ============================================================ */
+const CS_PACK = 20;
+/* písmená kódu idú vo volačke v rovnakom poradí za sebou */
+function csLogical(cs) {
+  const f = cs.call.replace(/[^A-Z]/g, '');
+  let i = 0;
+  for (let k = 0; k < f.length && i < 3; k++) if (f.charAt(k) === cs.icao.charAt(i)) i++;
+  return i === 3;
+}
+CALLSIGNS.forEach(cs => { cs.logical = csLogical(cs); });
+function csHighlight(cs) {
+  if (!cs.logical) return cs.call;
+  let i = 0;
+  return cs.call.split('').map(ch => (i < 3 && ch === cs.icao.charAt(i)) ? (i++, `<u>${ch}</u>`) : ch).join('');
+}
+/* výber podľa kategórie, písmena a typu — ešte pred krájaním na balíčky */
+function csSelection() {
+  const F = state.filters;
+  let pool = CALLSIGNS;
+  if (F.callsignCat !== 'all') pool = pool.filter(c => c.cat === F.callsignCat);
+  if (F.csLetter !== 'all') pool = pool.filter(c => c.icao.charAt(0) === F.csLetter);
+  if (F.csKind === 'logical') pool = pool.filter(c => c.logical);
+  if (F.csKind === 'hard') pool = pool.filter(c => !c.logical);
+  return pool;
+}
+function csPool() {
+  const F = state.filters, sel = csSelection();
+  if (F.csPack > Math.ceil(sel.length / CS_PACK)) F.csPack = 0;
+  return F.csPack ? sel.slice((F.csPack - 1) * CS_PACK, F.csPack * CS_PACK) : sel;
+}
+
+/* ---------- KARTIČKY: odpoveď si povieš sám a ohodnotíš sa ---------- */
+function renderCsCard(q, card) {
+  const i2c = q.subtype === 'icao-to-call';
+  card.innerHTML = `
+    <div class="qmeta">OPERATOR CALL <span class="sep">·</span> KARTIČKY <span class="sep">·</span> ${i2c ? 'ICAO → TELEPHONY' : 'TELEPHONY → ICAO'}</div>
+    <div class="big-prompt${i2c ? '' : ' small'}">${i2c ? q.data.icao : '"' + q.data.call + '"'}</div>
+    <div class="cs-back" id="cs-back">?</div>
+    <div class="cs-acts" id="cs-acts"><button class="btn" id="cs-show">UKÁŽ ODPOVEĎ <span class="cs-key">medzerník</span></button></div>
+    <div class="prompt-hint" style="margin-top:14px">— povedz si odpoveď nahlas, až potom ju odkry —</div>
+  `;
+  apRetryBadge(q);
+  document.getElementById('cs-show').onclick = csCardShow;
+}
+function csCardShow() {
+  const q = state.current, back = document.getElementById('cs-back');
+  if (!q || !back || back.dataset.open) return;
+  back.dataset.open = '1';
+  const i2c = q.subtype === 'icao-to-call', cs = q.data;
+  back.innerHTML = (i2c ? q.group.map(c => '"' + csHighlight(c) + '"').join(' / ') : q.group.map(c => c.icao).join(' / ')) +
+    (cs.airline ? `<small>${cs.airline} · ${cs.country}</small>` : '') +
+    (cs.logical ? '' : '<small class="hard">kód sa z volačky nedá vyčítať — treba ho vedieť</small>');
+  back.classList.add('open');
+  document.getElementById('cs-acts').innerHTML = `
+    <button class="btn" id="cs-yes">✓ VEDEL SOM <span class="cs-key">1</span></button>
+    <button class="btn ghost" id="cs-no">✗ NEVEDEL SOM <span class="cs-key">2</span></button>`;
+  document.getElementById('cs-yes').onclick = () => csCardRate(true);
+  document.getElementById('cs-no').onclick = () => csCardRate(false);
+}
+function csCardRate(ok) {
+  const q = state.current;
+  if (!q) return;
+  if (ok) {
+    state.correct++; state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+  } else {
+    state.wrong++; state.streak = 0;
+    state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1;
+  }
+  renderStats(); renderWeak();
+  apAfterAnswer(q, ok);
+  nextQuestion();
+}
+document.addEventListener('keydown', e => {
+  if (state.mode !== 'callsign' || state.filters.csMode !== 'cards' || !state.current) return;
+  if (document.getElementById('cs-show')) {
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); csCardShow(); }
+  } else if (document.getElementById('cs-yes')) {
+    if (e.key === '1') csCardRate(true);
+    if (e.key === '2') csCardRate(false);
+  }
+});
+
+/* ---------- ZOZNAM: prečítať, zakryť stĺpec, odkrývať klikom ---------- */
+function renderCsList(card) {
+  const sel = csPool(), hide = state.csHide || 'none';
+  document.getElementById('qnum').textContent = '•';
+  document.getElementById('qtotal').textContent = sel.length + ' volačiek';
+  const cells = sel.map(cs => `<div class="cs-cell${cs.logical ? '' : ' hard'}">
+      <span class="cs-i${hide === 'icao' ? ' hid' : ''}">${cs.icao}</span>
+      <span class="cs-c${hide === 'call' ? ' hid' : ''}">${csHighlight(cs)}</span>
+    </div>`).join('');
+  const b = (v, t) => `<button class="filter-chip ${hide === v ? 'on' : ''}" data-cshide="${v}">${t}</button>`;
+  card.innerHTML = `
+    <div class="qmeta">OPERATOR CALL <span class="sep">·</span> ZOZNAM NA UČENIE</div>
+    <div class="cs-list-bar">${b('none', 'UKÁZAŤ VŠETKO')}${b('call', 'ZAKRYŤ VOLAČKY')}${b('icao', 'ZAKRYŤ KÓDY')}</div>
+    <div class="study-tip" style="text-align:left;margin:8px 0 12px">Zakryté políčko odkryješ kliknutím. Oranžový pruh = kód sa z volačky nedá vyčítať. Podčiarknuté písmená = kód ukrytý vo volačke.</div>
+    <div class="cs-list">${cells || '<span class="weak-empty">— vo výbere nie je žiadna volačka —</span>'}</div>
+  `;
+  card.querySelectorAll('[data-cshide]').forEach(x => { x.onclick = () => { state.csHide = x.dataset.cshide; renderQuestion(); }; });
+  card.querySelector('.cs-list').addEventListener('click', e => {
+    const t = e.target.closest('.hid');
+    if (t) t.classList.remove('hid');
+  });
 }
 
 /* ============================================================
@@ -3469,10 +3593,7 @@ function buildAirportQuestions() {
   const F = state.filters, m = F.apMode;
   let list = [];
   if (m === 'prefix') {
-    if (F.apAns === 'click') {
-      pxPool().filter(pxClickable).forEach(st => list.push(
-        { type: 'prefix', subtype: 'click', click: true, id: 'PX_CLK_' + st.p, data: st, accept: [st.p] }));
-    } else list = buildPrefixQuestions();
+    list = buildPrefixQuestions();
   } else {
     let pool = AIRPORTS;
     if (F.airportCat !== 'all') pool = pool.filter(a => a.cat === F.airportCat);
@@ -3501,26 +3622,32 @@ function buildAirportQuestions() {
   return shuffle(list);
 }
 function buildCallsignQuestions() {
-  let pool = CALLSIGNS;
-  if (state.filters.callsignCat !== 'all') pool = pool.filter(c => c.cat === state.filters.callsignCat);
-  if (state.filters.csLetter !== 'all') pool = pool.filter(c => c.icao.charAt(0) === state.filters.csLetter);
+  const F = state.filters, pool = csPool();
   /* jedna otázka na kód a jedna na volačku — duplicity z dokumentu
      sa zlúčia a uzná sa ktorákoľvek platná odpoveď */
-  const list = [], seen = {};
+  let list = [];
+  const seen = {};
   pool.forEach(cs => {
-    if (!seen['I' + cs.icao]) {
+    if (F.csDir !== 'c2i' && !seen['I' + cs.icao]) {
       seen['I' + cs.icao] = 1;
       const g = CS_BY_ICAO[cs.icao];
       list.push({ type: 'callsign', subtype: 'icao-to-call', id: 'CS_I2C_' + cs.icao, data: cs, group: g,
         accept: g.map(c => c.call) });
     }
-    if (!seen['C' + cs.call]) {
+    if (F.csDir !== 'i2c' && !seen['C' + cs.call]) {
       seen['C' + cs.call] = 1;
       const g = CS_BY_CALL[cs.call];
       list.push({ type: 'callsign', subtype: 'call-to-icao', id: 'CS_C2I_' + cs.icao, data: cs, group: g,
         accept: g.map(c => c.icao) });
     }
   });
+  state.apAllIds = list.map(q => q.id);
+  state.csNote = '';
+  if (F.csWeak) {
+    const weak = list.filter(q => state.mistakes[q.id] > 0);
+    if (weak.length) list = weak;
+    else { F.csWeak = false; state.csNote = 'V tomto výbere nemáš žiadne slabé miesta — idú všetky otázky.'; }
+  }
   return shuffle(list);
 }
 /* Volačiek je vyše tisíc a mnohé sa líšia jediným písmenom
@@ -3882,6 +4009,11 @@ function renderQuestion() {
     state.mode === 'callsign' ? 'CALLSIGNS' : 'FRA BODY / MAPA';
   state.hintsUsed = 0;
 
+  /* MOD 03 ZOZNAM — čítanie a zakrývanie, bez otázok */
+  if (state.mode === 'callsign' && state.filters.csMode === 'list') {
+    renderCsList(card);
+    return;
+  }
   /* MOD 02 ŠTÚDIUM — oblasti ICAO na mape, bez otázok */
   if (state.mode === 'airport' && state.filters.apMode === 'study') {
     renderAirportStudy(card);
@@ -3916,6 +4048,8 @@ function renderQuestion() {
 
   /* MOD 02 — klik do mapy má vlastnú kartu bez inputu */
   if (q.click) { renderClickQuestion(q, card); return; }
+  /* MOD 03 — kartičky */
+  if (q.type === 'callsign' && state.filters.csMode === 'cards') { renderCsCard(q, card); return; }
 
   if (q.type === 'aircraft') {
     const a = q.data;
@@ -3971,11 +4105,7 @@ function renderQuestion() {
               <div class="prompt-hint">— KTORÝ ŠTÁT MÁ TENTO PREFIX? —</div>`;
       placeholder = 'ŠTÁT...';
     } else {
-      const pos = pxPos(st);
-      const map = (pos && euOnMap(pos[0], pos[1]))
-        ? `<div class="map-wrap">${euMapSVG('plain', litPoint.apply(null, euXY(pos[0], pos[1])))}</div>` : '';
       body = `<div class="qmeta">ICAO PREFIX <span class="sep">·</span> ŠTÁT → KÓD</div>
-              ${map}
               <div class="big-prompt small">${pxAsk(st)}</div>
               <div class="prompt-hint">— PRVÉ DVE PÍSMENÁ INDIKÁTORA? —</div>`;
       placeholder = 'PREFIX (2 PÍSMENÁ)...';
@@ -4003,7 +4133,8 @@ function renderQuestion() {
   }
 
   /* MOD 02 — výber z možností namiesto písania */
-  if ((q.type === 'airport' || q.type === 'prefix') && state.filters.apAns === 'choice') {
+  if (((q.type === 'airport' || q.type === 'prefix') && state.filters.apAns === 'choice') ||
+      (q.type === 'callsign' && state.filters.csAns === 'choice')) {
     renderChoiceQuestion(q, card, body);
     return;
   }
@@ -4676,16 +4807,13 @@ function renderFilters() {
     const F = state.filters, apm = F.apMode, c = F.airportCat;
     const lab = (t, first) => `<span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:${first ? '0 6px 0 0' : '0 6px'}">${t}</span>`;
     const chip = (on, attr, val, txt) => `<button class="filter-chip ${on ? 'on' : ''}" data-${attr}="${val}">${txt}</button>`;
-    /* klik na mapu ako spôsob odpovede existuje len pri prefixoch */
-    if (F.apAns === 'click' && apm !== 'prefix') F.apAns = 'type';
     let h = lab('REŽIM:', true) +
       chip(apm==='quiz', 'apmode', 'quiz', 'KVÍZ') + chip(apm==='map', 'apmode', 'map', 'MAPA') +
       chip(apm==='click', 'apmode', 'click', 'KLIKNI NA MAPU') + chip(apm==='prefix', 'apmode', 'prefix', 'PREFIXY ŠTÁTOV') +
       chip(apm==='study', 'apmode', 'study', 'ŠTÚDIUM');
     if (apm === 'quiz' || apm === 'map' || apm === 'prefix') {
       h += '<span class="filter-break"></span>' + lab('ODPOVEĎ:', true) +
-        chip(F.apAns==='choice', 'apans', 'choice', 'VÝBER Z MOŽNOSTÍ (ľahšie)') + chip(F.apAns==='type', 'apans', 'type', 'PÍSANIE') +
-        (apm === 'prefix' ? chip(F.apAns==='click', 'apans', 'click', 'KLIK NA ŠTÁT') : '');
+        chip(F.apAns==='choice', 'apans', 'choice', 'VÝBER Z MOŽNOSTÍ (ľahšie)') + chip(F.apAns==='type', 'apans', 'type', 'PÍSANIE');
     }
     if (apm === 'quiz' || apm === 'map' || apm === 'click') {
       const eu = apm !== 'quiz';
@@ -4714,27 +4842,59 @@ function renderFilters() {
     on('apweak',  () => { F.apWeak = !F.apWeak; startMode(state.mode); });
     on('apclear', () => {
       if (!confirm('Vymazať uložený pokrok a slabé miesta MOD 02?')) return;
-      apClearProgress(); F.apWeak = false; startMode(state.mode);
+      apClearProgress(apIsMod02); F.apWeak = false; startMode(state.mode);
     });
   } else if (state.mode === 'callsign') {
-    const cat = state.filters.callsignCat, L = state.filters.csLetter;
+    const F = state.filters, cat = F.callsignCat, L = F.csLetter, m = F.csMode;
+    const lab = (t) => `<span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:0 6px 0 0">${t}</span>`;
+    const chip = (on, attr, val, txt) => `<button class="filter-chip ${on ? 'on' : ''}" data-${attr}="${val}">${txt}</button>`;
+    const br = '<span class="filter-break"></span>';
     /* písmená sa ponúkajú len tie, ktoré vo zvolenej kategórii naozaj sú */
-    const letters = [...new Set(CALLSIGNS.filter(c => cat === 'all' || c.cat === cat).map(c => c.icao.charAt(0)))].sort();
-    el.innerHTML = `
-      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin-right:6px">CATEGORY:</span>
-      <button class="filter-chip ${cat==='all'?'on':''}" data-cscat="all">ALL</button>
-      <button class="filter-chip ${cat==='sk'?'on':''}" data-cscat="sk">CEZ SLOVENSKO</button>
-      <button class="filter-chip ${cat==='other'?'on':''}" data-cscat="other">OSTATNÉ</button>
-      <span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:0 6px">PÍSMENO:</span>
-      <button class="filter-chip ${L==='all'?'on':''}" data-csl="all">VŠETKY</button>
-      ${letters.map(x => `<button class="filter-chip ${L===x?'on':''}" data-csl="${x}">${x}</button>`).join('')}
-    `;
-    el.querySelectorAll('[data-cscat]').forEach(b => {
-      b.onclick = () => { state.filters.callsignCat = b.dataset.cscat; state.filters.csLetter = 'all'; startMode(state.mode); };
+    const inCat = CALLSIGNS.filter(c => cat === 'all' || c.cat === cat);
+    const letters = [...new Set(inCat.map(c => c.icao.charAt(0)))].sort();
+    const sel = csSelection(), packs = Math.ceil(sel.length / CS_PACK);
+    const byL = inCat.filter(c => L === 'all' || c.icao.charAt(0) === L);
+    let h = lab('REŽIM:') + chip(m==='quiz', 'csmode', 'quiz', 'KVÍZ') + chip(m==='cards', 'csmode', 'cards', 'KARTIČKY') + chip(m==='list', 'csmode', 'list', 'ZOZNAM');
+    if (m === 'quiz') h += br + lab('ODPOVEĎ:') + chip(F.csAns==='choice', 'csans', 'choice', 'VÝBER Z MOŽNOSTÍ (ľahšie)') + chip(F.csAns==='type', 'csans', 'type', 'PÍSANIE');
+    if (m !== 'list') h += br + lab('SMER:') + chip(F.csDir==='both', 'csdir', 'both', 'OBOJE') + chip(F.csDir==='i2c', 'csdir', 'i2c', 'KÓD → VOLAČKA') + chip(F.csDir==='c2i', 'csdir', 'c2i', 'VOLAČKA → KÓD');
+    h += br + lab('CATEGORY:') + chip(cat==='all', 'cscat', 'all', 'ALL') + chip(cat==='sk', 'cscat', 'sk', 'CEZ SLOVENSKO') + chip(cat==='other', 'cscat', 'other', 'OSTATNÉ');
+    h += br + lab('TYP:') + chip(F.csKind==='all', 'cskind', 'all', `VŠETKY (${byL.length})`) +
+      chip(F.csKind==='hard', 'cskind', 'hard', `BEZ SÚVISU — TREBA VEDIEŤ (${byL.filter(c => !c.logical).length})`) +
+      chip(F.csKind==='logical', 'cskind', 'logical', `KÓD VO VOLAČKE (${byL.filter(c => c.logical).length})`);
+    h += br + lab('PÍSMENO:') + chip(L==='all', 'csl', 'all', 'VŠETKY') + letters.map(x => chip(L===x, 'csl', x, x)).join('');
+    if (packs > 1) {
+      let opts = `<option value="0">celý výber (${sel.length})</option>`;
+      for (let p = 1; p <= packs; p++) {
+        const part = sel.slice((p - 1) * CS_PACK, p * CS_PACK);
+        opts += `<option value="${p}" ${F.csPack === p ? 'selected' : ''}>${p} / ${packs} · ${part[0].icao}–${part[part.length-1].icao} (${part.length})</option>`;
+      }
+      h += br + lab('BALÍČEK PO ' + CS_PACK + ':') + `<select class="cs-pack" id="cs-pack">${opts}</select>` +
+        (F.csPack ? chip(false, 'cspk', 'prev', '◀') + chip(false, 'cspk', 'next', 'ĎALŠÍ BALÍČEK ▶') : '');
+    }
+    if (m !== 'list') {
+      const weakN = (state.apAllIds || []).filter(id => state.mistakes[id] > 0).length;
+      h += br + lab('OPAKOVANIE:') + chip(F.csWeak, 'csweak', '1', `LEN SLABÉ MIESTA (${weakN})`) +
+        `<span class="ap-progress" id="ap-progress">${apProgressText()}</span>` + chip(false, 'csclear', '1', 'VYMAZAŤ POKROK');
+      if (state.csNote) h += `<span class="ap-note">${state.csNote}</span>`;
+    }
+    el.innerHTML = h;
+    const on = (attr, fn) => el.querySelectorAll('[data-' + attr + ']').forEach(b => { b.onclick = () => fn(b.dataset[attr]); });
+    const go = () => startMode(state.mode);
+    on('csmode', v => { F.csMode = v; go(); });
+    on('csans',  v => { F.csAns = v; go(); });
+    on('csdir',  v => { F.csDir = v; go(); });
+    /* zmena výberu zmení aj hranice balíčkov, takže sa začína od celku */
+    on('cscat',  v => { F.callsignCat = v; F.csLetter = 'all'; F.csPack = 0; go(); });
+    on('cskind', v => { F.csKind = v; F.csPack = 0; go(); });
+    on('csl',    v => { F.csLetter = v; F.csPack = 0; go(); });
+    on('cspk',   v => { F.csPack = v === 'next' ? (F.csPack % packs) + 1 : (F.csPack > 1 ? F.csPack - 1 : packs); go(); });
+    on('csweak', () => { F.csWeak = !F.csWeak; go(); });
+    on('csclear', () => {
+      if (!confirm('Vymazať uložený pokrok a slabé miesta MOD 03?')) return;
+      apClearProgress(apIsMod03); F.csWeak = false; go();
     });
-    el.querySelectorAll('[data-csl]').forEach(b => {
-      b.onclick = () => { state.filters.csLetter = b.dataset.csl; startMode(state.mode); };
-    });
+    const pk = document.getElementById('cs-pack');
+    if (pk) pk.onchange = () => { F.csPack = +pk.value; go(); };
   } else if (state.mode === 'waypoint') {
     const hard = state.filters.wpDiff === 'hard';
     const wpm = state.filters.wpMode;
@@ -4838,7 +4998,8 @@ function renderReveal(q) {
     `;
     grid = `
       <div class="item"><span class="item-label">ICAO 3LTR</span><span class="item-val"><strong>${cs.icao}</strong></span></div>
-      <div class="item"><span class="item-label">CALLSIGN</span><span class="item-val"><strong>"${cs.call}"</strong></span></div>
+      <div class="item"><span class="item-label">CALLSIGN</span><span class="item-val"><strong>"${csHighlight(cs)}"</strong></span></div>
+      <div class="item"><span class="item-label">POMÔCKA</span><span class="item-val">${cs.logical ? 'písmená kódu sú vo volačke (podčiarknuté)' : 'kód sa z volačky nedá vyčítať — treba ho vedieť'}</span></div>
     `;
     if (cs.airline) grid += `
       <div class="item"><span class="item-label">AIRLINE</span><span class="item-val">${cs.airline}</span></div>
@@ -4883,7 +5044,7 @@ function submitAnswer() {
   renderWeak();
 
   input.disabled = true;
-  if (q.type === 'airport' || q.type === 'prefix') apAfterAnswer(q, ok);
+  if (q.type === 'airport' || q.type === 'prefix' || q.type === 'callsign') apAfterAnswer(q, ok);
   const sb = document.getElementById('submit-btn');
   sb.disabled = true; sb.style.opacity = '0.4';
   const hb = document.getElementById('btn-hint'); if (hb) hb.disabled = true;
@@ -4947,6 +5108,7 @@ setInterval(tickClock, 1000); tickClock();
 document.querySelectorAll('.tab').forEach(t => { t.onclick = () => startMode(t.dataset.mode); });
 document.getElementById('btn-skip').onclick = () => {
   if (state.mode === 'airport' && state.filters.apMode === 'study') return;
+  if (state.mode === 'callsign' && state.filters.csMode === 'list') return;
   if (state.mode === 'waypoint' && (state.filters.wpMode === 'study' || state.filters.wpMode === 'blind')) return; // no skipping in study / blind map
   if (!state.current) return;
   state.mistakes[state.current.id] = (state.mistakes[state.current.id] || 0) + 1;
