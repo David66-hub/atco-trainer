@@ -42,7 +42,7 @@
   .clock { color:var(--green-dim); font-size:12px; letter-spacing:0.15em; font-weight:500; }
 
   /* TABS — clearly card-like, active tab is a solid filled button */
-  .tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
+  .tabs { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:20px; }
   .tab { background:var(--panel); border:1.5px solid var(--border); color:var(--text-dim); padding:14px 14px; cursor:pointer; text-align:left; font-family:var(--mono); font-size:12px; letter-spacing:0.12em; transition:all 0.15s; border-radius:8px; box-shadow:var(--shadow); }
   .tab:hover { border-color:var(--green-strong); color:var(--text); transform:translateY(-1px); box-shadow:0 3px 10px rgba(10,157,92,0.16); }
   .tab.active { background:var(--green-strong); border-color:var(--green-strong); color:#ffffff; box-shadow:0 3px 12px rgba(10,157,92,0.32); }
@@ -338,6 +338,43 @@
   .hint-text .cs-photo img { max-width:150px; max-height:80px; }
   .cs-a { color:var(--text-faint); font-size:10px; margin-left:auto; text-align:right; }
 
+  /* ===== MOD 05 — hra na kurzy ===== */
+  .hg-plane { fill:#16221c; stroke:#ffffff; stroke-width:1.5; stroke-linejoin:round; }
+  .hg-vec { stroke:#16221c; stroke-width:1.6; }
+  .hg-setv { stroke:var(--amber); stroke-width:2; stroke-dasharray:5 4; }
+  .hg-trail { fill:none; stroke:#16221c; stroke-width:1.4; stroke-dasharray:2 5; opacity:0.45; }
+  .hg-rose circle { fill:rgba(255,255,255,0.55); stroke:#3b82c4; stroke-width:1; opacity:0.9; }
+  .hg-rose line { stroke:#3b82c4; stroke-width:1.2; }
+  .hg-rose text { fill:#22557f; font-family:var(--mono); font-size:9px; font-weight:700; text-anchor:middle; paint-order:stroke; stroke:#fbfdfc; stroke-width:2.4px; }
+  .hg-zone { fill:rgba(176,106,0,0.14); stroke:var(--amber); stroke-width:1.2; stroke-dasharray:4 3; }
+  .hg-gate { stroke:var(--amber); stroke-width:3; }
+  .hg-post { fill:var(--amber); stroke:#7a4a00; stroke-width:2; }
+  .hg-pl circle { fill:#ccd8d1; stroke:#8c9c94; stroke-width:1; }
+  .hg-pl text { fill:#5d6d65; font-family:var(--mono); font-size:9px; font-weight:700; paint-order:stroke; stroke:#fbfdfc; stroke-width:2.4px; }
+  .hg-pl.on circle { fill:var(--amber); stroke:#7a4a00; stroke-width:2; }
+  .hg-pl.on text { fill:#7a4a00; font-size:11px; }
+  .hg-task { margin-top:6px; padding:12px 16px; background:var(--amber-bg); border-left:4px solid var(--amber); border-radius:0 6px 6px 0; }
+  .hg-task span { display:block; font-size:9px; letter-spacing:0.2em; color:var(--amber); font-weight:700; }
+  .hg-task strong { font-family:var(--display); font-size:26px; color:var(--text); }
+  .hg-hdgs { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  .hg-hdgs > div, .hg-stats > div { background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; text-align:center; }
+  .hg-hdgs span, .hg-stats span { display:block; font-size:9px; letter-spacing:0.18em; color:var(--text-faint); }
+  .hg-hdgs b { font-family:var(--display); font-size:44px; line-height:1.1; color:var(--green); }
+  .hg-hdgs b.set { color:var(--amber); }
+  .hg-msg { margin-top:12px; padding:10px 14px; border-left:4px solid var(--border-bright); background:var(--panel-2); border-radius:0 6px 6px 0; font-size:12px; min-height:40px; color:var(--text-dim); }
+  .hg-msg.ok { border-color:var(--green-strong); background:var(--green-bg); color:var(--green); }
+  .hg-msg.no { border-color:var(--red); background:var(--red-bg); color:var(--red); }
+  .hg-msg.hint { border-color:var(--amber); background:var(--amber-bg); color:var(--amber); }
+  .hg-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px; }
+  .hg-stats b { font-family:var(--mono); font-size:18px; color:var(--text); }
+  .hs-true { stroke:var(--green-strong); stroke-width:2; stroke-dasharray:7 5; }
+  .hs-you { stroke-width:2.2; }
+  .hs-you.ok { stroke:var(--green-strong); }
+  .hs-you.no { stroke:var(--red); }
+  .hg-task strong { line-height:1.25; display:block; }
+  .hg-btns { display:flex; gap:10px; margin-top:12px; }
+  .hg-btns .btn { padding:10px 18px; }
+
   @media (max-width:760px) {
     .aircraft-display { grid-template-columns:1fr; }
     .big-prompt { font-size:44px; }
@@ -366,6 +403,7 @@
     <button class="tab" data-mode="airport"><span class="tab-num">MOD 02</span><span class="tab-label">AIRPORTS / ICAO</span></button>
     <button class="tab" data-mode="callsign"><span class="tab-num">MOD 03</span><span class="tab-label">CALLSIGNS</span></button>
     <button class="tab" data-mode="waypoint"><span class="tab-num">MOD 04</span><span class="tab-label">FRA BODY / MAPA</span></button>
+    <button class="tab" data-mode="heading"><span class="tab-num">MOD 05</span><span class="tab-label">HRA NA KURZY</span></button>
   </div>
   <div class="panel">
     <div class="panel-head">
@@ -2881,7 +2919,7 @@ const state = {
   queue: [], current: null, index: 0, total: 0,
   correct: 0, wrong: 0, streak: 0, bestStreak: 0,
   mistakes: {},
-  filters: { wake: 'all', airportCat: 'all', apMode: 'quiz', apAns: 'type', apPx: 'doc', apWeak: false, callsignCat: 'all', wpDiff: 'easy', csLetter: 'all', csMode: 'quiz', csAns: 'type', csDir: 'both', csKind: 'all', csPack: 0, csWeak: false, wpGrp: 'all', wpMode: 'quiz', wpBorder: 'all' },
+  filters: { hgMode: 'move', hgDiff: 'easy', hgKind: 'gate', hgNames: 'on', hgRose: 'off', wake: 'all', airportCat: 'all', apMode: 'quiz', apAns: 'type', apPx: 'doc', apWeak: false, callsignCat: 'all', wpDiff: 'easy', csLetter: 'all', csMode: 'quiz', csAns: 'type', csDir: 'both', csKind: 'all', csPack: 0, csWeak: false, wpGrp: 'all', wpMode: 'quiz', wpBorder: 'all' },
   hintsUsed: 0,
   apOk: {},       // MOD 02: koľkokrát po sebe správne (ukladá sa)
 };
@@ -3692,6 +3730,10 @@ function renderCsList(card) {
    ním podržíš myš.
    ============================================================ */
 const MODE_HELP = {
+  'heading.static': 'Lietadlo stojí na mieste a na mape je oranžový bod. Napíš kurz, ktorý od lietadla vedie na bod, a stlač Enter. Lietadlo sa natočí a uvidíš, či to sedí. Ďalší Enter dá novú úlohu.',
+  'heading.gate': 'Lietadlo letí samo. Napíš kurz po 5° (napr. 245) a stlač Enter — lietadlo hneď zatočí. Prelet medzi stĺpikmi oranžovej bránky je zásah a hneď sa objaví ďalšia.',
+  'heading.city': 'Lietadlo letí samo. Hore vpravo je miesto, nad ktoré máš preletieť. Napíš kurz po 5° a stlač Enter. Keď názvy na mape vypneš, musíš vedieť, kde miesto leží.',
+  'heading.fra':  'To isté ako MIESTA, ale ciele sú význačné body FRA z MOD 04 — precvičíš kurzy aj polohu bodov naraz.',
   aircraft: 'Na fotke je lietadlo. Napíš jeho ICAO označenie typu (napr. B738) alebo bežný názov a potvrď Enterom. Keď nevieš, HINT ti napovedá po krokoch.',
   'airport.quiz':   'Dostaneš ICAO kód a napíšeš mesto, alebo dostaneš mesto a napíšeš štvorpísmenový ICAO kód. Potvrdíš Enterom, ďalším Enterom ideš na ďalšiu otázku.',
   'airport.map':    'To isté ako KVÍZ, ale vľavo na mape svieti miesto, kde letisko leží. Odpovedáš vpravo — kód si tak spojíš s polohou.',
@@ -3711,6 +3753,7 @@ function modeHelpKey() {
   if (m === 'airport')  return 'airport.' + F.apMode;
   if (m === 'callsign') return 'callsign.' + F.csMode;
   if (m === 'waypoint') return 'waypoint.' + F.wpMode;
+  if (m === 'heading')  return 'heading.' + (F.hgMode === 'static' ? 'static' : F.hgKind);
   return m;
 }
 function renderModeHelp() {
@@ -3724,12 +3767,22 @@ function renderModeHelp() {
 
 /* kľúč = „atribút=hodnota" z data-* tlačidla, alebo jeho id s # */
 const TIPS = {
+  'mode=heading': 'MOD 05 — navádzanie jedného lietadla kurzami po 5° cez bránky alebo nad miesta.',
+  'hgkind=gate': 'Ciele sú náhodné bránky na mape.', 'hgkind=city': 'Ciele sú slovenské mestá a letiská.', 'hgkind=fra': 'Ciele sú význačné body FRA z MOD 04.',
+  'hgmode=move': 'Lietadlo letí a ty ho kurzami navádzaš cez ciele.', 'hgmode=static': 'Lietadlo stojí; len určíš kurz na bod a hneď vidíš, či je správny.',
+  'hgdiff=easy': 'Ľahšia verzia: pomalšie lietadlo a širšia bránka, resp. kurz po 5° s toleranciou ±5°.',
+  'hgdiff=hard': 'Hardcore: rýchle lietadlo a úzka bránka, resp. kurz na stupeň s toleranciou ±2°.',
+  '#hs-next': 'Nová úloha. To isté spraví Enter.',
+  'hgnames=on': 'Miesta sú na mape pomenované a cieľ je zvýraznený.', 'hgnames=off': 'Na mape sú len bodky bez mien — polohu cieľa musíš vedieť.',
+  'hgrose=on': 'Zapne okolo lietadla kruh s kurzami — pomôcka na odhad.', 'hgrose=off': 'Bez kruhu okolo lietadla — kurz odhaduješ z hlavy.',
+  '#hg-go': 'Odošle kurz. To isté spraví Enter.', '#hg-pause': 'Zastaví alebo znova spustí lietadlo.',
+  '#hg-hint': 'Prezradí približný kurz na cieľ, zaokrúhlený na 5°.',
   'mode=aircraft': 'MOD 01 — spoznávanie typov lietadiel podľa fotky.',
   'mode=airport':  'MOD 02 — ICAO kódy letísk, mapa Európy a prefixy štátov.',
   'mode=callsign': 'MOD 03 — trojpísmenové kódy prevádzkovateľov a ich volacie znaky.',
   'mode=waypoint': 'MOD 04 — význačné body FRA v FIR Bratislava na mape.',
   '#btn-fs':    'Roztiahne cvičenie s mapou na celú obrazovku, aby bola mapa čo najväčšia. Späť klávesom Esc.',
-  '#btn-skip':  'Preskočí otázku. Počíta sa ako chyba a zapíše sa do slabých miest.',
+  '#btn-skip':  'Preskočí otázku. Počíta sa ako chyba a zapíše sa do slabých miest. V MOD 05 dá nový cieľ.',
   '#btn-reset': 'Začne cvičenie odznova s tými istými filtrami a vynuluje skóre hore.',
   '#btn-hint':  'Ukáže ďalšiu nápovedu. Nápovedy idú od najmenšej po najväčšiu.',
   '#submit-btn': 'Odošle odpoveď. To isté spraví kláves Enter.',
@@ -3837,7 +3890,7 @@ function tipFor(el) {
 })();
 function modeHasMap() {
   const F = state.filters;
-  if (state.mode === 'waypoint') return true;
+  if (state.mode === 'waypoint' || state.mode === 'heading') return true;
   return state.mode === 'airport' && (F.apMode === 'map' || F.apMode === 'click' || F.apMode === 'study');
 }
 function fsActive() {
@@ -3866,6 +3919,352 @@ document.addEventListener('keydown', e => {
   const p = document.querySelector('.panel');
   if (e.key === 'Escape' && p.classList.contains('fs')) { p.classList.remove('fs'); fsSync(); }
 });
+
+/* ============================================================
+   MOD 05 — HRA NA KURZY
+   ------------------------------------------------------------
+   Jedno lietadlo letí nad mapou Slovenska. Kurz sa zadáva číslom
+   po 5° (245, 250, 255…) a cieľom je preletieť bránkou alebo nad
+   zadaným miestom. Po zásahu sa hneď objaví ďalší cieľ.
+   Lietadlo začne točiť hneď po Enteri, bez oneskorenia.
+   Poloha je v súradniciach mapy (viewBox 1000 × 534, 1 px ≈ 0,44 km).
+   ============================================================ */
+const HG_SPEED = { easy: 20, hard: 40 };              // px za sekundu (ĽAHKÁ / HARDCORE)
+const HG_TURN  = 90;                                 // ° za sekundu — skoro hneď, ale zatáčku ešte vidno
+const HG_DELAY = 0;                                  // bez oneskorenia: lietadlo točí hneď po Enteri
+const HG_GATE  = { easy: 30, hard: 16 };              // polomer bránky v px
+const HS_TOL   = { easy: 5, hard: 2 };                // statický režim: o koľko stupňov smieš byť vedľa
+const HG_POINT_R = 14;                               // do akej vzdialenosti sa ráta prelet miesta
+const HG = { raf: 0, run: false, built: false };
+
+function hgNorm(h) { h = ((h % 360) + 360) % 360; return h === 0 ? 360 : h; }
+function hgPad(h) { return String(Math.round(hgNorm(h))).padStart(3, '0'); }
+function hgBearing(x1, y1, x2, y2) { return hgNorm(Math.atan2(x2 - x1, -(y2 - y1)) * 180 / Math.PI); }
+/* najkratší rozdiel kurzov, -180…180 (kladný = doprava) */
+function hgDiff(from, to) { return ((to - from + 540) % 360) - 180; }
+
+let HG_POLY = null;
+function hgInside(x, y) {
+  if (!HG_POLY) HG_POLY = FIR_OUTLINE.map(p => [projX(p[0]), projY(p[1])]);
+  let c = false;
+  for (let i = 0, j = HG_POLY.length - 1; i < HG_POLY.length; j = i++) {
+    const a = HG_POLY[i], b = HG_POLY[j];
+    if ((a[1] > y) !== (b[1] > y) && x < (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]) + a[0]) c = !c;
+  }
+  return c;
+}
+/* miesta, nad ktoré sa lieta: slovenské letiská z MOD 02, resp. body FRA z MOD 04 */
+function hgPlaces() {
+  if (state.filters.hgKind === 'fra')
+    return WAYPOINTS.map(w => ({ name: w.name, x: projX(w.lon), y: projY(w.lat) }));
+  return AIRPORTS.filter(a => a.cat === 'sk' && AP_POS[a.icao])
+    .map(a => ({ name: a.city.toUpperCase(), x: projX(AP_POS[a.icao][1]), y: projY(AP_POS[a.icao][0]) }));
+}
+
+function hgNewTarget() {
+  const F = state.filters;
+  let t = null;
+  if (F.hgKind === 'gate') {
+    for (let i = 0; i < 400 && !t; i++) {
+      const x = 60 + Math.random() * 880, y = 40 + Math.random() * 450;
+      const d = Math.hypot(x - HG.x, y - HG.y);
+      if (hgInside(x, y) && d > 170 && d < 520) t = { x, y, r: HG_GATE[F.hgDiff], name: 'BRÁNKA ' + (HG.hits + 1) };
+    }
+    if (!t) t = { x: 500, y: 267, r: HG_GATE[F.hgDiff], name: 'BRÁNKA ' + (HG.hits + 1) };
+    /* stĺpiky bránky stoja kolmo na smer, z ktorého k nej lietadlo teraz letí */
+    t.ang = hgBearing(HG.x, HG.y, t.x, t.y) + 90;
+  } else {
+    const all = hgPlaces().filter(p => (!HG.target || p.name !== HG.target.name) && Math.hypot(p.x - HG.x, p.y - HG.y) > 110);
+    const p = all[Math.floor(Math.random() * all.length)];
+    t = { x: p.x, y: p.y, r: HG_POINT_R, name: p.name };
+  }
+  HG.target = t;
+  HG.hintUsed = false;
+  hgDrawTarget();
+}
+
+function hgReset() {
+  cancelAnimationFrame(HG.raf);
+  Object.assign(HG, { raf: 0, run: false, x: 500, y: 250, hdg: 90, set: 90, delay: 0, trail: [], cmds: 0, hits: 0, t: 0, out: false, target: null, last: 0 });
+  state.correct = 0; state.wrong = 0; state.streak = 0; state.bestStreak = 0;
+}
+function hgStop() { cancelAnimationFrame(HG.raf); HG.raf = 0; HG.run = false; HG.built = false; }
+
+/* ružica okolo lietadla: sever je hore, čiarka každých 10°, číslo každých 30° */
+function hgRoseSVG() {
+  let rose = '';
+  for (let a = 0; a < 360; a += 10) {
+    const r1 = a % 30 === 0 ? 52 : 57, s = Math.sin(a * Math.PI / 180), c = -Math.cos(a * Math.PI / 180);
+    rose += `<line x1="${(r1 * s).toFixed(1)}" y1="${(r1 * c).toFixed(1)}" x2="${(62 * s).toFixed(1)}" y2="${(62 * c).toFixed(1)}"></line>`;
+    if (a % 30 === 0) rose += `<text x="${(74 * s).toFixed(1)}" y="${(74 * c + 3).toFixed(1)}">${hgPad(a)}</text>`;
+  }
+  return rose;
+}
+
+/* ------------------------------------------------------------
+   STATICKÝ REŽIM
+   Lietadlo stojí na mieste, niekde na Slovensku je bod. Napíšeš
+   kurz, ktorý na bod vedie; lietadlo sa naň natočí a ukáže sa,
+   či to sedí. ĽAHKÁ: kurz po 5°, uzná sa ±5°. HARDCORE: kurz na
+   stupeň, uzná sa ±2° (presnejšie sa z mapy odhadnúť nedá).
+   ------------------------------------------------------------ */
+const HS = {};
+function hsNew() {
+  const rnd = () => {
+    for (let i = 0; i < 400; i++) {
+      const x = 60 + Math.random() * 880, y = 40 + Math.random() * 450;
+      if (hgInside(x, y)) return [x, y];
+    }
+    return [500, 267];
+  };
+  let a = rnd(), t = rnd();
+  for (let i = 0; i < 60 && Math.hypot(a[0] - t[0], a[1] - t[1]) < 160; i++) t = rnd();
+  Object.assign(HS, { ax: a[0], ay: a[1], tx: t[0], ty: t[1], brg: hgBearing(a[0], a[1], t[0], t[1]), done: false });
+}
+function hsRender(card) {
+  const F = state.filters, P = MAP_PROJ, hard = F.hgDiff === 'hard';
+  hsNew();
+  document.getElementById('qnum').textContent = state.correct + state.wrong + 1;
+  document.getElementById('qtotal').textContent = '∞';
+  card.innerHTML = `
+    <div class="qmeta">HRA NA KURZY <span class="sep">·</span> STATICKÝ REŽIM <span class="sep">·</span> ${hard ? 'HARDCORE' : 'ĽAHKÁ'}</div>
+    <div class="map-wrap"><svg viewBox="0 0 ${P.w} ${P.h.toFixed(0)}" xmlns="http://www.w3.org/2000/svg" id="map-svg">
+      <rect x="0" y="0" width="${P.w}" height="${P.h.toFixed(0)}" fill="#fbfdfc"></rect>
+      <path d="${mapBaseParts().firPath}" fill="#eef6f0" stroke="var(--border-bright)" stroke-width="1.5"></path>
+      ${mapBaseParts().cities}
+      <g id="hs-lines"></g>
+      <circle class="hg-zone" cx="${HS.tx.toFixed(1)}" cy="${HS.ty.toFixed(1)}" r="13"></circle>
+      <circle class="hg-post" cx="${HS.tx.toFixed(1)}" cy="${HS.ty.toFixed(1)}" r="6"></circle>
+      <g id="hg-ac" transform="translate(${HS.ax.toFixed(1)},${HS.ay.toFixed(1)})">
+        <g class="hg-rose" style="${F.hgRose === 'on' ? '' : 'display:none'}"><circle r="62"></circle>${hgRoseSVG()}</g>
+        <g id="hg-rot" style="transition:transform 0.35s ease"><path class="hg-plane" d="M0,-12 L8,10 L0,5 L-8,10 Z"></path></g>
+      </g>
+    </svg></div>
+    <div class="hg-task"><span>ÚLOHA</span><strong>Aký kurz vedie od lietadla na oranžový bod?</strong></div>
+    <div class="input-row">
+      <input type="text" id="hg-in" inputmode="numeric" maxlength="3" placeholder="${hard ? 'KURZ NA STUPEŇ (napr. 247)' : 'KURZ PO 5° (napr. 245)'}" autocomplete="off">
+      <button class="btn" id="hg-go">POTVRDIŤ ▶</button>
+    </div>
+    <div class="hg-msg" id="hg-msg">${hard ? 'HARDCORE: napíš kurz na stupeň presne. Uzná sa odchýlka do ±' + HS_TOL.hard + '°.' : 'Napíš kurz po 5°. Uzná sa odchýlka do ±' + HS_TOL.easy + '°.'}</div>
+    <div class="hg-hdgs" id="hs-res" style="display:none">
+      <div><span>TVOJ KURZ</span><b id="hs-you" class="set">—</b></div>
+      <div><span>SPRÁVNY KURZ</span><b id="hs-true">—</b></div>
+    </div>
+    <div class="hg-btns"><button class="btn" id="hs-next" style="display:none">ĎALŠÍ ▶</button></div>
+  `;
+  HG.built = true;
+  const inp = document.getElementById('hg-in');
+  inp.focus();
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (HS.done) hsRender(card); else hsAnswer(); } });
+  document.getElementById('hg-go').onclick = hsAnswer;
+  document.getElementById('hs-next').onclick = () => hsRender(card);
+}
+function hsAnswer() {
+  if (HS.done) return;
+  const F = state.filters, hard = F.hgDiff === 'hard';
+  const inp = document.getElementById('hg-in'), raw = inp.value.trim(), n = Number(raw);
+  if (!raw) return;
+  if (!/^\d{1,3}$/.test(raw) || n > 360) { hgMsg(`„${raw}“ nie je kurz. Zadaj číslo 001 až 360.`, 'no'); inp.value = ''; return; }
+  if (!hard && n % 5 !== 0) { hgMsg(`${hgPad(n)} nie je po 5°. Skús ${hgPad(Math.floor(n / 5) * 5)} alebo ${hgPad(Math.ceil(n / 5) * 5)}.`, 'no'); inp.value = ''; return; }
+  const you = hgNorm(n), err = Math.abs(hgDiff(you, HS.brg)), ok = err <= HS_TOL[F.hgDiff] + 0.5;
+  HS.done = true;
+  if (ok) { state.correct++; state.streak++; if (state.streak > state.bestStreak) state.bestStreak = state.streak; }
+  else { state.wrong++; state.streak = 0; }
+  renderStats();
+  /* lietadlo sa natočí na zadaný kurz; plná čiara = tvoj kurz, prerušovaná = správny */
+  document.getElementById('hg-rot').setAttribute('transform', `rotate(${you})`);
+  const L = 1200, a = you * Math.PI / 180;
+  document.getElementById('hs-lines').innerHTML =
+    `<line class="hs-true" x1="${HS.ax.toFixed(1)}" y1="${HS.ay.toFixed(1)}" x2="${HS.tx.toFixed(1)}" y2="${HS.ty.toFixed(1)}"></line>
+     <line class="hs-you ${ok ? 'ok' : 'no'}" x1="${HS.ax.toFixed(1)}" y1="${HS.ay.toFixed(1)}" x2="${(HS.ax + Math.sin(a) * L).toFixed(1)}" y2="${(HS.ay - Math.cos(a) * L).toFixed(1)}"></line>`;
+  document.getElementById('hs-res').style.display = '';
+  document.getElementById('hs-you').textContent = hgPad(you);
+  document.getElementById('hs-true').textContent = hgPad(HS.brg);
+  const e = Math.round(err);
+  hgMsg(ok ? `✓ SPRÁVNE — ${e === 0 ? 'presne na bod' : 'vedľa len o ' + e + '°'}. Enter = ďalší.`
+           : `✗ ZLE — si vedľa o ${e}°. Správny kurz je ${hgPad(HS.brg)}. Enter = ďalší.`, ok ? 'ok' : 'no');
+  inp.value = '';
+  document.getElementById('hs-next').style.display = '';
+  document.getElementById('hg-go').disabled = true;
+}
+
+function renderHeadingGame(card) {
+  const F = state.filters;
+  hgReset();
+  document.getElementById('mode-label').textContent = 'HRA NA KURZY';
+  if (F.hgMode === 'static') { hsRender(card); return; }
+  document.getElementById('qnum').textContent = '•';
+  document.getElementById('qtotal').textContent = F.hgKind === 'gate' ? 'bránky' : F.hgKind === 'fra' ? 'body FRA' : 'miesta';
+  document.getElementById('mode-label').textContent = 'HRA NA KURZY';
+  const P = MAP_PROJ;
+
+  /* miesta na mape: v režime bránok len orientačné mestá, inak všetky ciele */
+  let places = '';
+  if (F.hgKind === 'gate') places = mapBaseParts().cities;
+  else places = hgPlaces().map(p => `<g class="hg-pl" data-n="${p.name}">
+      <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4"></circle>
+      ${F.hgNames === 'on' ? `<text x="${(p.x + 7).toFixed(1)}" y="${(p.y - 6).toFixed(1)}">${p.name}</text>` : ''}
+    </g>`).join('');
+  const rose = hgRoseSVG();
+
+  card.innerHTML = `
+    <div class="qmeta">HRA NA KURZY <span class="sep">·</span> POHYBLIVÝ REŽIM <span class="sep">·</span> ${F.hgKind === 'gate' ? 'BRÁNKY' : F.hgKind === 'fra' ? 'BODY FRA' : 'MIESTA'} <span class="sep">·</span> ${F.hgDiff === 'hard' ? 'HARDCORE' : 'ĽAHKÁ'}</div>
+    <div class="map-wrap"><svg viewBox="0 0 ${P.w} ${P.h.toFixed(0)}" xmlns="http://www.w3.org/2000/svg" id="map-svg">
+      <rect x="0" y="0" width="${P.w}" height="${P.h.toFixed(0)}" fill="#fbfdfc"></rect>
+      <path d="${mapBaseParts().firPath}" fill="#eef6f0" stroke="var(--border-bright)" stroke-width="1.5"></path>
+      ${places}
+      <g id="hg-tgt"></g>
+      <polyline id="hg-trail" class="hg-trail" points=""></polyline>
+      <g id="hg-ac">
+        <g class="hg-rose" style="${F.hgRose === 'on' ? '' : 'display:none'}"><circle r="62"></circle>${rose}</g>
+        <line id="hg-setv" class="hg-setv" x1="0" y1="0" x2="0" y2="-62"></line>
+        <g id="hg-rot"><line class="hg-vec" x1="0" y1="0" x2="0" y2="-46"></line><path class="hg-plane" d="M0,-12 L8,10 L0,5 L-8,10 Z"></path></g>
+      </g>
+    </svg></div>
+    <div class="hg-task"><span>CIEĽ</span><strong id="hg-name">—</strong></div>
+    <div class="hg-hdgs">
+      <div><span>LETÍ KURZOM</span><b id="hg-cur">090</b></div>
+      <div><span>ZADANÝ KURZ</span><b id="hg-set" class="set">090</b></div>
+    </div>
+    <div class="input-row">
+      <input type="text" id="hg-in" inputmode="numeric" maxlength="3" placeholder="KURZ PO 5° (napr. 245)" autocomplete="off">
+      <button class="btn" id="hg-go">TOČ ▶</button>
+    </div>
+    <div class="hg-msg" id="hg-msg">Napíš kurz a stlač Enter — lietadlo vyštartuje.</div>
+    <div class="hg-stats">
+      <div><span>ZÁSAHY</span><b id="hg-hits">0</b></div>
+      <div><span>POVELY</span><b id="hg-cmds">0</b></div>
+      <div><span>POVELY / ZÁSAH</span><b id="hg-avg">—</b></div>
+      <div><span>ČAS</span><b id="hg-time">0:00</b></div>
+    </div>
+    <div class="hg-btns">
+      <button class="btn ghost" id="hg-pause">⏸ PAUZA</button>
+      <button class="btn-hint" id="hg-hint">? SMER NA CIEĽ</button>
+    </div>
+  `;
+  HG.built = true;
+  hgNewTarget();
+  hgPaint();
+  const inp = document.getElementById('hg-in');
+  inp.focus();
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') hgCommand(); });
+  document.getElementById('hg-go').onclick = hgCommand;
+  document.getElementById('hg-pause').onclick = () => { if (HG.run) hgPause(); else hgRun(); inp.focus(); };
+  document.getElementById('hg-hint').onclick = () => {
+    HG.hintUsed = true;
+    const b = Math.round(hgBearing(HG.x, HG.y, HG.target.x, HG.target.y) / 5) * 5;
+    hgMsg(`Smer na cieľ je teraz približne ${hgPad(b)}°.`, 'hint');
+    inp.focus();
+  };
+}
+
+function hgMsg(t, cls) {
+  const el = document.getElementById('hg-msg');
+  if (el) { el.textContent = t; el.className = 'hg-msg ' + (cls || ''); }
+}
+function hgCommand() {
+  const inp = document.getElementById('hg-in');
+  const raw = inp.value.trim();
+  inp.value = '';
+  if (!raw) { if (!HG.run) hgRun(); return; }
+  const n = Number(raw);
+  if (!/^\d{1,3}$/.test(raw) || n > 360) { hgMsg(`„${raw}“ nie je kurz. Zadaj číslo 005 až 360.`, 'no'); return; }
+  if (n % 5 !== 0) { hgMsg(`${hgPad(n)} nie je po 5°. Skús ${hgPad(Math.floor(n / 5) * 5)} alebo ${hgPad(Math.ceil(n / 5) * 5)}.`, 'no'); return; }
+  HG.set = hgNorm(n);
+  HG.delay = HG_DELAY;
+  HG.cmds++;
+  const d = hgDiff(HG.hdg, HG.set);
+  hgMsg(Math.abs(d) < 1 ? `Kurz ${hgPad(HG.set)} — letíš ním.` : `Točím ${d > 0 ? 'doprava' : 'doľava'} na kurz ${hgPad(HG.set)} (o ${Math.abs(Math.round(d))}°).`, 'ok');
+  if (!HG.run) hgRun();
+}
+function hgRun() {
+  if (HG.run || !HG.built) return;
+  HG.run = true; HG.last = 0;
+  const b = document.getElementById('hg-pause'); if (b) b.textContent = '⏸ PAUZA';
+  HG.raf = requestAnimationFrame(hgTick);
+}
+function hgPause() {
+  HG.run = false; cancelAnimationFrame(HG.raf);
+  const b = document.getElementById('hg-pause'); if (b) b.textContent = '▶ POKRAČOVAŤ';
+}
+function hgTick(ts) {
+  if (!HG.run) return;
+  /* panel zmizol (iný modul) — slučka sa sama zastaví */
+  if (!document.getElementById('hg-ac')) { hgStop(); return; }
+  const dt = HG.last ? Math.min(0.1, (ts - HG.last) / 1000) : 0;
+  HG.last = ts;
+  hgStep(dt);
+  hgPaint();
+  HG.raf = requestAnimationFrame(hgTick);
+}
+function hgStep(dt) {
+  HG.t += dt;
+  /* zatáčka: najprv oneskorenie, potom plynulo kratšou stranou */
+  if (HG.delay > 0) HG.delay -= dt;
+  else {
+    const d = hgDiff(HG.hdg, HG.set), step = HG_TURN * dt;
+    HG.hdg = Math.abs(d) <= step ? HG.set : hgNorm(HG.hdg + Math.sign(d) * step);
+  }
+  const v = HG_SPEED[state.filters.hgDiff] * dt, a = HG.hdg * Math.PI / 180;
+  HG.x += Math.sin(a) * v; HG.y -= Math.cos(a) * v;
+  if (!HG.trail.length || Math.hypot(HG.x - HG.trail[HG.trail.length - 1][0], HG.y - HG.trail[HG.trail.length - 1][1]) > 6) {
+    HG.trail.push([HG.x, HG.y]);
+    if (HG.trail.length > 140) HG.trail.shift();
+  }
+  /* zásah */
+  const T = HG.target;
+  if (T && Math.hypot(HG.x - T.x, HG.y - T.y) <= T.r) {
+    HG.hits++; state.correct++; state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    hgMsg(`✓ ${T.name} — zásah. Ďalší cieľ je na mape.`, 'ok');
+    hgNewTarget();
+    renderStats();
+  }
+  /* vyletel z mapy: počíta sa ako chyba a lietadlo sa samo otočí späť */
+  const P = MAP_PROJ, outside = HG.x < 0 || HG.y < 0 || HG.x > P.w || HG.y > P.h;
+  if (outside && !HG.out) {
+    HG.out = true; state.wrong++; state.streak = 0;
+    HG.set = Math.round(hgBearing(HG.x, HG.y, P.w / 2, P.h / 2) / 5) * 5; HG.delay = 0;
+    hgMsg(`✗ Vyletel si z mapy — otáčam späť na kurz ${hgPad(HG.set)}.`, 'no');
+    renderStats();
+  }
+  if (!outside) HG.out = false;
+}
+function hgPaint() {
+  const ac = document.getElementById('hg-ac');
+  if (!ac) return;
+  ac.setAttribute('transform', `translate(${HG.x.toFixed(1)},${HG.y.toFixed(1)})`);
+  document.getElementById('hg-rot').setAttribute('transform', `rotate(${HG.hdg.toFixed(1)})`);
+  const sv = document.getElementById('hg-setv');
+  sv.setAttribute('transform', `rotate(${HG.set})`);
+  sv.style.display = Math.abs(hgDiff(HG.hdg, HG.set)) < 1 ? 'none' : '';
+  document.getElementById('hg-trail').setAttribute('points', HG.trail.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' '));
+  document.getElementById('hg-cur').textContent = hgPad(HG.hdg);
+  document.getElementById('hg-set').textContent = hgPad(HG.set);
+  document.getElementById('hg-hits').textContent = HG.hits;
+  document.getElementById('hg-cmds').textContent = HG.cmds;
+  document.getElementById('hg-avg').textContent = HG.hits ? (HG.cmds / HG.hits).toFixed(1) : '—';
+  const s = Math.floor(HG.t);
+  document.getElementById('hg-time').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function hgDrawTarget() {
+  const g = document.getElementById('hg-tgt'), T = HG.target, F = state.filters;
+  if (!g || !T) return;
+  document.getElementById('hg-name').textContent = F.hgKind === 'gate' ? T.name : 'PRELEŤ NAD: ' + T.name;
+  document.querySelectorAll('.hg-pl.on').forEach(el => el.classList.remove('on'));
+  if (F.hgKind === 'gate') {
+    const a = T.ang * Math.PI / 180, dx = Math.sin(a) * T.r, dy = -Math.cos(a) * T.r;
+    g.innerHTML = `<circle class="hg-zone" cx="${T.x.toFixed(1)}" cy="${T.y.toFixed(1)}" r="${T.r}"></circle>
+      <line class="hg-gate" x1="${(T.x - dx).toFixed(1)}" y1="${(T.y - dy).toFixed(1)}" x2="${(T.x + dx).toFixed(1)}" y2="${(T.y + dy).toFixed(1)}"></line>
+      <circle class="hg-post" cx="${(T.x - dx).toFixed(1)}" cy="${(T.y - dy).toFixed(1)}" r="5"></circle>
+      <circle class="hg-post" cx="${(T.x + dx).toFixed(1)}" cy="${(T.y + dy).toFixed(1)}" r="5"></circle>`;
+  } else if (F.hgNames === 'on') {
+    /* s názvami na mape sa cieľ zvýrazní; bez názvov ho musíš nájsť sám */
+    g.innerHTML = `<circle class="hg-zone" cx="${T.x.toFixed(1)}" cy="${T.y.toFixed(1)}" r="${T.r}"></circle>`;
+    const el = [...document.querySelectorAll('.hg-pl')].find(x => x.dataset.n === T.name);
+    if (el) el.classList.add('on');
+  } else g.innerHTML = '';
+}
 
 /* ============================================================
    QUESTION BUILDERS
@@ -4156,6 +4555,7 @@ function buildQueue() {
     case 'airport':  return buildAirportQuestions();
     case 'callsign': return buildCallsignQuestions();
     case 'waypoint': return buildWaypointQuestions();
+    case 'heading':  return [];   // MOD 05 nemá otázky, beží ako hra
   }
 }
 
@@ -4294,10 +4694,12 @@ function renderQuestion() {
   const card = document.getElementById('qcard');
   /* MOD 02 s mapou (aj ŠTÚDIUM): mapa vľavo, text vpravo — všetko na jednej obrazovke */
   const apm = state.filters.apMode;
-  const split = state.mode === 'airport' && (apm === 'study' || (!!q && (apm === 'map' || apm === 'click')));
+  const split = state.mode === 'heading' || (state.mode === 'airport' && (apm === 'study' || (!!q && (apm === 'map' || apm === 'click'))));
   card.classList.toggle('split', split);
   document.querySelector('.app').classList.toggle('wide', split);
   fsSync();
+  /* MOD 05 — hra na kurzy má vlastnú kartu a vlastnú slučku */
+  if (state.mode === 'heading') { renderHeadingGame(card); return; }
   document.getElementById('qnum').textContent = state.index + 1;
   document.getElementById('qtotal').textContent = state.total;
   document.getElementById('mode-label').textContent =
@@ -5236,6 +5638,25 @@ function renderFilters() {
     el.querySelectorAll('[data-wpgrp]').forEach(b => {
       b.onclick = () => { state.filters.wpGrp = b.dataset.wpgrp; state.blind = null; startMode(state.mode); };
     });
+  } else if (state.mode === 'heading') {
+    const F = state.filters;
+    const lab = (t) => `<span style="font-size:10px;letter-spacing:0.15em;color:var(--text-faint);align-self:center;margin:0 6px 0 0">${t}</span>`;
+    const chip = (on, attr, val, txt) => `<button class="filter-chip ${on ? 'on' : ''}" data-${attr}="${val}">${txt}</button>`;
+    const br = '<span class="filter-break"></span>';
+    const mv = F.hgMode === 'move';
+    let h = lab('REŽIM:') + chip(mv, 'hgmode', 'move', 'POHYBLIVÝ') + chip(!mv, 'hgmode', 'static', 'STATICKÝ');
+    h += br + lab('OBTIAŽNOSŤ:') + chip(F.hgDiff==='easy', 'hgdiff', 'easy', mv ? 'ĽAHKÁ (pomalšie, široká bránka)' : 'ĽAHKÁ (po 5°, ±5°)') +
+      chip(F.hgDiff==='hard', 'hgdiff', 'hard', mv ? 'HARDCORE (rýchlo, úzka bránka)' : 'HARDCORE (na stupeň, ±2°)');
+    if (mv) {
+      h += br + lab('CIEĽ:') + chip(F.hgKind==='gate', 'hgkind', 'gate', 'BRÁNKY') + chip(F.hgKind==='city', 'hgkind', 'city', 'MIESTA') + chip(F.hgKind==='fra', 'hgkind', 'fra', 'BODY FRA');
+      if (F.hgKind !== 'gate') h += br + lab('NÁZVY NA MAPE:') + chip(F.hgNames==='on', 'hgnames', 'on', 'ZAPNUTÉ') + chip(F.hgNames==='off', 'hgnames', 'off', 'VYPNUTÉ (ťažšie)');
+    }
+    h += br + lab('RUŽICA:') + chip(F.hgRose==='off', 'hgrose', 'off', 'VYPNUTÁ') + chip(F.hgRose==='on', 'hgrose', 'on', 'ZAPNUTÁ (pomôcka)');
+    el.innerHTML = h;
+    ['hgmode', 'hgdiff', 'hgkind', 'hgnames', 'hgrose'].forEach(attr => {
+      const key = { hgmode: 'hgMode', hgdiff: 'hgDiff', hgkind: 'hgKind', hgnames: 'hgNames', hgrose: 'hgRose' }[attr];
+      el.querySelectorAll('[data-' + attr + ']').forEach(b => { b.onclick = () => { F[key] = b.dataset[attr]; startMode(state.mode); }; });
+    });
   }
   renderModeHelp();
 }
@@ -5379,6 +5800,7 @@ function nextQuestion() {
 }
 
 function startMode(mode) {
+  if (typeof hgStop === 'function') hgStop();   // hra z MOD 05 nesmie bežať na pozadí
   state.mode = mode;
   state.queue = buildQueue();
   state.index = 0;
@@ -5406,6 +5828,8 @@ setInterval(tickClock, 1000); tickClock();
 
 document.querySelectorAll('.tab').forEach(t => { t.onclick = () => startMode(t.dataset.mode); });
 document.getElementById('btn-skip').onclick = () => {
+  if (state.mode === 'heading' && state.filters.hgMode === 'static') { hsRender(document.getElementById('qcard')); return; }
+  if (state.mode === 'heading') { hgNewTarget(); hgMsg('Cieľ preskočený — nový je na mape.', 'hint'); document.getElementById('hg-in').focus(); return; }
   if (state.mode === 'airport' && state.filters.apMode === 'study') return;
   if (state.mode === 'callsign' && state.filters.csMode === 'list') return;
   if (state.mode === 'waypoint' && (state.filters.wpMode === 'study' || state.filters.wpMode === 'blind')) return; // no skipping in study / blind map
