@@ -347,15 +347,22 @@ function dqCfgHTML(S) {
 }
 function dqMapSVG(S, me) {
   const M = DQ_MAP, mine = dqPicking(S) && S.chooser === me, v = DQ.view || dqBaseView(), now = Date.now();
-  const fx = (DQ.fx || []).filter(f => now - f.t0 < 2000);
+  const fx = (DQ.fx || []).filter(f => now - f.t0 < 1600);
   let h = `<svg class="dq-map dq-s-${DQ_STYLE}" id="dq-svg" viewBox="${v.x} ${v.y} ${v.w} ${v.h}" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="dq-clip"><path d="${M.border}"/></clipPath>
     ${M.t.map((o, i) => o.c === 'G' ? `<clipPath id="dq-g${i}"><path d="${o.cp}"/></clipPath>` : '').join('')}
     <pattern id="dq-hB" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#2a0d10"/><line x1="0" y1="0" x2="0" y2="7" stroke="#7a2229" stroke-width="2.2"/></pattern>
     <pattern id="dq-hC" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#0a1a13"/><line x1="0" y1="0" x2="0" y2="7" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.6"/></pattern></defs>
     <g clip-path="url(#dq-clip)">`;
   M.t.forEach((o, i) => {
-    const ow = S.own[i], can = S.allowed.indexOf(i) >= 0, tgt = S.duel && S.duel.t === i, f = fx.find(x => x.t === i);
-    h += `<path d="${o.c === 'G' ? M.g[o.s] : o.d}"${o.c === 'G' ? ` clip-path="url(#dq-g${i})"` : ''} data-t="${i}" class="dq-cell c-${o.c}${ow >= 0 ? ' own' : ''}${can ? ' can' : ''}${can && mine ? ' click' : ''}${tgt ? ' tgt' : ''}${f ? ' new' : ''}" style="${ow >= 0 ? '--pc:' + DQ_COL[ow] + ';' : ''}${f ? 'animation-delay:-' + (now - f.t0) + 'ms' : ''}"/>`;
+    const f = fx.find(x => x.t === i), ow = f ? f.was : S.own[i], can = S.allowed.indexOf(i) >= 0, tgt = S.duel && S.duel.t === i, d = o.c === 'G' ? M.g[o.s] : o.d;
+    h += `<path d="${d}"${o.c === 'G' ? ` clip-path="url(#dq-g${i})"` : ''} data-t="${i}" class="dq-cell c-${o.c}${ow >= 0 ? ' own' : ''}${can ? ' can' : ''}${can && mine ? ' click' : ''}${tgt ? ' tgt' : ''}"${ow >= 0 ? ` style="--pc:${DQ_COL[ow]}"` : ''}/>`;
+    if (f) {
+      /* kruh v novej farbe rastie z bodu kliknutia a je orezaný tvarom priestoru */
+      const nums = (o.c === 'G' ? o.cp : o.d).match(/-?\d+\.?\d*/g).map(Number); let R = 0;
+      for (let n = 0; n + 1 < nums.length; n += 2) R = Math.max(R, Math.hypot(nums[n] - f.x, nums[n + 1] - f.y));
+      const c = `<circle class="dq-spread" cx="${f.x}" cy="${f.y}" r="${(R + 3).toFixed(1)}" fill="${f.col}" clip-path="url(#dq-fx${i})" style="animation-delay:-${now - f.t0}ms"/>`;
+      h += `<clipPath id="dq-fx${i}"><path d="${d}"/></clipPath>` + (o.c === 'G' ? `<g clip-path="url(#dq-g${i})">${c}</g>` : c);
+    }
   });
   h += `</g><path d="${M.border}" class="dq-out"/>`;
   M.t.forEach((o, i) => {
@@ -373,11 +380,6 @@ function dqMapSVG(S, me) {
     if (from) h += `<line class="dq-atk bg" x1="${from.x}" y1="${from.y}" x2="${T.x}" y2="${T.y}"/><line class="dq-atk" style="--pc:${col}" x1="${from.x}" y1="${from.y}" x2="${T.x}" y2="${T.y}"/>`;
     h += `<g transform="translate(${T.x},${T.y})"><g class="dq-swords" style="--pc:${col}"><circle r="15"/><text y="5.5">⚔</text></g></g>`;
   }
-  /* obsadenie: kruh z priestoru a body, ktoré zaň pribudli */
-  fx.forEach(f => {
-    const o = M.t[f.t], d = 'animation-delay:-' + (now - f.t0) + 'ms';
-    h += `<circle class="dq-ring" cx="${o.x}" cy="${o.y}" r="${Math.max(16, o.r * 1.5).toFixed(1)}" style="--pc:${f.col};${d}"/><text class="dq-plus" x="${o.x}" y="${o.y - 10}" style="${d}">+${o.v}</text>`;
-  });
   return h + '</svg>';
 }
 function dqLegendHTML() {
@@ -405,7 +407,7 @@ function dqChipsHTML(S, me) {
 function dqPopHTML(S, me, stage, ctx) {
   const q = S.q, R = S.rev, can = q.who.indexOf(me) >= 0, my = DQ.my;
   const sec = ms => (ms / 1000).toFixed(1).replace('.', ',') + ' s';
-  let h = `<div class="dq-pop-wrap"><div class="dq-pop${R ? ' rev' : ''}">
+  let h = `<div class="dq-pop${R ? ' rev' : ''}">
       <div class="dq-pop-top"><span>${dqEsc(q.mod)}</span><span class="dq-pop-stage">${stage}</span><span class="dq-pop-time" id="dq-sec">${R ? '' : Math.ceil(S.tot / 1000)}</span></div>
       <div class="dq-timer"><i class="dq-bar-i"></i></div>
       ${ctx ? `<div class="dq-pop-ctx">${ctx}</div>` : ''}
@@ -421,7 +423,7 @@ function dqPopHTML(S, me, stage, ctx) {
   if (R) h += q.who.map(pi => { const r = R.res[pi]; return `<span class="${r.ok ? 'ok' : 'no'}"><i style="background:${DQ_COL[pi]}"></i>${dqEsc(S.players[pi].nick)} ${r.c < 0 ? '— bez odpovede' : r.ok ? '✓ ' + sec(r.ms) : '✗'}</span>`; }).join('');
   else h += q.who.map(pi => `<span class="${S.answered.indexOf(pi) >= 0 ? 'in' : ''}"><i style="background:${DQ_COL[pi]}"></i>${dqEsc(S.players[pi].nick)} ${S.answered.indexOf(pi) >= 0 ? '✓' : '…'}</span>`).join('')
     + `<em>${!can ? 'Pozeráš sa — odpovedá ' + q.who.map(pi => dqEsc(S.players[pi].nick)).join(' a ') + '.' : my ? 'Odpoveď je zapísaná.' : 'Klikni alebo stlač 1–4. Rozhoduje aj rýchlosť.'}</em>`;
-  return h + '</div></div></div>';
+  return h + '</div></div>';
 }
 function dqStageEl() {
   let el = document.getElementById('dq-stage');
@@ -517,11 +519,13 @@ function dqRender(card) {
   /* čo sa zmenilo na mape od posledného stavu → animácia a oznam */
   if (DQ.prev) S.own.forEach((o, t) => {
     if (o === DQ.prev[t] || o < 0) return;
-    DQ.fx.push({ t, col: DQ_COL[o], t0: now });
+    const ck = DQ.click && DQ.click.t === t && now - DQ.click.at < 4000 ? DQ.click : M.t[t];
+    DQ.fx.push({ t, col: DQ_COL[o], was: DQ.prev[t], x: +ck.x.toFixed(1), y: +ck.y.toFixed(1), t0: now });
     const was = DQ.prev[t], k = dqEsc(M.t[t].k);
     toast(was >= 0 ? `⚔ <b>${nm(o)}</b> dobyl <b>${k}</b> hráčovi ${nm(was)} <em>+${M.t[t].v}</em>` : `<b>${nm(o)}</b> obsadil <b>${k}</b> <em>+${M.t[t].v}</em>`, DQ_COL[o]);
   });
-  DQ.fx = DQ.fx.filter(f => now - f.t0 < 2000);
+  DQ.fx = DQ.fx.filter(f => now - f.t0 < 1600);
+  clearTimeout(DQ.fxT); if (DQ.fx.length) DQ.fxT = setTimeout(dqShow, 1700);
   DQ.prev = S.own.slice();
   let pop = '', banner = '', stage = '', myTurn = false;
   if (S.phase === 'startq' || S.phase === 'startrev') {
@@ -551,14 +555,14 @@ function dqRender(card) {
     if (S.phase !== 'duelintro') pop = dqPopHTML(S, me, stage, banner);
   } else if (S.phase === 'end') {
     stage = 'KONIEC HRY'; banner = `Vyhráva ${nm(S.rank[0])}.`;
-    pop = DQ.peek === S.gid ? '' : `<div class="dq-pop-wrap"><div class="dq-pop end">
+    pop = DQ.peek === S.gid ? '' : `<div class="dq-pop end">
         <div class="dq-pop-top"><span>DOBYVATEĽ</span><span class="dq-pop-stage">KONIEC HRY</span><span></span></div>
         <div class="dq-pop-q">🏆 ${nm(S.rank[0])}</div>
         <div class="dq-pop-s">víťaz partie</div>
         <div class="dq-endlist">${S.rank.map((pi, r) => `<div class="${pi === me ? 'me' : ''}"><b>${r + 1}.</b><i style="background:${DQ_COL[pi]}"></i><span>${nm(pi)}</span><small>${S.own.filter(o => o === pi).length} priestorov</small><strong>${dqScore(S, pi)}</strong>${S.humans >= 2 && !S.players[pi].bot ? `<em>+${S.league[pi]} do rebríčka</em>` : ''}</div>`).join('')}</div>
         <div class="dq-pop-foot"><em>${S.humans < 2 ? 'Hra proti počítaču sa do rebríčka nepočíta.' : (RK.acct ? 'Body sú pripísané v rebríčku.' : 'Nie si prihlásený, body do rebríčka sa ti nepripísali.')}</em></div>
         <div class="dq-endacts">${DQ.host ? '<button class="dq-btn pri" id="dq-again">ĎALŠIA HRA ▶</button>' : ''}<button class="dq-btn" id="dq-peek">POZRIEŤ MAPU</button><button class="dq-btn" id="dq-leave2">ODÍSŤ</button></div>
-      </div></div>`;
+      </div>`;
   }
   $('dq-chips').innerHTML = dqChipsHTML(S, me);
   $('dq-status').classList.toggle('me', myTurn);
@@ -574,7 +578,14 @@ function dqRender(card) {
     st.querySelectorAll('.dq-cell').forEach(c => {
       const t = +c.dataset.t;
       c.onpointerenter = () => { info.innerHTML = dqTerrInfo(t, DQ.S); };
-      c.onclick = () => { const Z = DQ.S; if (DQ.dragged || !Z) return; info.innerHTML = dqTerrInfo(t, Z); if (Z.chooser === dqMe() && dqPicking(Z) && Z.allowed.indexOf(t) >= 0) dqSend({ t: 'pick', k: Z.k, terr: t }); };
+      c.onclick = e => {
+        const Z = DQ.S; if (DQ.dragged || !Z) return;
+        info.innerHTML = dqTerrInfo(t, Z);
+        if (Z.chooser === dqMe() && dqPicking(Z) && Z.allowed.indexOf(t) >= 0) {
+          const m = svg.getScreenCTM(); if (m && e.clientX) DQ.click = { t, x: (e.clientX - m.e) / m.a, y: (e.clientY - m.f) / m.d, at: Date.now() };
+          dqSend({ t: 'pick', k: Z.k, terr: t });
+        }
+      };
     });
     /* priblíženie a posun mapy */
     const pt = e => { const m = svg.getScreenCTM(); return m ? { x: (e.clientX - m.e) / m.a, y: (e.clientY - m.f) / m.d } : null; };
@@ -609,7 +620,7 @@ function dqRender(card) {
   if (popSig !== DQ.popSig) {
     DQ.popSig = popSig;
     const ph = $('dq-poph');
-    ph.className = pop && DQ.popK === S.k ? 'still' : '';
+    ph.className = pop ? 'dq-pop-wrap' + (DQ.popK === S.k ? ' still' : '') : '';
     ph.innerHTML = pop;
     if (pop) DQ.popK = S.k;
     ph.querySelectorAll('.dq-opts .choice-btn').forEach(b => { b.onclick = () => {
