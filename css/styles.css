@@ -1115,6 +1115,17 @@
   @keyframes dqConf { to { transform:translateY(640px) rotate(560deg); } }
   @media (max-width:760px) { .dq-rib { margin:-16px -14px 12px; font-size:13.5px; } .dq-count b { font-size:110px; } .dq-toast-in b { font-size:16px; } .dq-pop-img { height:min(28vh,200px); } }
 
+  /* ===== rebríček: vynulovanie skóre ===== */
+  .rk-acct-b { display:flex; gap:8px; flex-wrap:wrap; }
+  .rk-reset { height:44px; padding:0 16px; border-radius:14px; border:1.5px solid #d6453d; background:#fff; color:#c0322a; font-family:var(--ui); font-weight:800; font-size:12px; letter-spacing:0.07em; cursor:pointer; white-space:nowrap; }
+  .rk-reset:hover, .rk-reset.solid { background:#d6453d; color:#fff; }
+  .rk-modal { position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(3,10,7,0.72); animation:dqFade 0.2s ease; }
+  .rk-modal-in { width:min(460px,100%); padding:24px; border-radius:20px; background:#fff; box-shadow:0 30px 80px rgba(0,0,0,0.5); }
+  .rk-modal-in h3 { margin:0 0 8px; font-family:var(--display); font-size:21px; font-weight:800; color:var(--text); } .rk-modal-in p { margin:0 0 18px; font-size:14.5px; line-height:1.55; color:var(--text-dim); }
+  .rk-modal-in > div { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; } .rk-modal-in .btn { height:44px; padding:0 18px; }
+  .rk-me-top { grid-template-columns:repeat(5,1fr); }
+  @media (max-width:760px) { .rk-me-top { grid-template-columns:1fr 1fr; } }
+
   /* ===== telefón a úzke okná ===== */
   @media (max-width:1100px) {
     body.fs-on .qcard.split > .map-wrap { width:auto; }
