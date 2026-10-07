@@ -1126,6 +1126,30 @@
   .rk-me-top { grid-template-columns:repeat(5,1fr); }
   @media (max-width:760px) { .rk-me-top { grid-template-columns:1fr 1fr; } }
 
+  /* ===== DOBYVATEĽ v6 — tipovacie otázky s terčom, domovské letiská so životmi ===== */
+  .dq-numbox { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:18px; flex-wrap:wrap; }
+  .dq-numbox input { width:min(260px,60%); height:62px; border-radius:14px; border:2px solid rgba(63,227,154,0.6); background:rgba(0,0,0,0.45); color:#ffffff; font-family:var(--mono); font-size:30px; font-weight:800; text-align:center; outline:none; }
+  .dq-numbox input:focus { border-color:#3fe39a; box-shadow:0 0 0 4px rgba(63,227,154,0.2); } .dq-numbox input::placeholder { font-size:15px; font-weight:500; color:rgba(255,255,255,0.4); }
+  .dq-numbox span { font-family:var(--mono); font-size:18px; color:#a9c7b8; font-weight:700; } .dq-numbox .dq-btn { height:62px; font-size:14px; }
+  .dq-numbox.done { font-size:17px; color:#cfe6da; } .dq-numbox.done b { font-family:var(--mono); font-size:30px; color:#ffd34d; margin-left:8px; }
+  .dq-numrev { display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr); gap:16px; align-items:center; margin-top:14px; }
+  .dq-darts { width:100%; max-height:250px; display:block; overflow:visible; }
+  .dq-dart { animation:dqDart 0.75s cubic-bezier(0.2,0.9,0.3,1.1) both; }
+  @keyframes dqDart { from { transform:translate(var(--fx), var(--fy)) scale(1.5); opacity:0; } 60% { opacity:1; } to { transform:none; opacity:1; } }
+  .dq-numtab { display:flex; flex-direction:column; gap:6px; }
+  .dq-numans { font-size:13px; color:#a9c7b8; letter-spacing:0.04em; } .dq-numans b { font-family:var(--mono); font-size:24px; color:#ffffff; margin-left:8px; }
+  .dq-numrow { display:grid; grid-template-columns:24px 12px 1fr auto; align-items:center; gap:4px 9px; padding:8px 12px; border-radius:12px; background:rgba(255,255,255,0.06); border:1.5px solid transparent; color:#ffffff; animation:dqRow 0.5s ease both; }
+  .dq-numrow:nth-child(2) { animation-delay:1.3s; } .dq-numrow:nth-child(3) { animation-delay:1.85s; } .dq-numrow:nth-child(4) { animation-delay:2.4s; } .dq-numrow:nth-child(5) { animation-delay:2.95s; } .dq-numrow:nth-child(6) { animation-delay:3.5s; } .dq-numrow:nth-child(7) { animation-delay:4.05s; }
+  .dq-numrow.best { border-color:#ffd34d; background:rgba(255,211,77,0.14); } .dq-numrow b { font-family:var(--mono); } .dq-numrow i { width:12px; height:12px; border-radius:50%; }
+  .dq-numrow span { font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .dq-numrow strong { font-family:var(--mono); font-size:17px; }
+  .dq-numrow small { grid-column:3 / 5; font-size:11.5px; color:#a9c7b8; } .dq-numnote { font-size:11.5px; color:#8fa89b; margin-top:2px; }
+  .dq-rib.tie { background:linear-gradient(90deg,#3a3a46,#5b5b6e); color:#ffffff; } .dq-pop.r-tie { border-color:#8a8aa0; }
+  .dq-hearts { text-anchor:middle; font-size:9px; fill:#ff5d6c; paint-order:stroke; stroke:#000; stroke-width:2.2px; pointer-events:none; }
+  .dq-basering { fill:none; stroke:#ffd34d; stroke-width:2; pointer-events:none; }
+  .dq-chip u { text-decoration:none; color:#ff5d6c; font-size:12px; letter-spacing:1px; } .dq-chip.out { opacity:0.4; text-decoration:line-through; }
+  @media (max-width:760px) { .dq-numrev { grid-template-columns:1fr; gap:8px; } .dq-darts { max-height:170px; } .dq-numbox input { height:54px; font-size:24px; } .dq-numbox .dq-btn { height:54px; } }
+  .dq-gline { stroke:#ffffff; stroke-width:2.3; fill:none; pointer-events:none; }
+
   /* ===== telefón a úzke okná ===== */
   @media (max-width:1100px) {
     body.fs-on .qcard.split > .map-wrap { width:auto; }

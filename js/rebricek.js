@@ -18,7 +18,7 @@ function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '3.3';
+const APP_VERSION = '3.5';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -81,18 +81,19 @@ function rkMult() {
   return hard ? 2 : 1;
 }
 /* počítadlá správne / zle vedie každý modul po svojom — tu sa len sleduje ich prírastok */
-function rkSample() {
+function rkSample(now) {
   const c = state.correct || 0, w = state.wrong || 0;
   if (c >= RK.lastC && w >= RK.lastW && (c > RK.lastC || w > RK.lastW) && state.mode !== 'conquer' && state.mode !== 'rank' && state.mode !== 'home') {
     const dc = c - RK.lastC, dw = w - RK.lastW;
     rkAdd(state.mode, { c: dc, w: dw, p: dc * rkMult() });
-    RK.lastAns = Date.now();
+    RK.lastAns = now || Date.now();
     rkPendSave();
   }
   RK.lastC = c; RK.lastW = w;
 }
 async function rkFlush() {
-  if (!RK.acct || RK.busy) return;
+  if (RK.busy) { RK.again = true; return; }      // práve sa odosiela — po skončení sa pošle aj to nové
+  if (!RK.acct) return;
   const rows = Object.keys(RK.pend).map(m => Object.assign({ m }, RK.pend[m])).filter(r => 'pcwsgv'.split('').some(f => r[f] > 0));
   if (!rows.length) return;
   const sent = RK.pend; RK.pend = {}; rkPendSave(); RK.busy = true;
@@ -102,16 +103,29 @@ async function rkFlush() {
     if (e.message === 'BAD_TOKEN') { RK.acct = null; lsSet(RK_ACCT, null); RK.err = RK_ERR.BAD_TOKEN; }
   }
   RK.busy = false;
+  if (RK.again) { RK.again = false; return rkFlush(); }
 }
-setInterval(() => {
-  rkSample();
+/* Čas smie počítať len jedno okno toho istého účtu — inak by dve otvorené karty počítali dvojmo. */
+RK.tab = Math.random().toString(36).slice(2);
+function rkOwnsClock(now) {
+  try {
+    const k = 'atcoTrainerV2.rkClock:' + RK.acct.nick.toLowerCase(), cur = JSON.parse(localStorage.getItem(k) || 'null');
+    if (cur && cur.id !== RK.tab && now - cur.t < 2500) return false;
+    localStorage.setItem(k, JSON.stringify({ id: RK.tab, t: now }));
+  } catch (e) {}
+  return true;
+}
+/* Jedna sekunda tréningu sa pripíše, len ak: je prihlásený účet, otvorené je cvičenie alebo bežiaca hra,
+   okno je viditeľné, posledná odpoveď / ťah bol pred menej než 45 s a čas nepočíta iné okno. */
+function rkTick(now, hidden) {
+  rkSample(now);
   RK.n++;
   const m = state.mode, playing = m === 'conquer' ? !!(DQ.room && DQ.S && DQ.S.phase !== 'lobby' && DQ.S.phase !== 'end') : (m !== 'home' && m !== 'rank');
-  if (RK.acct && playing && !document.hidden && Date.now() - RK.lastAns < 45000) rkAdd(m, { s: 1 });
+  if (RK.acct && playing && !hidden && now - RK.lastAns < 45000 && rkOwnsClock(now)) rkAdd(m, { s: 1 });
   if (RK.n % 10 === 0) rkPendSave();
   if (RK.n % 30 === 0) rkFlush();
-}, 1000);
-['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => { RK.lastAct = Date.now(); }, true));
+}
+setInterval(() => rkTick(Date.now(), document.hidden), 1000);
 document.addEventListener('visibilitychange', () => { if (document.hidden) { rkPendSave(); rkFlush(); } });
 
 /* ---------- účet ---------- */
