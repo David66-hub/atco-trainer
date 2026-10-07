@@ -811,6 +811,149 @@
     .hc-rule { font-size:11.5px; padding:8px 10px; }
   }
 
+  /* ===== SÚŤAŽ: rebríček a Dobyvateľ ===== */
+  @media (min-width:1101px) {
+    .tabs, .app.wide .tabs { display:flex; gap:7px; }
+    .tab { flex:1 1 auto; padding:12px 9px; }
+    .tab .tab-label { font-size:10.5px; white-space:nowrap; }
+    .tab .tab-num { font-size:9.5px; }
+  }
+  .tab[data-mode="conquer"], .tab[data-mode="rank"] { border-color:rgba(255,196,84,0.45); }
+  .tab[data-mode="conquer"] .tab-num, .tab[data-mode="rank"] .tab-num { color:#ffc454; }
+  body.on-comp #btn-demo, body.on-comp #btn-set, body.on-comp .stats .stat { display:none; }
+  .home-dash.comp { grid-template-columns:1fr 1fr; margin-top:14px; }
+  .home-cta.gold { background:linear-gradient(135deg,#2a1f08,#5a4310); color:#f6e7c1; }
+  .rk h2, .dq-home h2 { font-family:var(--display); font-size:26px; font-weight:800; letter-spacing:-0.01em; margin:0 0 6px; color:var(--text); }
+  .rk-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .rk-head p, .dq-lead { margin:0; color:var(--text-dim); font-size:14.5px; line-height:1.55; max-width:760px; }
+  .rk .btn, .dq-home .btn, .dq-game .btn { height:44px; padding:0 20px; white-space:nowrap; }
+  .rk-warn { margin-top:14px; padding:11px 14px; border-radius:12px; background:#fff6dd; border:1px solid #ecd28a; color:#6b5210; font-size:13px; line-height:1.5; }
+  .rk-err { margin-top:10px; padding:9px 12px; border-radius:10px; background:#fdeceb; border:1px solid #f0b4ae; color:#a3271c; font-size:13px; font-weight:600; }
+  .rk-acct { margin-top:16px; padding:16px 18px; border-radius:16px; background:var(--panel-2); border:1px solid var(--border); }
+  .rk-acct.in { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:14px; }
+  .rk-acct-t strong { display:block; font-size:15px; } .rk-acct-t span { font-size:13px; color:var(--text-dim); }
+  .rk-form { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .rk-form input, .dq-box input { flex:1 1 170px; min-width:0; height:44px; padding:0 14px; border-radius:12px; border:1.5px solid var(--border-bright); font-family:var(--ui); font-size:15px; font-weight:600; color:var(--text); background:#fff; outline:none; }
+  .rk-form input:focus, .dq-box input:focus { border-color:var(--green-strong); box-shadow:0 0 0 3px rgba(10,157,92,0.18); }
+  .rk-me { margin-top:16px; padding:16px 18px; border-radius:16px; background:linear-gradient(135deg,#0f2219,#145238); color:#d6efe2; }
+  .rk-me-top { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .rk-me-top b { display:block; font-size:24px; font-weight:800; color:#fff; } .rk-me-top span { font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; opacity:0.75; }
+  .rk-bars { margin-top:14px; display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:6px 22px; }
+  .rk-bars > div { display:grid; grid-template-columns:82px 1fr 118px; align-items:center; gap:8px; font-size:11.5px; }
+  .rk-bars i { height:7px; border-radius:99px; background:rgba(255,255,255,0.14); overflow:hidden; display:block; } .rk-bars em { display:block; height:100%; background:#3fe39a; border-radius:99px; }
+  .rk-bars small { text-align:right; opacity:0.8; font-size:11px; }
+  .rk-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:18px; }
+  .rk-chip { border:1.5px solid var(--border-bright); background:#fff; color:var(--text-dim); font-family:var(--ui); font-weight:700; font-size:12px; letter-spacing:0.04em; padding:7px 12px; border-radius:99px; cursor:pointer; }
+  .rk-chip.on { background:var(--green-strong); border-color:var(--green-strong); color:#fff; }
+  .rk-tbl { margin-top:12px; overflow-x:auto; border:1px solid var(--border); border-radius:14px; }
+  .rk-tbl table { width:100%; border-collapse:collapse; font-size:14px; }
+  .rk-tbl th { text-align:left; font-size:10.5px; letter-spacing:0.1em; color:var(--text-dim); padding:10px 12px; background:var(--panel-2); white-space:nowrap; }
+  .rk-tbl td { padding:10px 12px; border-top:1px solid var(--border); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .rk-tbl tr.me td { background:var(--green-bg); font-weight:700; }
+  .rk-pos { width:44px; font-weight:800; } .rk-nick { font-weight:700; width:40%; } .rk-pts { font-weight:800; color:var(--green); }
+  .rk-empty { margin-top:14px; padding:26px; text-align:center; color:var(--text-dim); border:1px dashed var(--border-bright); border-radius:14px; }
+
+  .dq-rules { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:16px 0; }
+  .dq-rules > div { position:relative; padding:14px 14px 14px 46px; border-radius:14px; background:var(--panel-2); border:1px solid var(--border); }
+  .dq-rules b { position:absolute; left:12px; top:13px; width:24px; height:24px; border-radius:50%; background:var(--green-strong); color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  .dq-rules strong { display:block; font-size:12.5px; letter-spacing:0.08em; margin-bottom:3px; } .dq-rules span { font-size:13px; line-height:1.5; color:var(--text-dim); }
+  .dq-start { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .dq-box { padding:16px; border-radius:16px; border:1.5px solid var(--border); background:#fff; display:flex; flex-direction:column; gap:9px; }
+  .dq-box strong { font-size:11.5px; letter-spacing:0.1em; color:var(--text-dim); } .dq-box span { font-size:12.5px; color:var(--text-dim); line-height:1.45; }
+  .dq-box input { flex:none; width:100%; } .dq-as { font-size:20px; font-weight:800; }
+  .dq-row { display:flex; gap:8px; } .dq-row input { flex:1 1 0; width:auto; text-transform:uppercase; letter-spacing:0.3em; font-family:var(--mono); text-align:center; }
+  .dq-code { margin:14px 0; padding:18px; border-radius:18px; background:linear-gradient(135deg,#0f2219,#145238); color:#d6efe2; text-align:center; }
+  .dq-code span { display:block; font-size:11px; letter-spacing:0.16em; opacity:0.75; } .dq-code b { display:block; font-family:var(--mono); font-size:52px; letter-spacing:0.22em; color:#fff; line-height:1.15; margin-left:0.22em; } .dq-code small { font-size:13px; opacity:0.85; }
+  .dq-lobby, .dq-score, .dq-end { display:flex; flex-direction:column; gap:6px; }
+  .dq-pl { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:12px; border:1.5px solid var(--border); background:#fff; font-size:14px; }
+  .dq-pl i { width:14px; height:14px; border-radius:50%; flex:none; } .dq-pl span { flex:1; font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .dq-pl em { font-style:normal; font-weight:600; font-size:11.5px; color:var(--text-dim); } .dq-pl small { color:var(--text-dim); font-size:12px; } .dq-pl b { font-size:16px; font-variant-numeric:tabular-nums; min-width:48px; text-align:right; }
+  .dq-pl.act { border-color:var(--green-strong); box-shadow:0 0 0 3px rgba(10,157,92,0.15); } .dq-pl.dead { opacity:0.45; text-decoration:line-through; } .dq-pl.off span { color:var(--text-dim); }
+  .dq-pl.empty { border-style:dashed; color:var(--text-dim); } .dq-pl.empty span { font-weight:500; }
+  .dq-x { border:none; background:none; color:#a3271c; font-size:15px; cursor:pointer; padding:2px 6px; }
+  .dq-acts { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .dq-note { margin-top:9px; font-size:12.5px; color:var(--text-dim); line-height:1.45; }
+  .dq-game { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr); gap:22px; align-items:start; }
+  .dq-map { width:100%; height:auto; display:block; max-height:calc(100vh - 210px); }
+  .dq-cell { stroke:#fff; stroke-width:2.5; stroke-linejoin:round; transition:fill 0.35s, fill-opacity 0.2s; }
+  .dq-cell.can { stroke:#0b1f16; stroke-width:4; stroke-dasharray:9 6; animation:dqDash 0.9s linear infinite; }
+  .dq-cell.click { cursor:pointer; } .dq-cell.click:hover { fill-opacity:1; filter:brightness(1.12); }
+  .dq-cell.tgt { stroke:#0b1f16; stroke-width:5; }
+  .dq-out { fill:none; stroke:#0b1f16; stroke-width:3; stroke-linejoin:round; pointer-events:none; }
+  .dq-lab { pointer-events:none; } .dq-lab text { text-anchor:middle; font-family:var(--mono); font-size:19px; font-weight:800; fill:#40584c; }
+  .dq-lab.own text { fill:#fff; paint-order:stroke; stroke:rgba(0,0,0,0.45); stroke-width:3.5px; }
+  .dq-base { fill:none; stroke:#fff; stroke-width:3.5; } .dq-lab text.dq-lives { font-size:17px; fill:#fff; stroke:rgba(0,0,0,0.55); stroke-width:3px; paint-order:stroke; font-family:var(--ui); }
+  @keyframes dqDash { to { stroke-dashoffset:-15; } }
+  .dq-banner { margin-top:10px; padding:10px 14px; border-radius:12px; background:#0f2219; color:#d6efe2; font-size:13.5px; line-height:1.45; }
+  .dq-banner b { display:block; font-size:11px; letter-spacing:0.12em; color:#3fe39a; margin-bottom:2px; }
+  .dq-timer { height:7px; border-radius:99px; background:var(--panel-2); overflow:hidden; margin:8px 0 2px; } .dq-timer i { display:block; height:100%; background:var(--green-strong); border-radius:99px; } .dq-timer i.low { background:#e4572e; }
+  .dq-q { margin-top:10px; text-align:center; } .dq-q-mod { font-size:10.5px; letter-spacing:0.14em; color:var(--text-dim); font-weight:700; }
+  .dq-q-p { font-family:var(--display); font-size:clamp(22px,2.6vw,34px); font-weight:800; line-height:1.15; margin:4px 0; color:var(--text); overflow-wrap:anywhere; } .dq-q-s { font-size:14px; color:var(--text-dim); }
+  .dq-opts { margin-top:12px; } .dq-opts .choice-btn { font-size:14.5px; padding:13px 10px 13px 30px; overflow-wrap:anywhere; } .dq-opts .choice-btn.sel { border-color:#0b1f16; background:#eef3f0; opacity:1; }
+  .dq-res { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; } .dq-res span { display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:99px; font-size:12.5px; font-weight:700; background:var(--panel-2); }
+  .dq-res span.ok { background:var(--green-bg); color:var(--green); } .dq-res span.no { background:#fdeceb; color:#a3271c; } .dq-res i { width:10px; height:10px; border-radius:50%; }
+  .dq-big { margin-top:12px; padding:26px 16px; border-radius:16px; border:1.5px dashed var(--border-bright); text-align:center; font-size:17px; font-weight:800; color:var(--text-dim); }
+  .dq-big.me { border-color:var(--green-strong); background:var(--green-bg); color:var(--green); animation:pulseOk 1.2s ease-in-out infinite; }
+  .dq-end { margin-top:12px; } .dq-end .dq-pl b { min-width:22px; text-align:left; } .dq-end .dq-pl em { color:var(--green); font-weight:800; }
+  .dq-quit { margin-top:12px; border:none; background:none; color:var(--text-dim); font-size:12px; text-decoration:underline; cursor:pointer; padding:0; font-family:var(--ui); }
+  @media (max-width:1100px) {
+    .dq-game { grid-template-columns:1fr; gap:10px; } .dq-map { max-height:34vh; margin:0 auto; }
+    .dq-score { flex-direction:row; flex-wrap:wrap; } .dq-score .dq-pl { flex:1 1 150px; padding:6px 10px; } .dq-score .dq-pl small { display:none; }
+  }
+  @media (max-width:760px) {
+    .dq-rules, .dq-start, .home-dash.comp { grid-template-columns:1fr; } .rk-me-top { grid-template-columns:1fr 1fr; }
+    .rk-head { flex-direction:column; } .rk-acct.in { flex-direction:column; align-items:flex-start; }
+    .dq-code b { font-size:40px; } .dq-q-p { font-size:22px; } .dq-big { padding:16px; font-size:15px; }
+    .dq-opts .choice-btn { font-size:13px; padding:11px 6px 11px 24px; } .dq-banner { font-size:12.5px; padding:8px 12px; }
+    .rk-tbl td, .rk-tbl th { padding:8px 9px; font-size:12.5px; }
+  }
+
+  /* ===== DOBYVATEĽ v2 — VFR mapa priestorov ===== */
+  .qcard.dq-on { padding:16px; }
+  .dq-game { grid-template-columns:minmax(0,1.8fr) minmax(330px,1fr); gap:16px; }
+  .dq-stage { background:radial-gradient(120% 120% at 30% 15%, #1a4131 0%, #0b1a14 72%); border-radius:18px; padding:10px 12px; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.07), 0 10px 30px rgba(3,14,10,0.25); }
+  .dq-map { max-height:calc(100vh - 262px); margin:0 auto; }
+  .dq-halo { fill:#3fe39a; opacity:0.30; }
+  .dq-cell { stroke:#0b1a14; stroke-width:0.9; stroke-opacity:0.5; stroke-linejoin:round; stroke-dasharray:none; animation:none; transition:fill 0.4s; }
+  .dq-cell.c-AD { stroke-opacity:0.95; stroke-width:1.3; }
+  .dq-cell.own { stroke:#ffffff; stroke-opacity:0.9; stroke-width:1.1; }
+  .dq-cell.c-G.own { fill-opacity:0.62; }
+  .dq-cell.can { stroke:#04140d; stroke-opacity:1; stroke-width:1.9; stroke-dasharray:5 3; animation:dqPulse 1s ease-in-out infinite; }
+  .dq-cell.click { cursor:pointer; } .dq-cell.click:hover { filter:brightness(1.18) saturate(1.3); fill-opacity:1; animation:none; }
+  .dq-cell.tgt { stroke:#ffffff; stroke-width:3; stroke-opacity:1; stroke-dasharray:none; animation:dqPulse 0.6s ease-in-out infinite; }
+  .dq-cell.flash { animation:dqFlash 1s ease-out; }
+  @keyframes dqPulse { 50% { fill-opacity:0.5; } }
+  @keyframes dqFlash { 0% { filter:brightness(2.4); } 100% { filter:none; } }
+  .dq-out { fill:none; stroke:#eafff5; stroke-width:1.5; stroke-opacity:0.9; stroke-linejoin:round; pointer-events:none; }
+  text.dq-lab { text-anchor:middle; dominant-baseline:middle; font-family:var(--mono); font-weight:800; fill:#22382e; pointer-events:none; stroke:none; }
+  text.dq-lab .t { font-size:0.72em; opacity:0.72; }
+  text.dq-lab.own { fill:#ffffff; paint-order:stroke; stroke:rgba(0,0,0,0.5); stroke-width:1.6px; }
+  text.dq-lab.ad { font-size:6.3px; dominant-baseline:auto; }
+  text.dq-lab.g { font-size:15px; opacity:0.4; letter-spacing:0.12em; }
+  text.dq-lab.g.own { opacity:0.9; }
+  .dq-info { display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-height:32px; margin-top:6px; padding:6px 12px; border-radius:10px; background:rgba(255,255,255,0.08); color:#cfe6da; font-size:12.5px; line-height:1.3; }
+  .dq-info b { font-family:var(--mono); color:#fff; font-size:14px; } .dq-info em { font-style:normal; font-weight:800; color:#ffc454; } .dq-info i { width:10px; height:10px; border-radius:50%; } .dq-info small { opacity:0.8; font-size:12px; }
+  .dq-legend { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:7px; font-size:11px; letter-spacing:0.04em; color:#a9c7b8; }
+  .dq-legend span { display:flex; align-items:center; gap:5px; } .dq-legend i { width:11px; height:11px; border-radius:3px; } .dq-legend b { color:#fff; }
+  .dq-pl { position:relative; overflow:hidden; } .dq-pl u { position:absolute; left:0; bottom:0; height:3px; border-radius:0 3px 0 0; transition:width 0.5s; opacity:0.85; }
+  .dq-pl em.in { color:var(--green); }
+  .dq-opts .choice-btn { position:relative; } .dq-who { position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:3px; } .dq-who i { width:10px; height:10px; border-radius:50%; box-shadow:0 0 0 1.5px #fff; }
+  .dq-lobby-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:16px; align-items:start; margin-top:6px; }
+  .dq-lobby-grid .dq-code { margin-top:0; }
+  .dq-cfg { padding:16px; border-radius:16px; border:1.5px solid var(--border); background:#fff; }
+  .dq-cfg-t { font-size:11.5px; letter-spacing:0.1em; font-weight:800; color:var(--text-dim); margin-bottom:8px; } .dq-cfg-t em { font-style:normal; font-weight:600; letter-spacing:0; }
+  .dq-cfg-row { display:grid; grid-template-columns:150px 1fr; gap:8px; align-items:center; padding:7px 0; border-top:1px solid var(--border); }
+  .dq-cfg-row > span { font-size:11px; letter-spacing:0.08em; font-weight:700; color:var(--text-dim); } .dq-cfg-row > div { display:flex; flex-wrap:wrap; gap:5px; }
+  .dq-cfg .rk-chip:disabled { cursor:default; opacity:0.75; } .dq-cfg .rk-chip.on:disabled { opacity:1; }
+  .dq-src { margin-top:14px; font-size:11.5px; color:var(--text-dim); }
+  @media (max-width:1100px) {
+    .dq-game { grid-template-columns:1fr; gap:10px; } .dq-map { max-height:38vh; } .dq-lobby-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width:760px) {
+    .qcard.dq-on { padding:10px; } .dq-stage { padding:6px 8px; border-radius:14px; } .dq-legend { display:none; } .dq-map { max-height:32vh; }
+    .dq-info { font-size:11.5px; padding:5px 9px; min-height:28px; gap:7px; } .dq-cfg-row { grid-template-columns:1fr; gap:4px; }
+  }
+
   /* ===== telefón a úzke okná ===== */
   @media (max-width:1100px) {
     body.fs-on .qcard.split > .map-wrap { width:auto; }
@@ -859,6 +1002,8 @@
     <button class="tab" data-mode="heading"><span class="tab-num">MOD 05</span><span class="tab-label">HRA NA KURZY</span></button>
     <button class="tab" data-mode="coord"><span class="tab-num">MOD 06</span><span class="tab-label">KOORDINÁCIA</span></button>
     <button class="tab" data-mode="exam"><span class="tab-num">TEST</span><span class="tab-label">SKÚŠKA</span></button>
+    <button class="tab" data-mode="conquer"><span class="tab-num">HRA</span><span class="tab-label">DOBYVATEĽ</span></button>
+    <button class="tab" data-mode="rank"><span class="tab-num">LIGA</span><span class="tab-label">REBRÍČEK</span></button>
   </div>
   <div class="panel">
     <div class="panel-head">
@@ -6001,6 +6146,16 @@ function homeDashHTML() {
         <button class="btn ghost" data-go="exam">OTVORIŤ ▶</button>
       </div>
     </div>
+    <div class="home-dash comp">
+      <div class="home-cta gold">
+        <div><strong>DOBYVATEĽ</strong><span>Vedomostný súboj o Slovensko naživo — 2 až 3 hráči.</span></div>
+        <button class="btn ghost" data-go="conquer">HRAŤ ▶</button>
+      </div>
+      <div class="home-cta gold">
+        <div><strong>REBRÍČEK</strong><span>Body, úspešnosť a čas tréningu všetkých kolegov.</span></div>
+        <button class="btn ghost" data-go="rank">POZRIEŤ ▶</button>
+      </div>
+    </div>
     <div class="home-search">
       <input type="text" id="home-q" placeholder="Hľadaj čokoľvek: BAW, LOWW, MEBAN, B738, 134,475, Speedbird…" autocomplete="off" spellcheck="false">
       <div id="home-res"></div>
@@ -6454,6 +6609,693 @@ async function demoRun() {
 }
 
 /* ============================================================
+   SÚŤAŽ — účty (prezývka + heslo), rebríček a hra DOBYVATEĽ
+   Účty a rebríček idú cez Supabase (funkcie atco_* z priloženého SQL),
+   hra naživo cez Supabase Realtime. Kým nie sú vyplnené SB_URL a SB_KEY,
+   beží SKÚŠOBNÝ REŽIM: údaje ostávajú len v tomto prehliadači.
+   ============================================================ */
+const SB_URL = 'https://xzpfdaehwwyezjfketha.supabase.co';   // adresa projektu, napr. https://abcdefgh.supabase.co
+const SB_KEY = 'sb_publishable_zCtKfNAduJIc6kr4N1YK2w_CRQT8fQz';   // verejný kľúč (anon / publishable)
+const SB_ON = !!(SB_URL && SB_KEY);
+const RK_ACCT = 'atcoTrainerV2.acct', RK_PEND = 'atcoTrainerV2.rkPend', RK_MOCK = 'atcoTrainerV2.rkMock';
+const RK_MODS = [['aircraft', 'MOD 01'], ['airport', 'MOD 02'], ['callsign', 'MOD 03'], ['waypoint', 'MOD 04'], ['heading', 'MOD 05'],
+  ['coord', 'MOD 06'], ['daily', 'TRÉNING'], ['exam', 'SKÚŠKA'], ['conquer', 'DOBYVATEĽ']];
+const RK_ERR = { NICK_TAKEN: 'Táto prezývka je už obsadená — skús inú.', BAD_LOGIN: 'Nesprávna prezývka alebo heslo.',
+  BAD_NICK: 'Prezývka musí mať 3 až 16 znakov (písmená, čísla, medzera, bodka, pomlčka).', BAD_PASS: 'Heslo musí mať aspoň 6 znakov.',
+  BAD_TOKEN: 'Prihlásenie vypršalo — prihlás sa znova.' };
+const RK = { acct: null, pend: {}, rows: null, view: 'all', err: '', busy: false, lastC: 0, lastW: 0, lastAct: Date.now(), n: 0, loading: false };
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+RK.acct = lsGet(RK_ACCT, null);
+RK.pend = lsGet(RK_PEND, {});
+
+/* skúšobná náhrada databázy — rovnaké funkcie, údaje len v prehliadači */
+function rkMock(fn, a) {
+  const db = lsGet(RK_MOCK, { players: {} }), P = db.players;
+  const byTok = t => Object.keys(P).map(k => P[k]).find(p => p.token === t);
+  let out = null;
+  if (fn === 'atco_register') {
+    const k = a.p_nick.toLowerCase();
+    if (P[k]) throw new Error('NICK_TAKEN');
+    P[k] = { nick: a.p_nick, pass: a.p_pass, token: Math.random().toString(36).slice(2) + Date.now().toString(36), mods: {} };
+    out = { nick: P[k].nick, token: P[k].token };
+  } else if (fn === 'atco_login') {
+    const p = P[a.p_nick.toLowerCase()];
+    if (!p || p.pass !== a.p_pass) throw new Error('BAD_LOGIN');
+    out = { nick: p.nick, token: p.token };
+  } else if (fn === 'atco_report') {
+    const p = byTok(a.p_token);
+    if (!p) throw new Error('BAD_TOKEN');
+    a.p_rows.forEach(r => { const m = p.mods[r.m] = p.mods[r.m] || { p: 0, c: 0, w: 0, s: 0, g: 0, v: 0 }; 'pcwsgv'.split('').forEach(f => { m[f] += r[f] || 0; }); });
+    out = { ok: true };
+  } else if (fn === 'atco_ranking') {
+    out = Object.keys(P).map(k => ({ nick: P[k].nick, mods: P[k].mods }));
+  }
+  lsSet(RK_MOCK, db);
+  return out;
+}
+async function rkRpc(fn, args) {
+  if (!SB_ON) return rkMock(fn, args || {});
+  const r = await fetch(SB_URL + '/rest/v1/rpc/' + fn, { method: 'POST', keepalive: true,
+    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(args || {}) });
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((j && j.message) || 'NET');
+  return j;
+}
+function rkErrText(e) { return RK_ERR[e && e.message] || 'Nepodarilo sa spojiť s rebríčkom. Skús to o chvíľu.'; }
+
+/* ---------- zbieranie bodov a času ---------- */
+function rkAdd(mod, d) {
+  if (!RK.acct) return;
+  const m = RK.pend[mod] = RK.pend[mod] || {};
+  Object.keys(d).forEach(f => { m[f] = (m[f] || 0) + d[f]; });
+}
+/* HARDCORE (písanie / ťažšia verzia) dáva dva body, ľahká jeden */
+function rkMult() {
+  const F = state.filters, m = state.mode;
+  const hard = m === 'aircraft' ? F.acAns === 'type' : m === 'airport' ? F.apAns === 'type' : m === 'callsign' ? F.csAns === 'type' :
+    m === 'waypoint' ? F.wpDiff === 'hard' : m === 'heading' ? F.hgDiff === 'hard' : m === 'coord' ? F.coAns === 'type' :
+    (m === 'daily' || m === 'exam') ? F.dAns === 'type' : false;
+  return hard ? 2 : 1;
+}
+/* počítadlá správne / zle vedie každý modul po svojom — tu sa len sleduje ich prírastok */
+function rkSample() {
+  const c = state.correct || 0, w = state.wrong || 0;
+  if (c >= RK.lastC && w >= RK.lastW && (c > RK.lastC || w > RK.lastW) && state.mode !== 'conquer' && state.mode !== 'rank' && state.mode !== 'home') {
+    const dc = c - RK.lastC, dw = w - RK.lastW;
+    rkAdd(state.mode, { c: dc, w: dw, p: dc * rkMult() });
+    lsSet(RK_PEND, RK.pend);
+  }
+  RK.lastC = c; RK.lastW = w;
+}
+async function rkFlush() {
+  if (!RK.acct || RK.busy) return;
+  const rows = Object.keys(RK.pend).map(m => Object.assign({ m }, RK.pend[m])).filter(r => 'pcwsgv'.split('').some(f => r[f] > 0));
+  if (!rows.length) return;
+  const sent = RK.pend; RK.pend = {}; lsSet(RK_PEND, RK.pend); RK.busy = true;
+  try { await rkRpc('atco_report', { p_token: RK.acct.token, p_rows: rows }); }
+  catch (e) {
+    Object.keys(sent).forEach(m => rkAdd(m, sent[m])); lsSet(RK_PEND, RK.pend);
+    if (e.message === 'BAD_TOKEN') { RK.acct = null; lsSet(RK_ACCT, null); RK.err = RK_ERR.BAD_TOKEN; }
+  }
+  RK.busy = false;
+}
+setInterval(() => {
+  rkSample();
+  RK.n++;
+  const m = state.mode, playing = m === 'conquer' ? !!(DQ.room && DQ.S && DQ.S.phase !== 'lobby' && DQ.S.phase !== 'end') : (m !== 'home' && m !== 'rank');
+  if (RK.acct && playing && !document.hidden && Date.now() - RK.lastAct < 60000) rkAdd(m, { s: 1 });
+  if (RK.n % 10 === 0) lsSet(RK_PEND, RK.pend);
+  if (RK.n % 30 === 0) rkFlush();
+}, 1000);
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => { RK.lastAct = Date.now(); }, true));
+document.addEventListener('visibilitychange', () => { if (document.hidden) { lsSet(RK_PEND, RK.pend); rkFlush(); } });
+
+/* ---------- účet ---------- */
+async function rkAuth(kind, nick, pass) {
+  nick = (nick || '').trim().replace(/\s+/g, ' ');
+  if (!/^[0-9A-Za-zÀ-ž _.\-]{3,16}$/.test(nick)) { RK.err = RK_ERR.BAD_NICK; return false; }
+  if ((pass || '').length < 6) { RK.err = RK_ERR.BAD_PASS; return false; }
+  try {
+    const r = await rkRpc(kind === 'new' ? 'atco_register' : 'atco_login', { p_nick: nick, p_pass: pass });
+    RK.acct = { nick: r.nick, token: r.token }; lsSet(RK_ACCT, RK.acct); RK.err = '';
+    RK.pend = {}; lsSet(RK_PEND, RK.pend);
+    return true;
+  } catch (e) { RK.err = rkErrText(e); return false; }
+}
+function rkLogout() { rkFlush(); RK.acct = null; lsSet(RK_ACCT, null); RK.pend = {}; lsSet(RK_PEND, RK.pend); }
+async function rkLoad() {
+  RK.loading = true;
+  await rkFlush();
+  try { RK.rows = await rkRpc('atco_ranking', {}); RK.loadErr = ''; } catch (e) { RK.loadErr = rkErrText(e); }
+  RK.loading = false;
+  if (state.mode === 'rank') renderRank(document.getElementById('qcard'));
+}
+function rkTime(s) { s = s || 0; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? h + ' h ' + m + ' min' : m ? m + ' min' : s ? s + ' s' : '—'; }
+function rkAccountHTML() {
+  if (RK.acct) return `<div class="rk-acct in"><span>Prihlásený ako <strong>${dqEsc(RK.acct.nick)}</strong></span><button class="btn ghost" id="rk-out">ODHLÁSIŤ</button></div>`;
+  return `<div class="rk-acct">
+      <div class="rk-acct-t"><strong>Prihlás sa, aby sa ti počítali body</strong><span>Stačí prezývka a heslo. Bez prihlásenia trenažér funguje ďalej, len ťa nebude vidno v rebríčku.</span></div>
+      <div class="rk-form">
+        <input type="text" id="rk-nick" placeholder="prezývka" maxlength="16" autocomplete="username" spellcheck="false">
+        <input type="password" id="rk-pass" placeholder="heslo (min. 6 znakov)" autocomplete="current-password">
+        <button class="btn" id="rk-in">PRIHLÁSIŤ</button>
+        <button class="btn ghost" id="rk-new">VYTVORIŤ ÚČET</button>
+      </div>
+      ${RK.err ? `<div class="rk-err">${dqEsc(RK.err)}</div>` : ''}
+    </div>`;
+}
+function rkBindAccount(after) {
+  const go = async kind => {
+    const n = document.getElementById('rk-nick').value, p = document.getElementById('rk-pass').value;
+    await rkAuth(kind, n, p);
+    after();
+  };
+  const bi = document.getElementById('rk-in'), bn = document.getElementById('rk-new'), bo = document.getElementById('rk-out');
+  if (bi) bi.onclick = () => go('in');
+  if (bn) bn.onclick = () => go('new');
+  if (bo) bo.onclick = () => { rkLogout(); after(); };
+  const pw = document.getElementById('rk-pass');
+  if (pw) pw.addEventListener('keydown', e => { if (e.key === 'Enter') go('in'); });
+}
+function renderRank(card) {
+  document.getElementById('qnum').textContent = '•';
+  document.getElementById('qtotal').textContent = 'liga';
+  const v = RK.view, rows = (RK.rows || []).map(r => {
+    const M = r.mods || {}, o = { nick: r.nick, p: 0, c: 0, w: 0, s: 0, g: 0, v: 0 };
+    (v === 'all' ? Object.keys(M) : [v]).forEach(m => { const x = M[m]; if (x) 'pcwsgv'.split('').forEach(f => { o[f] += x[f] || 0; }); });
+    o.M = M;
+    return o;
+  }).filter(o => v === 'all' || o.p || o.c || o.w || o.s || o.g).sort((a, b) => b.p - a.p || b.c - a.c || a.nick.localeCompare(b.nick));
+  const meI = RK.acct ? rows.findIndex(o => o.nick === RK.acct.nick) : -1, me = rows[meI];
+  const acc = o => (o.c + o.w) ? Math.round(o.c / (o.c + o.w) * 100) + ' %' : '—';
+  const cq = v === 'conquer';
+  const head = cq ? ['#', 'HRÁČ', 'BODY', 'HRY', 'VÝHRY', 'ČAS'] : v === 'all' ? ['#', 'HRÁČ', 'BODY', 'SPRÁVNE', 'ÚSPEŠNOSŤ', 'ČAS', 'DOBYVATEĽ'] : ['#', 'HRÁČ', 'BODY', 'SPRÁVNE', 'ZLE', 'ÚSPEŠNOSŤ', 'ČAS'];
+  const line = (o, i) => {
+    const d = o.M.conquer || {};
+    const cells = cq ? [o.p, o.g, o.v, rkTime(o.s)] : v === 'all' ? [o.p, o.c, acc(o), rkTime(o.s), (d.v || 0) + ' / ' + (d.g || 0)] : [o.p, o.c, o.w, acc(o), rkTime(o.s)];
+    return `<tr class="${i === meI ? 'me' : ''}"><td class="rk-pos">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</td><td class="rk-nick">${dqEsc(o.nick)}</td>${cells.map((c, k) => `<td${k === 0 ? ' class="rk-pts"' : ''}>${c}</td>`).join('')}</tr>`;
+  };
+  let mine = '';
+  if (me) {
+    const all = (RK.rows.find(r => r.nick === RK.acct.nick) || {}).mods || {};
+    const mx = Math.max(1, ...RK_MODS.map(x => (all[x[0]] || {}).s || 0));
+    mine = `<div class="rk-me">
+        <div class="rk-me-top"><div><b>${meI + 1}.</b><span>z ${rows.length} hráčov</span></div><div><b>${me.p}</b><span>bodov</span></div><div><b>${rkTime(me.s)}</b><span>čas tréningu</span></div><div><b>${acc(me)}</b><span>úspešnosť</span></div></div>
+        ${v === 'all' ? `<div class="rk-bars">${RK_MODS.map(x => { const s = (all[x[0]] || {}).s || 0, p = (all[x[0]] || {}).p || 0; return `<div><span>${x[1]}</span><i><em style="width:${Math.round(s / mx * 100)}%"></em></i><small>${rkTime(s)} · ${p} b.</small></div>`; }).join('')}</div>` : ''}
+      </div>`;
+  }
+  card.innerHTML = `
+    <div class="rk">
+      <div class="rk-head"><div><h2>REBRÍČEK</h2><p>Bod za každú správnu odpoveď, v HARDCORE dva. K tomu body z Dobyvateľa. Čas sa počíta len vtedy, keď naozaj cvičíš.</p></div><button class="btn ghost" id="rk-refresh">${RK.loading ? 'NAČÍTAVAM…' : '↻ OBNOVIŤ'}</button></div>
+      ${SB_ON ? '' : '<div class="rk-warn"><strong>SKÚŠOBNÝ REŽIM</strong> — rebríček ešte nie je pripojený na databázu. Účty a body sú zatiaľ len v tomto prehliadači a kolegovia ich nevidia.</div>'}
+      ${rkAccountHTML()}
+      ${mine}
+      <div class="rk-chips">${[['all', 'CELKOVO']].concat(RK_MODS).map(x => `<button class="rk-chip${v === x[0] ? ' on' : ''}" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
+      ${RK.loadErr ? `<div class="rk-err">${dqEsc(RK.loadErr)}</div>` : ''}
+      ${rows.length ? `<div class="rk-tbl"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(line).join('')}</tbody></table></div>`
+        : `<div class="rk-empty">${RK.rows ? 'Zatiaľ tu nikto nemá body. Buď prvý.' : 'Načítavam rebríček…'}</div>`}
+    </div>`;
+  rkBindAccount(() => { renderRank(card); rkLoad(); });
+  document.getElementById('rk-refresh').onclick = () => { renderRank(card); rkLoad(); };
+  card.querySelectorAll('.rk-chip').forEach(b => { b.onclick = () => { RK.view = b.dataset.v; renderRank(card); }; });
+}
+
+const DQ_MAP = {"w":1000.0,"h":534.2,"eff":"01 OCT 2026","border":"M399.5,413.8L401.2,413.7L403.5,415.4L409.8,417.1L414.1,416.2L418.7,418.8L419.8,417.8L421.1,414.3L424.5,413.7L425.9,411.6L429.1,409.9L437.2,409.9L438.0,409.4L440.3,410.6L440.5,409.7L442.9,409.1L445.2,411.5L447.0,409.8L449.6,409.9L451.3,407.2L454.3,406.7L455.0,407.6L454.1,407.8L454.1,409.2L455.8,411.4L456.7,411.1L456.8,409.1L460.0,407.2L459.6,405.7L461.2,404.7L460.8,402.6L461.6,400.8L461.1,397.1L463.6,394.9L464.4,392.9L463.0,388.3L463.7,388.0L463.5,387.3L464.2,387.3L464.3,386.2L466.0,385.7L467.0,384.1L466.6,380.8L469.1,379.2L469.9,380.2L473.5,377.7L475.3,377.5L479.4,373.5L480.3,371.8L484.2,368.9L486.5,371.6L488.1,371.9L488.9,371.0L490.7,371.6L491.6,376.6L492.4,378.3L494.4,379.8L494.3,380.6L499.3,381.2L501.8,377.6L503.6,377.4L505.9,378.0L507.1,380.2L509.4,381.3L510.5,383.5L512.4,382.9L513.6,385.5L510.7,388.4L510.8,389.8L509.6,390.5L511.7,393.4L513.7,393.2L513.7,391.2L516.2,389.4L517.6,390.0L517.2,390.8L520.2,391.1L520.0,389.7L521.9,387.1L522.4,388.0L522.0,388.9L522.7,389.4L526.1,389.2L526.5,390.7L529.2,390.2L530.4,394.0L531.9,395.1L531.1,396.9L529.8,397.7L529.1,400.7L530.8,399.5L535.7,399.1L535.6,397.6L537.3,396.1L538.1,393.9L540.1,393.8L541.9,390.2L544.3,391.2L544.8,389.6L551.1,387.3L553.4,388.4L553.6,389.9L554.5,389.9L556.5,387.1L558.6,386.7L559.5,385.7L557.6,384.5L557.9,383.9L559.3,382.5L561.5,382.3L563.4,379.2L568.8,375.2L568.8,372.5L569.7,370.7L568.5,369.6L568.6,367.8L570.4,367.5L572.1,368.8L574.5,368.5L577.3,369.4L580.9,368.7L580.5,365.8L582.4,366.6L583.2,365.6L584.6,365.6L585.8,363.4L584.5,361.9L585.7,361.3L588.2,361.5L594.6,365.9L598.5,364.9L597.6,363.8L598.1,362.9L601.0,363.1L601.4,359.1L602.6,359.3L602.0,357.9L602.9,355.7L606.4,353.7L606.1,352.9L607.7,351.9L609.1,349.3L608.0,348.0L611.2,344.0L610.8,343.1L613.3,341.8L615.1,339.4L615.4,338.1L613.9,335.1L615.6,333.8L616.9,329.7L616.0,328.2L616.1,326.1L619.3,323.0L622.1,318.4L625.2,317.4L625.1,315.4L624.2,314.4L625.7,313.9L628.4,311.4L629.4,308.4L631.6,308.0L631.0,307.8L632.0,302.2L630.7,300.2L631.1,299.6L630.6,298.3L631.2,296.8L631.7,297.0L631.4,296.5L633.5,295.7L634.5,297.5L636.5,298.2L638.1,294.0L644.8,296.2L644.9,295.4L647.1,294.4L649.7,294.2L651.0,292.4L652.7,292.3L653.9,291.2L654.5,292.0L656.1,289.7L658.1,290.0L659.1,289.4L660.4,290.1L666.1,287.4L668.3,287.6L668.4,288.9L669.7,288.3L669.6,287.4L680.5,286.3L686.8,284.2L687.3,284.9L686.6,285.8L687.0,286.4L689.1,284.5L688.2,288.3L690.0,288.3L692.1,292.1L693.3,291.6L693.6,292.4L701.2,290.1L702.4,291.7L703.3,295.5L704.5,294.4L704.4,296.5L705.1,296.0L706.9,296.6L706.9,299.8L708.5,300.1L710.3,299.0L711.2,300.8L712.5,299.7L712.7,298.6L715.0,298.3L716.8,297.1L718.2,297.8L719.4,297.4L720.0,298.4L723.2,298.6L723.3,299.6L725.4,298.7L726.8,300.0L729.4,300.7L730.8,302.6L730.2,305.3L731.3,306.7L734.0,307.5L736.7,306.6L738.2,303.2L741.4,299.8L743.5,299.7L744.5,300.6L745.9,299.0L746.4,299.5L746.6,298.5L747.7,299.1L749.4,298.3L749.5,296.7L750.7,297.2L751.4,295.7L753.5,296.6L753.4,295.3L754.5,295.2L759.0,298.6L765.6,299.6L766.2,298.7L765.3,299.0L765.2,298.4L767.4,296.8L766.4,295.0L767.8,295.1L767.4,294.2L768.3,293.1L767.0,292.3L769.2,291.6L769.1,291.0L767.4,291.2L768.0,289.7L769.0,289.5L768.6,290.6L773.0,289.9L778.1,290.5L781.6,289.0L782.8,290.1L784.2,290.2L785.2,289.1L785.3,285.2L786.4,284.0L788.2,283.6L790.1,286.2L791.3,285.8L793.4,288.4L795.2,288.8L796.4,290.4L798.2,289.9L798.4,291.3L799.5,291.1L799.4,291.9L800.7,292.3L801.4,293.3L800.9,295.1L801.9,296.5L802.6,299.5L805.1,301.7L805.4,303.2L808.6,302.3L809.4,303.9L811.4,304.2L813.6,302.0L815.8,303.4L816.7,302.6L817.5,302.9L819.2,312.1L818.5,312.9L820.4,315.7L819.9,316.3L820.4,318.2L821.8,318.6L823.6,321.2L825.3,326.4L825.8,326.1L826.5,331.0L826.0,332.7L826.7,333.5L829.1,333.0L832.3,335.6L832.8,339.3L834.3,339.3L833.9,341.5L836.1,343.6L839.3,343.7L842.7,346.2L845.9,346.3L848.5,345.3L849.7,346.4L851.8,346.7L851.6,347.7L852.5,347.9L854.7,347.3L854.8,340.1L858.0,339.3L859.3,342.1L859.6,340.9L861.4,342.0L861.2,340.8L862.4,340.2L862.8,341.9L863.6,341.1L862.7,340.1L863.2,338.7L864.2,338.8L863.4,339.9L865.0,340.3L865.5,340.0L865.5,338.3L865.8,339.7L867.5,338.5L868.5,340.0L870.2,340.5L871.0,339.6L870.0,338.1L871.2,338.4L873.9,336.1L875.1,335.9L875.8,336.5L875.8,335.9L877.5,335.7L878.2,336.3L879.6,335.9L880.0,336.9L880.5,336.0L881.4,336.5L886.2,333.6L885.9,332.6L887.1,332.7L891.5,336.4L892.7,335.1L894.6,335.3L895.2,334.0L896.5,335.6L896.9,338.0L898.0,336.2L899.4,336.8L901.0,335.5L902.8,336.3L903.5,335.6L905.2,335.6L904.4,332.9L907.8,331.8L908.5,330.6L908.5,329.9L906.3,329.4L906.4,327.8L905.4,325.9L905.9,323.5L905.5,322.4L909.0,298.4L909.4,288.1L911.2,283.0L913.8,279.0L914.1,277.4L915.7,277.4L918.6,274.4L921.0,274.6L922.8,272.8L924.3,269.8L924.4,267.8L929.8,264.2L933.2,260.4L936.4,258.9L939.4,258.5L940.4,252.9L941.8,249.9L941.3,249.2L943.2,246.7L943.2,244.2L941.8,243.4L941.2,241.9L939.9,241.5L940.5,237.6L941.2,236.2L942.5,235.8L943.6,234.2L945.1,233.4L946.1,230.3L947.5,228.9L946.8,222.7L945.5,220.3L946.2,219.1L946.8,212.4L948.6,210.3L948.7,209.3L953.1,207.4L953.1,202.6L954.9,198.6L953.8,196.1L960.7,185.0L962.3,184.1L962.6,180.3L966.5,178.2L969.9,178.9L974.0,176.4L972.8,172.7L974.4,171.7L975.0,170.4L975.3,157.9L976.9,157.5L977.4,155.7L975.8,155.8L973.0,154.0L968.3,154.6L965.9,156.2L959.0,151.7L953.4,152.8L951.9,152.1L948.2,148.0L947.9,145.7L946.0,144.5L944.1,140.8L943.2,141.3L938.6,140.8L935.7,143.6L933.8,143.2L932.3,142.1L929.7,141.9L923.9,139.1L920.3,139.3L920.4,136.9L922.0,134.8L921.1,132.1L919.7,131.2L917.8,130.9L914.4,133.8L911.9,131.5L906.4,129.0L906.5,127.1L902.1,126.9L892.8,124.2L887.5,120.8L888.2,118.6L888.0,116.6L888.9,115.7L889.4,112.9L887.4,111.3L888.1,107.4L886.3,105.3L884.1,104.4L879.6,99.2L878.2,94.1L875.8,89.3L874.4,89.0L871.3,90.0L868.6,88.0L867.2,88.1L866.2,89.0L864.2,86.8L863.4,84.2L861.4,83.0L858.7,84.3L856.8,81.9L856.7,79.7L855.1,78.4L853.1,78.7L850.4,81.0L849.2,80.9L846.7,84.5L846.9,87.6L845.0,87.5L843.1,84.7L842.6,80.5L838.7,78.2L837.8,76.6L836.5,76.8L835.6,73.2L833.6,72.9L831.8,71.6L828.8,73.6L825.0,72.0L824.6,70.1L822.6,68.5L820.3,64.3L817.6,64.9L815.4,67.3L814.5,66.9L813.5,67.7L811.0,67.3L809.1,65.8L807.1,67.9L803.4,67.4L801.5,69.9L802.3,71.2L801.2,71.8L797.1,68.8L796.2,69.1L794.8,72.3L793.9,72.9L791.0,72.2L789.5,73.1L787.2,73.2L782.6,69.5L781.9,67.8L776.9,68.0L776.2,66.4L772.2,63.5L765.9,64.1L760.9,60.8L759.2,61.8L759.0,64.4L757.7,64.5L754.7,67.6L753.4,67.0L751.8,69.8L752.5,72.0L749.3,75.7L748.2,75.1L746.6,76.1L744.5,75.8L744.4,74.0L740.4,71.0L740.0,69.6L735.1,67.0L733.4,70.2L730.5,68.8L722.3,71.7L723.4,75.2L725.6,75.8L725.7,77.5L731.8,82.3L730.1,85.2L727.6,85.5L726.9,86.7L725.4,85.1L723.4,86.0L722.5,85.1L721.4,85.3L717.0,89.8L716.2,89.7L715.6,92.9L712.4,94.5L713.3,98.5L712.0,100.1L709.1,99.3L701.5,102.8L701.5,102.0L699.5,100.2L699.2,98.9L698.1,97.9L698.4,96.0L697.0,95.3L694.8,96.9L692.9,96.7L694.0,96.0L694.5,93.3L691.8,89.7L689.9,89.7L686.8,93.1L685.0,93.0L682.6,89.6L680.1,90.6L681.0,87.6L680.3,86.9L681.4,86.6L681.9,88.2L682.3,86.8L680.6,85.7L677.8,86.3L677.6,84.9L678.7,83.6L678.1,82.8L674.1,83.4L673.5,82.6L674.2,80.4L671.9,78.7L673.6,76.2L671.0,75.3L671.3,72.6L670.0,72.1L668.7,72.6L667.7,71.3L662.6,71.2L658.1,74.7L658.1,75.4L655.0,76.1L654.2,76.1L653.4,74.3L651.2,73.7L650.8,72.0L649.6,71.8L649.0,73.2L649.3,75.9L648.0,76.0L647.1,79.3L645.7,80.6L644.9,80.0L644.0,80.4L642.9,82.4L640.9,81.5L639.9,81.9L638.1,80.0L631.9,78.0L631.0,75.4L628.6,74.7L625.5,72.4L621.2,72.2L622.0,73.0L621.2,73.3L618.9,71.8L618.3,74.2L619.7,74.7L619.0,77.2L617.9,75.6L616.2,74.9L615.6,77.4L612.3,78.7L610.5,78.6L610.2,75.5L609.4,74.3L608.5,74.5L608.2,76.1L607.1,76.8L600.9,75.5L599.6,79.2L601.9,78.5L600.2,81.8L601.0,85.0L600.6,88.5L599.4,90.4L598.1,90.6L595.4,88.6L592.1,88.7L591.4,90.1L588.9,89.3L588.8,88.6L585.2,90.0L583.3,88.6L581.8,90.4L578.7,91.3L577.2,94.7L574.9,94.7L575.4,95.4L574.4,95.9L575.8,98.2L572.7,101.0L571.7,97.0L570.7,97.3L570.6,98.5L568.8,100.3L567.2,109.2L563.2,114.5L562.7,118.4L563.3,121.4L560.9,125.3L560.4,128.2L561.2,130.3L561.0,132.4L559.1,132.7L554.3,129.7L552.9,127.9L549.7,126.8L547.4,124.0L547.7,122.1L543.1,119.1L541.4,119.6L534.8,117.9L530.0,119.3L529.8,123.8L527.5,124.9L524.3,128.3L521.2,128.2L519.5,129.1L517.6,126.8L515.9,127.3L513.9,125.8L511.8,127.6L510.0,127.4L509.0,125.9L506.4,125.3L505.6,123.1L507.0,121.4L507.0,117.9L509.0,115.6L510.1,115.3L511.3,109.9L513.7,108.2L516.4,107.7L514.2,102.9L511.7,102.8L511.4,102.0L513.4,96.0L511.7,90.2L513.0,88.2L513.2,85.3L511.1,80.5L511.0,73.6L507.2,73.0L503.6,74.3L500.8,78.4L498.7,79.8L498.5,78.6L497.4,78.6L495.7,76.4L494.0,76.3L493.3,75.4L492.6,75.8L491.0,74.8L487.4,73.8L486.5,74.2L486.5,73.6L485.6,73.5L485.5,74.1L484.3,74.1L487.1,67.3L485.3,66.0L485.9,61.7L483.3,63.7L480.9,64.4L478.6,61.4L475.9,62.2L475.7,60.7L473.5,58.3L473.2,55.8L471.2,53.4L470.9,48.9L467.3,41.8L467.1,32.3L465.9,32.5L463.9,30.2L461.7,30.1L458.6,28.5L456.9,26.3L457.9,24.6L456.7,21.9L454.6,22.7L453.2,22.1L452.6,25.7L447.1,27.4L446.7,30.3L445.4,32.0L440.6,33.7L440.9,36.2L439.8,37.2L440.1,39.5L439.1,41.7L431.7,43.0L431.2,41.6L430.3,41.5L428.5,42.3L425.5,41.9L424.3,42.8L422.0,42.9L422.0,43.9L417.4,48.2L417.7,52.0L416.4,52.9L417.1,54.1L415.2,57.6L415.1,58.7L416.5,60.1L416.0,62.5L415.0,64.0L413.3,63.1L411.5,64.1L409.4,67.5L410.7,69.7L410.3,71.0L411.3,72.8L409.7,73.9L407.7,72.8L403.9,75.4L401.3,73.8L399.5,75.4L396.2,75.4L395.5,73.8L393.9,73.6L393.6,72.3L390.4,71.7L389.9,73.2L387.2,72.5L385.6,75.1L385.7,76.2L384.0,77.4L379.8,77.6L376.4,76.7L374.8,77.5L373.3,75.8L373.6,74.6L372.9,72.9L375.8,70.8L376.3,68.4L374.4,66.0L373.8,63.2L371.6,62.4L372.2,57.9L373.1,56.8L371.5,55.3L372.5,52.6L373.7,51.7L373.6,50.3L370.5,47.7L369.6,47.7L368.3,46.1L366.5,45.8L360.9,47.2L357.2,46.8L355.8,45.9L351.3,47.1L346.6,46.7L344.5,48.5L341.0,49.6L337.0,53.8L333.6,53.3L329.7,50.3L325.7,50.7L324.0,48.9L321.7,50.3L318.0,50.7L317.6,51.8L316.2,51.2L313.9,52.1L311.4,51.6L311.2,49.1L310.5,48.3L307.8,49.2L305.0,49.2L301.8,50.7L301.1,52.7L299.9,53.4L299.9,54.7L302.2,59.1L300.2,59.9L299.6,61.5L298.3,62.0L298.0,63.8L295.0,65.4L294.3,67.2L292.4,67.9L293.1,69.2L291.1,70.2L290.0,74.2L286.8,75.5L285.6,77.0L285.7,78.0L282.8,78.1L279.4,76.6L277.9,77.2L279.9,84.6L278.7,86.4L277.0,87.3L278.0,89.0L276.5,89.4L275.3,90.8L273.8,94.0L271.5,95.5L265.0,97.1L260.7,99.2L261.0,100.2L260.2,100.6L257.1,100.8L251.8,103.1L247.4,102.9L242.4,104.3L241.0,105.1L241.0,109.5L237.6,111.6L237.2,113.2L235.3,114.4L250.6,119.7L269.0,158.0L371.1,248.9L370.2,275.0L388.0,297.0L386.9,320.3ZM235.3,114.4L234.4,119.8L236.3,119.6L236.1,123.1L235.0,123.4L235.2,125.9L232.1,130.1L231.9,135.2L233.1,137.1L230.0,139.2L230.0,141.6L228.0,143.9L230.6,148.1L229.2,147.9L228.6,149.2L229.5,155.2L226.4,160.9L225.8,160.5L225.4,161.1L225.3,162.1L226.1,163.0L224.2,164.7L223.9,166.3L222.0,168.5L219.1,170.0L219.7,170.8L219.0,170.0L216.3,171.4L215.1,171.3L214.2,172.7L211.3,172.6L208.6,170.8L205.8,172.3L201.9,171.7L197.4,173.0L195.6,175.3L195.7,179.0L193.7,182.9L193.2,185.7L193.8,187.2L191.5,192.1L190.8,196.5L188.1,197.8L184.4,196.5L173.3,197.1L173.6,199.3L168.9,202.9L165.8,208.4L163.2,209.9L160.2,213.7L158.1,213.1L154.4,215.2L148.4,215.0L146.3,217.1L146.4,218.3L143.2,218.6L142.1,221.5L141.0,222.5L137.9,222.9L135.2,220.9L134.2,222.0L135.4,223.2L135.0,223.9L133.8,224.8L132.4,224.2L130.8,225.9L129.4,225.7L128.8,224.5L129.3,221.5L127.7,224.0L122.2,218.4L118.2,217.1L116.6,219.4L115.3,218.6L113.8,222.3L112.3,221.5L108.6,225.6L105.6,224.1L102.7,225.5L101.5,223.4L96.6,219.7L96.1,217.4L93.4,217.9L92.1,216.4L89.4,215.2L88.8,213.6L85.7,213.6L83.3,211.7L78.8,211.0L76.0,209.1L74.1,210.2L67.8,217.6L60.6,221.0L59.7,222.8L59.8,227.0L57.3,229.8L56.9,232.6L53.5,234.3L52.1,236.3L49.3,238.1L48.7,241.0L47.0,242.4L46.4,244.5L44.4,247.2L44.1,249.8L41.7,252.1L41.5,256.6L39.0,258.5L36.6,262.5L36.8,268.5L34.7,273.8L32.0,275.6L32.3,278.1L30.9,279.5L31.8,283.8L31.2,287.2L32.7,290.0L32.4,291.9L34.3,294.1L33.5,296.6L32.0,298.4L32.6,299.6L28.6,300.3L29.0,301.8L27.4,302.7L28.1,306.3L27.4,306.7L25.7,305.7L23.6,307.2L24.6,308.8L23.5,311.4L21.9,311.1L20.9,313.5L19.3,314.1L18.4,315.6L19.1,317.1L17.1,317.8L16.7,318.6L17.1,321.7L19.1,325.6L16.9,328.1L17.8,331.8L17.0,333.0L16.8,335.1L14.7,334.8L14.0,335.4L15.3,337.9L15.7,343.2L17.3,344.0L20.7,343.7L20.4,346.5L26.6,349.5L24.3,353.5L26.5,359.1L28.8,363.1L33.0,363.7L34.8,365.5L33.8,367.5L33.0,372.7L35.5,375.9L38.1,384.5L38.0,388.7L44.3,393.7L46.3,396.5L48.4,396.9L51.6,395.9L53.6,400.9L52.5,401.5L53.6,402.9L55.0,403.2L54.3,404.4L55.3,405.0L55.0,405.5L57.6,407.1L56.8,407.9L57.7,409.2L54.5,410.6L54.0,411.9L55.3,412.6L54.2,414.5L56.6,415.8L53.5,418.4L56.2,419.7L56.8,420.8L53.3,424.5L57.1,427.4L60.5,424.5L63.3,427.1L65.0,426.6L66.2,427.3L69.0,430.8L75.6,427.5L80.1,428.3L82.7,426.8L83.4,427.8L83.7,431.3L85.3,432.8L88.9,434.0L93.0,433.5L98.1,434.1L105.1,442.9L109.7,445.7L111.1,448.8L114.6,452.4L118.2,461.6L122.4,463.5L125.4,466.1L129.5,466.1L130.6,466.8L133.3,470.1L133.3,472.3L134.5,475.5L137.4,479.5L138.4,479.8L141.2,478.0L144.3,477.8L148.9,483.5L157.0,489.1L161.0,494.4L170.5,496.4L173.6,498.7L178.9,497.9L182.7,498.4L186.2,497.0L193.4,498.8L196.7,497.6L201.0,497.5L205.1,494.1L210.8,497.0L216.4,494.2L224.7,494.5L234.5,496.5L239.2,498.3L243.5,498.6L247.1,498.0L253.5,499.0L259.2,500.8L272.2,497.6L276.0,495.7L282.2,494.8L286.5,492.2L288.9,492.7L293.0,495.4L296.8,494.6L300.5,492.5L304.4,492.0L314.0,494.1L320.9,493.1L324.7,491.6L332.0,486.2L334.1,480.1L343.4,477.5L347.4,478.7L352.6,479.2L353.9,476.7L353.2,475.8L351.4,476.0L349.5,474.8L348.3,472.6L348.3,470.6L346.8,469.2L343.9,468.6L343.2,466.7L341.5,466.7L340.8,465.6L339.3,465.9L339.3,465.1L338.4,465.1L338.6,462.6L338.0,459.2L337.3,458.7L338.3,455.5L337.5,452.8L340.0,449.8L339.8,445.2L340.6,443.8L339.8,442.0L337.2,439.9L337.0,438.5L339.2,436.3L342.5,435.8L344.4,436.3L347.2,434.1L348.1,430.5L347.1,427.1L349.0,424.3L348.0,422.7L348.2,421.6L349.4,421.9L350.1,420.2L350.9,420.6L352.2,419.1L353.6,420.3L354.6,419.7L357.1,420.6L358.8,419.7L359.1,417.6L360.0,418.7L362.9,419.5L367.7,417.5L372.8,417.6L375.1,418.8L376.7,417.7L377.5,415.2L379.6,414.7L379.4,413.7L380.3,413.8L379.5,413.4L380.6,412.6L381.7,414.3L382.2,413.9L383.6,415.1L383.8,416.1L386.0,415.6L388.0,417.9L389.2,416.0L391.3,415.3L392.2,414.0L396.3,415.8L398.2,415.6L399.5,413.8L386.9,320.3L388.0,297.0L370.2,275.0L371.1,248.9L269.0,158.0L250.6,119.7Z","t":[{"c":"G","k":"G EAST","a":"G","b":"EAST","n":"Trieda G — sektor FIS EAST","lo":"GND","up":"8000 AMSL","cl":"G","v":100,"d":"M399.5,413.8L401.2,413.7L403.5,415.4L409.8,417.1L414.1,416.2L418.7,418.8L419.8,417.8L421.1,414.3L424.5,413.7L425.9,411.6L429.1,409.9L437.2,409.9L438.0,409.4L440.3,410.6L440.5,409.7L442.9,409.1L445.2,411.5L447.0,409.8L449.6,409.9L451.3,407.2L454.3,406.7L455.0,407.6L454.1,407.8L454.1,409.2L455.8,411.4L456.7,411.1L456.8,409.1L460.0,407.2L459.6,405.7L461.2,404.7L460.8,402.6L461.6,400.8L461.1,397.1L463.6,394.9L464.4,392.9L463.0,388.3L463.7,388.0L463.5,387.3L464.2,387.3L464.3,386.2L466.0,385.7L467.0,384.1L466.6,380.8L469.1,379.2L469.9,380.2L473.5,377.7L475.3,377.5L479.4,373.5L480.3,371.8L484.2,368.9L486.5,371.6L488.1,371.9L488.9,371.0L490.7,371.6L491.6,376.6L492.4,378.3L494.4,379.8L494.3,380.6L499.3,381.2L501.8,377.6L503.6,377.4L505.9,378.0L507.1,380.2L509.4,381.3L510.5,383.5L512.4,382.9L513.6,385.5L510.7,388.4L510.8,389.8L509.6,390.5L511.7,393.4L513.7,393.2L513.7,391.2L516.2,389.4L517.6,390.0L517.2,390.8L520.2,391.1L520.0,389.7L521.9,387.1L522.4,388.0L522.0,388.9L522.7,389.4L526.1,389.2L526.5,390.7L529.2,390.2L530.4,394.0L531.9,395.1L531.1,396.9L529.8,397.7L529.1,400.7L530.8,399.5L535.7,399.1L535.6,397.6L537.3,396.1L538.1,393.9L540.1,393.8L541.9,390.2L544.3,391.2L544.8,389.6L551.1,387.3L553.4,388.4L553.6,389.9L554.5,389.9L556.5,387.1L558.6,386.7L559.5,385.7L557.6,384.5L557.9,383.9L559.3,382.5L561.5,382.3L563.4,379.2L568.8,375.2L568.8,372.5L569.7,370.7L568.5,369.6L568.6,367.8L570.4,367.5L572.1,368.8L574.5,368.5L577.3,369.4L580.9,368.7L580.5,365.8L582.4,366.6L583.2,365.6L584.6,365.6L585.8,363.4L584.5,361.9L585.7,361.3L588.2,361.5L594.6,365.9L598.5,364.9L597.6,363.8L598.1,362.9L601.0,363.1L601.4,359.1L602.6,359.3L602.0,357.9L602.9,355.7L606.4,353.7L606.1,352.9L607.7,351.9L609.1,349.3L608.0,348.0L611.2,344.0L610.8,343.1L613.3,341.8L615.1,339.4L615.4,338.1L613.9,335.1L615.6,333.8L616.9,329.7L616.0,328.2L616.1,326.1L619.3,323.0L622.1,318.4L625.2,317.4L625.1,315.4L624.2,314.4L625.7,313.9L628.4,311.4L629.4,308.4L631.6,308.0L631.0,307.8L632.0,302.2L630.7,300.2L631.1,299.6L630.6,298.3L631.2,296.8L631.7,297.0L631.4,296.5L633.5,295.7L634.5,297.5L636.5,298.2L638.1,294.0L644.8,296.2L644.9,295.4L647.1,294.4L649.7,294.2L651.0,292.4L652.7,292.3L653.9,291.2L654.5,292.0L656.1,289.7L658.1,290.0L659.1,289.4L660.4,290.1L666.1,287.4L668.3,287.6L668.4,288.9L669.7,288.3L669.6,287.4L680.5,286.3L686.8,284.2L687.3,284.9L686.6,285.8L687.0,286.4L689.1,284.5L688.2,288.3L690.0,288.3L692.1,292.1L693.3,291.6L693.6,292.4L701.2,290.1L702.4,291.7L703.3,295.5L704.5,294.4L704.4,296.5L705.1,296.0L706.9,296.6L706.9,299.8L708.5,300.1L710.3,299.0L711.2,300.8L712.5,299.7L712.7,298.6L715.0,298.3L716.8,297.1L718.2,297.8L719.4,297.4L720.0,298.4L723.2,298.6L723.3,299.6L725.4,298.7L726.8,300.0L729.4,300.7L730.8,302.6L730.2,305.3L731.3,306.7L734.0,307.5L736.7,306.6L738.2,303.2L741.4,299.8L743.5,299.7L744.5,300.6L745.9,299.0L746.4,299.5L746.6,298.5L747.7,299.1L749.4,298.3L749.5,296.7L750.7,297.2L751.4,295.7L753.5,296.6L753.4,295.3L754.5,295.2L759.0,298.6L765.6,299.6L766.2,298.7L765.3,299.0L765.2,298.4L767.4,296.8L766.4,295.0L767.8,295.1L767.4,294.2L768.3,293.1L767.0,292.3L769.2,291.6L769.1,291.0L767.4,291.2L768.0,289.7L769.0,289.5L768.6,290.6L773.0,289.9L778.1,290.5L781.6,289.0L782.8,290.1L784.2,290.2L785.2,289.1L785.3,285.2L786.4,284.0L788.2,283.6L790.1,286.2L791.3,285.8L793.4,288.4L795.2,288.8L796.4,290.4L798.2,289.9L798.4,291.3L799.5,291.1L799.4,291.9L800.7,292.3L801.4,293.3L800.9,295.1L801.9,296.5L802.6,299.5L805.1,301.7L805.4,303.2L808.6,302.3L809.4,303.9L811.4,304.2L813.6,302.0L815.8,303.4L816.7,302.6L817.5,302.9L819.2,312.1L818.5,312.9L820.4,315.7L819.9,316.3L820.4,318.2L821.8,318.6L823.6,321.2L825.3,326.4L825.8,326.1L826.5,331.0L826.0,332.7L826.7,333.5L829.1,333.0L832.3,335.6L832.8,339.3L834.3,339.3L833.9,341.5L836.1,343.6L839.3,343.7L842.7,346.2L845.9,346.3L848.5,345.3L849.7,346.4L851.8,346.7L851.6,347.7L852.5,347.9L854.7,347.3L854.8,340.1L858.0,339.3L859.3,342.1L859.6,340.9L861.4,342.0L861.2,340.8L862.4,340.2L862.8,341.9L863.6,341.1L862.7,340.1L863.2,338.7L864.2,338.8L863.4,339.9L865.0,340.3L865.5,340.0L865.5,338.3L865.8,339.7L867.5,338.5L868.5,340.0L870.2,340.5L871.0,339.6L870.0,338.1L871.2,338.4L873.9,336.1L875.1,335.9L875.8,336.5L875.8,335.9L877.5,335.7L878.2,336.3L879.6,335.9L880.0,336.9L880.5,336.0L881.4,336.5L886.2,333.6L885.9,332.6L887.1,332.7L891.5,336.4L892.7,335.1L894.6,335.3L895.2,334.0L896.5,335.6L896.9,338.0L898.0,336.2L899.4,336.8L901.0,335.5L902.8,336.3L903.5,335.6L905.2,335.6L904.4,332.9L907.8,331.8L908.5,330.6L908.5,329.9L906.3,329.4L906.4,327.8L905.4,325.9L905.9,323.5L905.5,322.4L909.0,298.4L909.4,288.1L911.2,283.0L913.8,279.0L914.1,277.4L915.7,277.4L918.6,274.4L921.0,274.6L922.8,272.8L924.3,269.8L924.4,267.8L929.8,264.2L933.2,260.4L936.4,258.9L939.4,258.5L940.4,252.9L941.8,249.9L941.3,249.2L943.2,246.7L943.2,244.2L941.8,243.4L941.2,241.9L939.9,241.5L940.5,237.6L941.2,236.2L942.5,235.8L943.6,234.2L945.1,233.4L946.1,230.3L947.5,228.9L946.8,222.7L945.5,220.3L946.2,219.1L946.8,212.4L948.6,210.3L948.7,209.3L953.1,207.4L953.1,202.6L954.9,198.6L953.8,196.1L960.7,185.0L962.3,184.1L962.6,180.3L966.5,178.2L969.9,178.9L974.0,176.4L972.8,172.7L974.4,171.7L975.0,170.4L975.3,157.9L976.9,157.5L977.4,155.7L975.8,155.8L973.0,154.0L968.3,154.6L965.9,156.2L959.0,151.7L953.4,152.8L951.9,152.1L948.2,148.0L947.9,145.7L946.0,144.5L944.1,140.8L943.2,141.3L938.6,140.8L935.7,143.6L933.8,143.2L932.3,142.1L929.7,141.9L923.9,139.1L920.3,139.3L920.4,136.9L922.0,134.8L921.1,132.1L919.7,131.2L917.8,130.9L914.4,133.8L911.9,131.5L906.4,129.0L906.5,127.1L902.1,126.9L892.8,124.2L887.5,120.8L888.2,118.6L888.0,116.6L888.9,115.7L889.4,112.9L887.4,111.3L888.1,107.4L886.3,105.3L884.1,104.4L879.6,99.2L878.2,94.1L875.8,89.3L874.4,89.0L871.3,90.0L868.6,88.0L867.2,88.1L866.2,89.0L864.2,86.8L863.4,84.2L861.4,83.0L858.7,84.3L856.8,81.9L856.7,79.7L855.1,78.4L853.1,78.7L850.4,81.0L849.2,80.9L846.7,84.5L846.9,87.6L845.0,87.5L843.1,84.7L842.6,80.5L838.7,78.2L837.8,76.6L836.5,76.8L835.6,73.2L833.6,72.9L831.8,71.6L828.8,73.6L825.0,72.0L824.6,70.1L822.6,68.5L820.3,64.3L817.6,64.9L815.4,67.3L814.5,66.9L813.5,67.7L811.0,67.3L809.1,65.8L807.1,67.9L803.4,67.4L801.5,69.9L802.3,71.2L801.2,71.8L797.1,68.8L796.2,69.1L794.8,72.3L793.9,72.9L791.0,72.2L789.5,73.1L787.2,73.2L782.6,69.5L781.9,67.8L776.9,68.0L776.2,66.4L772.2,63.5L765.9,64.1L760.9,60.8L759.2,61.8L759.0,64.4L757.7,64.5L754.7,67.6L753.4,67.0L751.8,69.8L752.5,72.0L749.3,75.7L748.2,75.1L746.6,76.1L744.5,75.8L744.4,74.0L740.4,71.0L740.0,69.6L735.1,67.0L733.4,70.2L730.5,68.8L722.3,71.7L723.4,75.2L725.6,75.8L725.7,77.5L731.8,82.3L730.1,85.2L727.6,85.5L726.9,86.7L725.4,85.1L723.4,86.0L722.5,85.1L721.4,85.3L717.0,89.8L716.2,89.7L715.6,92.9L712.4,94.5L713.3,98.5L712.0,100.1L709.1,99.3L701.5,102.8L701.5,102.0L699.5,100.2L699.2,98.9L698.1,97.9L698.4,96.0L697.0,95.3L694.8,96.9L692.9,96.7L694.0,96.0L694.5,93.3L691.8,89.7L689.9,89.7L686.8,93.1L685.0,93.0L682.6,89.6L680.1,90.6L681.0,87.6L680.3,86.9L681.4,86.6L681.9,88.2L682.3,86.8L680.6,85.7L677.8,86.3L677.6,84.9L678.7,83.6L678.1,82.8L674.1,83.4L673.5,82.6L674.2,80.4L671.9,78.7L673.6,76.2L671.0,75.3L671.3,72.6L670.0,72.1L668.7,72.6L667.7,71.3L662.6,71.2L658.1,74.7L658.1,75.4L655.0,76.1L654.2,76.1L653.4,74.3L651.2,73.7L650.8,72.0L649.6,71.8L649.0,73.2L649.3,75.9L648.0,76.0L647.1,79.3L645.7,80.6L644.9,80.0L644.0,80.4L642.9,82.4L640.9,81.5L639.9,81.9L638.1,80.0L631.9,78.0L631.0,75.4L628.6,74.7L625.5,72.4L621.2,72.2L622.0,73.0L621.2,73.3L618.9,71.8L618.3,74.2L619.7,74.7L619.0,77.2L617.9,75.6L616.2,74.9L615.6,77.4L612.3,78.7L610.5,78.6L610.2,75.5L609.4,74.3L608.5,74.5L608.2,76.1L607.1,76.8L600.9,75.5L599.6,79.2L601.9,78.5L600.2,81.8L601.0,85.0L600.6,88.5L599.4,90.4L598.1,90.6L595.4,88.6L592.1,88.7L591.4,90.1L588.9,89.3L588.8,88.6L585.2,90.0L583.3,88.6L581.8,90.4L578.7,91.3L577.2,94.7L574.9,94.7L575.4,95.4L574.4,95.9L575.8,98.2L572.7,101.0L571.7,97.0L570.7,97.3L570.6,98.5L568.8,100.3L567.2,109.2L563.2,114.5L562.7,118.4L563.3,121.4L560.9,125.3L560.4,128.2L561.2,130.3L561.0,132.4L559.1,132.7L554.3,129.7L552.9,127.9L549.7,126.8L547.4,124.0L547.7,122.1L543.1,119.1L541.4,119.6L534.8,117.9L530.0,119.3L529.8,123.8L527.5,124.9L524.3,128.3L521.2,128.2L519.5,129.1L517.6,126.8L515.9,127.3L513.9,125.8L511.8,127.6L510.0,127.4L509.0,125.9L506.4,125.3L505.6,123.1L507.0,121.4L507.0,117.9L509.0,115.6L510.1,115.3L511.3,109.9L513.7,108.2L516.4,107.7L514.2,102.9L511.7,102.8L511.4,102.0L513.4,96.0L511.7,90.2L513.0,88.2L513.2,85.3L511.1,80.5L511.0,73.6L507.2,73.0L503.6,74.3L500.8,78.4L498.7,79.8L498.5,78.6L497.4,78.6L495.7,76.4L494.0,76.3L493.3,75.4L492.6,75.8L491.0,74.8L487.4,73.8L486.5,74.2L486.5,73.6L485.6,73.5L485.5,74.1L484.3,74.1L487.1,67.3L485.3,66.0L485.9,61.7L483.3,63.7L480.9,64.4L478.6,61.4L475.9,62.2L475.7,60.7L473.5,58.3L473.2,55.8L471.2,53.4L470.9,48.9L467.3,41.8L467.1,32.3L465.9,32.5L463.9,30.2L461.7,30.1L458.6,28.5L456.9,26.3L457.9,24.6L456.7,21.9L454.6,22.7L453.2,22.1L452.6,25.7L447.1,27.4L446.7,30.3L445.4,32.0L440.6,33.7L440.9,36.2L439.8,37.2L440.1,39.5L439.1,41.7L431.7,43.0L431.2,41.6L430.3,41.5L428.5,42.3L425.5,41.9L424.3,42.8L422.0,42.9L422.0,43.9L417.4,48.2L417.7,52.0L416.4,52.9L417.1,54.1L415.2,57.6L415.1,58.7L416.5,60.1L416.0,62.5L415.0,64.0L413.3,63.1L411.5,64.1L409.4,67.5L410.7,69.7L410.3,71.0L411.3,72.8L409.7,73.9L407.7,72.8L403.9,75.4L401.3,73.8L399.5,75.4L396.2,75.4L395.5,73.8L393.9,73.6L393.6,72.3L390.4,71.7L389.9,73.2L387.2,72.5L385.6,75.1L385.7,76.2L384.0,77.4L379.8,77.6L376.4,76.7L374.8,77.5L373.3,75.8L373.6,74.6L372.9,72.9L375.8,70.8L376.3,68.4L374.4,66.0L373.8,63.2L371.6,62.4L372.2,57.9L373.1,56.8L371.5,55.3L372.5,52.6L373.7,51.7L373.6,50.3L370.5,47.7L369.6,47.7L368.3,46.1L366.5,45.8L360.9,47.2L357.2,46.8L355.8,45.9L351.3,47.1L346.6,46.7L344.5,48.5L341.0,49.6L337.0,53.8L333.6,53.3L329.7,50.3L325.7,50.7L324.0,48.9L321.7,50.3L318.0,50.7L317.6,51.8L316.2,51.2L313.9,52.1L311.4,51.6L311.2,49.1L310.5,48.3L307.8,49.2L305.0,49.2L301.8,50.7L301.1,52.7L299.9,53.4L299.9,54.7L302.2,59.1L300.2,59.9L299.6,61.5L298.3,62.0L298.0,63.8L295.0,65.4L294.3,67.2L292.4,67.9L293.1,69.2L291.1,70.2L290.0,74.2L286.8,75.5L285.6,77.0L285.7,78.0L282.8,78.1L279.4,76.6L277.9,77.2L279.9,84.6L278.7,86.4L277.0,87.3L278.0,89.0L276.5,89.4L275.3,90.8L273.8,94.0L271.5,95.5L265.0,97.1L260.7,99.2L261.0,100.2L260.2,100.6L257.1,100.8L251.8,103.1L247.4,102.9L242.4,104.3L241.0,105.1L241.0,109.5L237.6,111.6L237.2,113.2L235.3,114.4L250.6,119.7L269.0,158.0L371.1,248.9L370.2,275.0L388.0,297.0L386.9,320.3Z","x":521.0,"y":253.0,"r":62.0,"j":[1,2,3,4,5,6,8,11,13,15,16,17,19,23,26,27,29,32,33,36,41,52,53,58,64,71,73,87],"px":13384},{"c":"G","k":"G WEST","a":"G","b":"WEST","n":"Trieda G — sektor FIS WEST","lo":"GND","up":"8000 AMSL","cl":"G","v":100,"d":"M235.3,114.4L234.4,119.8L236.3,119.6L236.1,123.1L235.0,123.4L235.2,125.9L232.1,130.1L231.9,135.2L233.1,137.1L230.0,139.2L230.0,141.6L228.0,143.9L230.6,148.1L229.2,147.9L228.6,149.2L229.5,155.2L226.4,160.9L225.8,160.5L225.4,161.1L225.3,162.1L226.1,163.0L224.2,164.7L223.9,166.3L222.0,168.5L219.1,170.0L219.7,170.8L219.0,170.0L216.3,171.4L215.1,171.3L214.2,172.7L211.3,172.6L208.6,170.8L205.8,172.3L201.9,171.7L197.4,173.0L195.6,175.3L195.7,179.0L193.7,182.9L193.2,185.7L193.8,187.2L191.5,192.1L190.8,196.5L188.1,197.8L184.4,196.5L173.3,197.1L173.6,199.3L168.9,202.9L165.8,208.4L163.2,209.9L160.2,213.7L158.1,213.1L154.4,215.2L148.4,215.0L146.3,217.1L146.4,218.3L143.2,218.6L142.1,221.5L141.0,222.5L137.9,222.9L135.2,220.9L134.2,222.0L135.4,223.2L135.0,223.9L133.8,224.8L132.4,224.2L130.8,225.9L129.4,225.7L128.8,224.5L129.3,221.5L127.7,224.0L122.2,218.4L118.2,217.1L116.6,219.4L115.3,218.6L113.8,222.3L112.3,221.5L108.6,225.6L105.6,224.1L102.7,225.5L101.5,223.4L96.6,219.7L96.1,217.4L93.4,217.9L92.1,216.4L89.4,215.2L88.8,213.6L85.7,213.6L83.3,211.7L78.8,211.0L76.0,209.1L74.1,210.2L67.8,217.6L60.6,221.0L59.7,222.8L59.8,227.0L57.3,229.8L56.9,232.6L53.5,234.3L52.1,236.3L49.3,238.1L48.7,241.0L47.0,242.4L46.4,244.5L44.4,247.2L44.1,249.8L41.7,252.1L41.5,256.6L39.0,258.5L36.6,262.5L36.8,268.5L34.7,273.8L32.0,275.6L32.3,278.1L30.9,279.5L31.8,283.8L31.2,287.2L32.7,290.0L32.4,291.9L34.3,294.1L33.5,296.6L32.0,298.4L32.6,299.6L28.6,300.3L29.0,301.8L27.4,302.7L28.1,306.3L27.4,306.7L25.7,305.7L23.6,307.2L24.6,308.8L23.5,311.4L21.9,311.1L20.9,313.5L19.3,314.1L18.4,315.6L19.1,317.1L17.1,317.8L16.7,318.6L17.1,321.7L19.1,325.6L16.9,328.1L17.8,331.8L17.0,333.0L16.8,335.1L14.7,334.8L14.0,335.4L15.3,337.9L15.7,343.2L17.3,344.0L20.7,343.7L20.4,346.5L26.6,349.5L24.3,353.5L26.5,359.1L28.8,363.1L33.0,363.7L34.8,365.5L33.8,367.5L33.0,372.7L35.5,375.9L38.1,384.5L38.0,388.7L44.3,393.7L46.3,396.5L48.4,396.9L51.6,395.9L53.6,400.9L52.5,401.5L53.6,402.9L55.0,403.2L54.3,404.4L55.3,405.0L55.0,405.5L57.6,407.1L56.8,407.9L57.7,409.2L54.5,410.6L54.0,411.9L55.3,412.6L54.2,414.5L56.6,415.8L53.5,418.4L56.2,419.7L56.8,420.8L53.3,424.5L57.1,427.4L60.5,424.5L63.3,427.1L65.0,426.6L66.2,427.3L69.0,430.8L75.6,427.5L80.1,428.3L82.7,426.8L83.4,427.8L83.7,431.3L85.3,432.8L88.9,434.0L93.0,433.5L98.1,434.1L105.1,442.9L109.7,445.7L111.1,448.8L114.6,452.4L118.2,461.6L122.4,463.5L125.4,466.1L129.5,466.1L130.6,466.8L133.3,470.1L133.3,472.3L134.5,475.5L137.4,479.5L138.4,479.8L141.2,478.0L144.3,477.8L148.9,483.5L157.0,489.1L161.0,494.4L170.5,496.4L173.6,498.7L178.9,497.9L182.7,498.4L186.2,497.0L193.4,498.8L196.7,497.6L201.0,497.5L205.1,494.1L210.8,497.0L216.4,494.2L224.7,494.5L234.5,496.5L239.2,498.3L243.5,498.6L247.1,498.0L253.5,499.0L259.2,500.8L272.2,497.6L276.0,495.7L282.2,494.8L286.5,492.2L288.9,492.7L293.0,495.4L296.8,494.6L300.5,492.5L304.4,492.0L314.0,494.1L320.9,493.1L324.7,491.6L332.0,486.2L334.1,480.1L343.4,477.5L347.4,478.7L352.6,479.2L353.9,476.7L353.2,475.8L351.4,476.0L349.5,474.8L348.3,472.6L348.3,470.6L346.8,469.2L343.9,468.6L343.2,466.7L341.5,466.7L340.8,465.6L339.3,465.9L339.3,465.1L338.4,465.1L338.6,462.6L338.0,459.2L337.3,458.7L338.3,455.5L337.5,452.8L340.0,449.8L339.8,445.2L340.6,443.8L339.8,442.0L337.2,439.9L337.0,438.5L339.2,436.3L342.5,435.8L344.4,436.3L347.2,434.1L348.1,430.5L347.1,427.1L349.0,424.3L348.0,422.7L348.2,421.6L349.4,421.9L350.1,420.2L350.9,420.6L352.2,419.1L353.6,420.3L354.6,419.7L357.1,420.6L358.8,419.7L359.1,417.6L360.0,418.7L362.9,419.5L367.7,417.5L372.8,417.6L375.1,418.8L376.7,417.7L377.5,415.2L379.6,414.7L379.4,413.7L380.3,413.8L379.5,413.4L380.6,412.6L381.7,414.3L382.2,413.9L383.6,415.1L383.8,416.1L386.0,415.6L388.0,417.9L389.2,416.0L391.3,415.3L392.2,414.0L396.3,415.8L398.2,415.6L399.5,413.8L386.9,320.3L388.0,297.0L370.2,275.0L371.1,248.9L269.0,158.0L250.6,119.7Z","x":273.0,"y":335.0,"r":50.0,"j":[0,6,8,9,10,12,15,18,20,22,25,31,55,57,59,60,61,65,66,76,83,84],"px":7120},{"c":"TMA","k":"TMA LZKZ 4","a":"TMA","b":"LZKZ 4","n":"KOŠICE TMA 4","lo":"8000 AMSL","up":"FL 135","cl":"D","v":300,"d":"M757.3,142.7L706.9,152.4L649.5,218.3L622.0,216.2L587.4,261.7L594.7,306.9L616.2,331.7L616.9,329.7L616.0,328.2L616.1,326.1L619.3,323.0L622.1,318.4L625.2,317.4L625.1,315.4L624.2,314.4L625.7,313.9L628.4,311.4L629.4,308.4L631.6,308.0L631.0,307.8L631.5,302.9L632.0,302.2L630.7,300.2L631.1,299.6L630.6,298.3L631.2,296.8L631.7,297.0L631.4,296.5L633.5,295.7L634.5,297.5L636.5,298.2L638.1,294.0L644.8,296.2L644.9,295.4L647.1,294.4L649.7,294.2L651.0,292.4L652.7,292.3L653.9,291.2L654.5,292.0L656.1,289.7L658.1,290.0L659.1,289.4L660.4,290.1L666.1,287.4L668.3,287.6L668.4,288.9L668.5,288.4L669.7,288.3L669.6,287.4L680.5,286.3L686.8,284.2L687.3,284.9L686.6,285.8L687.0,286.4L689.1,284.5L688.2,288.3L690.0,288.3L692.1,292.1L693.3,291.6L693.6,292.4L700.2,290.0L701.2,290.1L702.4,291.7L703.3,295.5L704.5,294.4L704.4,296.5L705.1,296.0L706.9,296.6L706.9,299.8L708.5,300.1L710.3,299.0L711.2,300.8L712.5,299.7L712.7,298.6L715.0,298.3L716.8,297.1L718.2,297.8L718.7,297.3L719.4,297.4L720.0,298.4L723.2,298.6L723.3,299.6L725.4,298.7L726.8,300.0L729.4,300.7L730.8,302.6L730.2,305.3L731.3,306.7L734.0,307.5L736.7,306.6L738.2,303.2L740.0,301.0L741.1,300.7L741.4,299.8L743.5,299.7L744.5,300.6L745.4,300.0L745.9,299.0L746.4,299.5L746.6,298.5L747.7,299.1L749.4,298.3L749.5,296.7L750.7,297.2L751.4,295.7L753.5,296.6L753.4,295.3L754.5,295.2L759.0,298.6L759.5,298.8L759.8,298.3L764.1,299.8L764.3,299.4L765.6,299.6L766.2,298.7L765.3,299.0L765.2,298.4L767.4,296.8L766.4,295.8L766.4,295.0L767.8,295.1L767.4,294.2L768.3,293.1L767.1,292.8L767.0,292.3L769.2,291.6L769.1,291.0L767.4,291.2L768.0,289.7L769.0,289.5L768.6,290.6L773.0,289.9L778.1,290.5L781.6,289.0L782.3,289.3L782.8,290.1L784.2,290.2L785.2,289.1L785.3,285.2L786.4,284.0L788.4,283.6L790.1,286.2L791.3,285.8L793.4,288.4L795.2,288.8L796.4,290.4L798.2,289.9L798.4,291.3L799.5,291.1L799.4,291.9L800.7,292.3L801.4,293.3L800.9,295.1L801.9,296.5L802.6,299.5L805.1,301.7L805.4,303.2L807.1,303.1L808.6,302.3L809.4,303.9L811.4,304.2L813.6,302.0L815.8,303.4L816.7,302.6L817.5,302.9L817.6,305.8L818.2,305.8L818.7,307.3L819.2,312.1L818.5,312.9L818.9,314.0L837.8,234.4L789.3,194.1L768.4,189.3Z","x":631.0,"y":255.0,"r":40.0,"j":[0,3,4,13,30,56,87],"px":2197},{"c":"TMA","k":"TMA LZTT 3","a":"TMA","b":"LZTT 3","n":"POPRAD TMA 3","lo":"8000 AMSL","up":"FL 135","cl":"D","v":300,"d":"M693.3,96.8L692.9,96.7L693.2,96.3L694.0,96.0L694.5,93.3L691.8,89.7L689.9,89.7L686.8,93.1L685.0,93.0L682.6,89.6L680.6,90.9L680.1,90.6L681.0,87.6L680.3,86.9L681.4,86.6L681.9,88.2L682.5,87.7L682.3,86.8L680.6,85.7L677.8,86.3L677.6,84.9L678.7,83.6L678.1,82.8L677.2,82.6L674.6,83.7L674.1,83.4L673.5,82.6L674.2,80.4L671.9,78.7L673.6,76.2L671.0,75.3L671.6,73.3L671.3,72.6L670.0,72.1L668.7,72.6L667.7,71.3L662.6,71.2L658.1,74.7L658.1,75.4L655.0,76.1L654.2,76.1L653.4,74.3L651.2,73.7L650.8,72.0L649.6,71.8L649.0,73.2L649.3,75.9L648.0,76.0L647.1,79.3L645.7,80.6L644.9,80.0L644.0,80.4L642.9,82.4L640.9,81.5L639.9,81.9L638.1,80.0L631.9,78.0L631.0,75.4L628.6,74.7L625.5,72.4L621.2,72.2L622.0,73.0L621.2,73.3L619.5,71.8L618.9,71.8L618.3,74.2L619.7,74.7L619.0,77.2L618.7,77.4L617.9,75.6L616.2,74.9L615.6,77.4L612.3,78.7L610.5,78.6L610.2,75.5L609.6,74.5L609.4,113.9L581.5,145.4L501.8,139.9L490.6,132.0L483.4,138.7L480.9,178.0L490.1,190.2L525.7,192.5L539.1,210.3L649.5,218.3L706.9,152.4Z","x":661.0,"y":101.0,"r":30.0,"j":[0,2,11,13,23,38,50],"px":1964},{"c":"TMA","k":"TMA LZKZ 3","a":"TMA","b":"LZKZ 3","n":"KOŠICE TMA 3","lo":"5000 AMSL","up":"8000 AMSL","cl":"D","v":300,"d":"M742.8,183.4L702.9,197.0L669.4,195.4L649.5,218.3L680.4,257.1L673.7,287.0L680.5,286.3L686.8,284.2L687.3,284.9L686.6,285.8L687.0,286.4L689.1,284.5L688.2,288.3L690.0,288.3L692.1,292.1L693.3,291.6L693.6,292.4L700.2,290.0L701.2,290.1L702.4,291.7L703.3,295.5L704.5,294.4L704.4,296.5L705.1,296.0L706.9,296.6L706.9,299.8L708.5,300.1L710.3,299.0L711.2,300.8L712.5,299.7L712.7,298.6L715.0,298.3L716.8,297.1L718.2,297.8L718.7,297.3L719.4,297.4L720.0,298.4L723.2,298.6L723.3,299.6L725.4,298.7L726.8,300.0L729.4,300.7L730.8,302.6L730.2,305.3L731.3,306.7L734.0,307.5L736.7,306.6L738.2,303.2L740.0,301.0L741.1,300.7L741.4,299.8L743.5,299.7L744.5,300.6L745.4,300.0L745.9,299.0L746.4,299.5L746.6,298.5L747.7,299.1L749.4,298.3L749.5,296.7L750.7,297.2L751.4,295.7L753.5,296.6L753.4,295.3L754.5,295.2L759.0,298.6L759.5,298.8L759.8,298.3L764.1,299.8L764.3,299.4L765.6,299.6L766.2,298.7L765.3,299.0L765.2,298.4L767.4,296.8L766.4,295.8L766.4,295.0L767.8,295.1L767.4,294.2L768.3,293.1L767.1,292.8L767.0,292.3L769.2,291.6L769.1,291.0L767.4,291.2L768.0,289.7L769.0,289.5L768.6,290.6L773.0,289.9L778.1,290.5L781.6,289.0L782.3,289.3L782.8,290.1L784.2,290.2L785.2,289.1L785.3,285.2L786.4,284.0L788.2,283.6L790.1,286.2L791.3,285.8L793.4,288.4L795.2,288.8L796.4,290.4L798.2,289.9L798.4,291.3L799.5,291.1L799.4,291.9L800.7,292.3L801.4,293.3L800.9,295.1L801.9,296.5L802.6,299.5L805.1,301.7L805.4,303.2L807.1,303.1L808.6,302.3L809.4,303.9L811.4,304.2L813.6,302.0L815.8,303.4L816.7,302.6L817.5,302.9L817.6,305.8L818.2,305.8L818.7,307.3L819.2,312.1L818.5,312.9L818.9,314.0L837.8,234.4L789.3,194.1Z","x":691.0,"y":227.0,"r":32.0,"j":[0,2,5,13,28,30,37,44,51],"px":1897},{"c":"TRA","k":"LZTRA10","a":"TRA","b":"10","n":"LZTRA10","lo":"8000 AMSL","up":"FL 245","cl":"","v":200,"d":"M805.6,105.7L789.9,136.4L809.1,159.1L789.3,194.1L823.0,222.4L937.8,201.2L943.1,163.5L866.0,132.6L827.2,110.9Z","x":867.0,"y":167.0,"r":24.0,"j":[0,4,16,26,34,41,48,86],"px":1228},{"c":"TRA","k":"LZTRA4B","a":"TRA","b":"4B","n":"LZTRA4B","lo":"FL 205","up":"FL 245","cl":"","v":200,"d":"M245.8,161.0L174.4,227.8L208.7,252.6L211.6,282.9L234.8,304.7L321.5,205.6L302.9,167.0L258.5,167.8Z","x":225.0,"y":195.0,"r":16.0,"j":[0,1,9,10,55,60,61,65,66],"px":831},{"c":"TMA","k":"TMA LZIB 1","a":"TMA","b":"LZIB 1","n":"BRATISLAVA TMA 1","lo":"1500 AMSL","up":"5000 AMSL","cl":"C","v":300,"d":"M115.9,313.8L91.5,352.0L98.0,351.6L114.3,367.4L104.7,377.5L106.4,382.9L107.1,388.6L106.6,394.3L105.1,399.8L112.1,406.5L86.7,433.2L88.9,434.0L93.0,433.5L96.4,433.6L98.4,434.4L103.6,440.3L105.1,442.9L109.7,445.7L111.1,448.8L114.6,452.4L118.2,461.6L122.6,463.6L166.2,418.1L169.9,379.4L137.5,326.2Z","x":137.0,"y":377.0,"r":32.0,"j":[12,18,54,67,80,81],"px":1560},{"c":"R","k":"LZR225A","a":"LZR","b":"225A","n":"LZR225A","lo":"4000 AMSL","up":"8000 AMSL","cl":"","v":150,"d":"M371.1,248.9L328.2,280.8L326.2,355.7L343.0,351.9L389.4,355.2L443.9,342.4L473.3,327.4L473.5,323.5L386.9,320.3L388.0,297.0L370.2,275.0Z","x":361.0,"y":323.0,"r":32.0,"j":[0,1,15,17,22,29,43,49,57,79],"px":1500},{"c":"TMA","k":"TMA LZZI 1","a":"TMA","b":"LZZI 1","n":"ŽILINA TMA 1","lo":"3500 AMSL","up":"9500 AMSL","cl":"D","v":300,"d":"M336.2,79.4L234.2,127.5L232.1,129.9L232.1,132.6L245.8,161.0L258.5,167.8L302.9,167.0L319.5,161.5L356.1,127.5L338.8,119.6L350.8,114.1L354.9,105.9L343.5,82.0Z","x":301.0,"y":155.0,"r":14.0,"j":[1,6,10,27,32,52],"px":617},{"c":"R","k":"LZR40","a":"LZR","b":"40","n":"LZR40","lo":"1000 AGL","up":"8000 AMSL","cl":"","v":150,"d":"M302.9,167.0L271.8,167.6L208.7,252.6L211.6,282.9L228.4,298.7L317.3,196.9Z","x":269.0,"y":215.0,"r":34.0,"j":[1,6,9,20,27,55,65],"px":1650},{"c":"TRA","k":"LZTRA5","a":"TRA","b":"5","n":"LZTRA5","lo":"9500 AMSL","up":"FL 245","cl":"","v":200,"d":"M460.0,123.9L386.6,202.3L400.9,226.8L444.3,228.4L490.1,190.2L480.9,178.0L483.4,138.7Z","x":429.0,"y":195.0,"r":34.0,"j":[0,3,17,36,68,71],"px":1318},{"c":"TMA","k":"TMA LZIB 3","a":"TMA","b":"LZIB 3","n":"BRATISLAVA TMA 3","lo":"2500 AMSL","up":"5000 AMSL","cl":"C","v":300,"d":"M137.5,326.2L169.9,379.4L166.2,418.1L122.6,463.6L125.9,466.2L129.5,466.1L130.6,466.8L133.3,470.1L133.3,472.3L134.5,475.5L137.4,479.5L138.4,479.8L141.2,478.0L144.3,477.8L148.9,483.5L154.9,487.4L158.2,490.7L197.9,449.3L204.7,380.0L190.4,356.5Z","x":167.0,"y":449.0,"r":32.0,"j":[1,7,20],"px":1465},{"c":"TMA","k":"TMA LZTT 1","a":"TMA","b":"LZTT 1","n":"POPRAD TMA 1","lo":"5000 AMSL","up":"8000 AMSL","cl":"D","v":300,"d":"M600.6,123.8L581.5,145.4L640.5,149.7L638.7,174.3L620.9,173.0L604.2,192.4L592.1,191.6L590.4,213.9L649.5,218.3L678.1,185.4L681.0,148.9L660.2,128.3Z","x":657.0,"y":175.0,"r":22.0,"j":[0,2,3,4,23,50,82,88],"px":1218},{"c":"R","k":"LZR55","a":"LZR","b":"55","n":"LZR55","lo":"GND","up":"10000 AMSL","cl":"","v":150,"d":"M881.0,335.9L881.4,336.5L883.5,335.5L883.7,334.8L886.4,333.5L885.9,332.6L887.1,332.7L888.4,334.3L889.9,334.8L891.5,336.4L892.1,336.3L892.0,335.5L892.7,335.1L894.6,335.3L894.5,334.5L895.2,334.0L896.5,335.6L896.2,336.1L896.9,337.9L898.0,336.2L899.4,336.8L901.0,335.5L902.8,336.3L903.5,335.6L905.2,335.6L904.4,332.9L907.0,332.3L908.4,331.0L908.5,329.9L906.3,329.4L906.4,327.8L905.4,325.9L905.9,323.5L905.5,322.4L909.0,298.4L909.4,288.1L911.2,283.0L913.8,279.0L914.1,277.4L915.7,277.4L918.6,274.4L921.0,274.6L922.8,272.8L924.3,269.8L924.4,267.8L929.8,264.2L931.2,262.2L933.0,261.2L933.2,260.4L936.4,258.9L939.4,258.5L940.4,252.9L941.8,249.9L941.3,249.2L942.9,247.7L943.2,246.7L943.2,244.2L941.8,243.4L941.2,241.9L939.9,241.5L940.5,237.6L941.2,236.2L942.5,235.8L943.6,234.2L945.1,233.4L946.1,230.3L947.5,228.9L946.8,222.7L945.5,220.3L946.2,219.1L946.8,212.4L947.3,211.2L948.6,210.3L948.7,209.3L953.1,207.4L953.1,202.6L954.9,198.6L953.8,196.1L960.7,185.0L962.3,184.1L962.6,180.3L964.8,179.6L965.5,178.5L966.5,178.2L969.9,178.9L971.6,177.3L974.0,176.4L972.8,172.7L974.4,171.7L975.0,170.4L975.3,157.9L976.9,157.5L977.4,155.7L975.8,155.8L973.0,154.0L968.3,154.6L965.9,156.2L964.0,155.5L960.8,152.5L959.0,151.7L955.3,152.2L954.4,153.0L952.8,152.4L926.1,193.7L915.7,241.3L887.8,271.7Z","x":945.0,"y":187.0,"r":16.0,"j":[16,53],"px":833},{"c":"TRA","k":"LZTRA6B","a":"TRA","b":"6B","n":"LZTRA6B","lo":"4000 AMSL","up":"FL 245","cl":"","v":200,"d":"M443.9,342.4L389.4,355.2L343.0,351.9L361.1,403.6L383.7,401.7L414.0,403.9L426.7,399.5L450.3,396.4L455.2,375.6Z","x":409.0,"y":377.0,"r":28.0,"j":[0,1,8,22,43],"px":1231},{"c":"R","k":"LZR56","a":"LZR","b":"56","n":"LZR56","lo":"GND","up":"10000 AMSL","cl":"","v":150,"d":"M952.8,152.4L951.9,152.1L949.0,148.3L948.2,148.0L947.9,145.7L946.0,144.5L945.9,143.5L944.1,140.8L943.2,141.3L938.6,140.8L936.2,143.6L928.8,141.4L840.5,344.4L842.7,346.2L845.9,346.3L848.5,345.3L849.7,346.4L851.8,346.7L851.7,347.8L854.4,347.5L854.3,346.1L855.0,345.2L854.6,344.5L855.0,343.7L854.8,340.1L858.0,339.3L859.3,342.1L859.7,341.7L859.6,340.9L861.4,342.0L861.2,340.8L862.4,340.2L862.8,341.9L863.6,341.1L862.7,340.1L863.4,338.6L864.2,338.8L863.6,340.0L865.4,340.2L865.1,338.8L865.5,338.3L865.8,339.7L867.5,338.5L867.5,339.1L868.5,340.0L870.2,340.5L871.0,339.6L870.0,338.1L871.2,338.4L872.1,337.2L873.3,337.1L873.9,336.1L875.1,335.9L875.8,336.5L875.8,335.9L877.5,335.7L878.2,336.3L879.3,335.9L880.0,336.9L881.0,335.9L887.8,271.7L915.7,241.3L926.1,193.7Z","x":929.0,"y":169.0,"r":14.0,"j":[0,5,14,41,53],"px":861},{"c":"R","k":"LZR225","a":"LZR","b":"225","n":"LZR225","lo":"GND","up":"8000 AMSL","cl":"","v":150,"d":"M400.9,226.8L371.1,248.9L370.2,275.0L388.0,297.0L386.9,320.3L416.9,321.4L417.6,298.0L435.5,278.8L437.3,228.1Z","x":415.0,"y":247.0,"r":20.0,"j":[0,8,11,29,36,62,74,79],"px":816},{"c":"R","k":"LZR2","a":"LZR","b":"2","n":"LZR2","lo":"3500 AMSL","up":"5000 AMSL","cl":"","v":150,"d":"M80.5,353.0L91.5,352.0L115.9,313.8L112.9,276.4L131.8,242.9L111.6,222.4L109.7,223.8L108.6,225.6L105.6,224.1L102.7,225.5L101.5,223.4L96.6,219.7L96.1,217.4L93.4,217.9L92.1,216.4L89.4,215.2L88.8,213.6L87.7,213.2L85.7,213.6L83.3,211.7L81.2,211.6L79.9,210.8L78.8,211.0L76.0,209.1L74.1,210.2L71.2,214.2L69.2,215.4L67.8,217.6L60.6,221.0L59.7,222.8L59.8,227.0L57.3,229.8L56.9,232.6L53.5,234.3L52.5,235.9L105.3,285.3L84.0,310.3L87.5,315.1L90.0,320.8L91.2,326.3L91.3,332.5L90.1,338.6L87.9,343.9L84.5,349.0Z","x":101.0,"y":305.0,"r":16.0,"j":[1,7,21,24,31,35,42,45,46,70,75,81],"px":530},{"c":"R","k":"LZR60C","a":"LZR","b":"60C","n":"LZR60C","lo":"GND","up":"4000 AMSL","cl":"","v":150,"d":"M594.7,306.9L506.5,321.7L523.7,372.8L538.0,378.5L563.3,358.6L598.1,344.3Z","x":547.0,"y":343.0,"r":30.0,"j":[0,58],"px":1016},{"c":"TMA","k":"TMA LZPP 1","a":"TMA","b":"LZPP 1","n":"PIEŠŤANY TMA 1","lo":"2500 AMSL","up":"5000 AMSL","cl":"D","v":300,"d":"M165.7,230.9L150.3,236.3L138.6,283.9L141.3,319.4L137.5,326.2L190.4,356.5L215.7,327.0L210.8,275.0L210.1,279.8L208.6,284.8L206.5,288.9L203.4,293.1L200.1,296.3L195.9,299.3L191.2,301.4L186.7,302.6L181.7,323.2L158.3,317.4L163.2,296.9L157.2,290.6L153.2,282.8Z","x":187.0,"y":335.0,"r":20.0,"j":[1,10,12,31,55,67],"px":947},{"c":"R","k":"LZR1","a":"LZR","b":"1","n":"LZR1","lo":"2000 AMSL","up":"5000 AMSL","cl":"","v":150,"d":"M52.5,235.9L49.3,238.1L48.7,241.0L47.0,242.4L46.4,244.5L44.4,247.2L44.1,249.8L41.7,252.1L41.5,256.6L39.0,258.5L37.9,260.9L36.6,262.5L36.8,268.5L35.9,269.6L34.7,273.8L33.3,274.2L32.0,275.6L32.3,278.1L30.9,279.5L31.8,283.8L31.2,287.2L32.7,290.0L32.4,291.9L34.2,293.7L34.2,294.7L33.5,296.6L32.0,298.4L32.5,299.7L28.8,300.2L29.0,301.8L27.5,302.3L27.6,305.2L28.1,306.3L27.0,306.6L26.3,305.7L24.7,306.0L23.5,307.4L24.6,308.8L23.7,309.9L23.5,311.4L21.9,311.1L20.9,313.5L19.3,314.1L18.4,315.6L19.1,317.1L16.8,318.1L17.1,321.7L19.1,326.0L16.9,328.1L17.8,331.8L17.0,333.0L16.8,335.1L15.9,335.3L14.7,334.8L14.0,335.4L15.3,337.9L15.0,339.8L15.7,343.2L17.3,344.0L20.7,343.7L21.0,344.6L20.1,345.6L20.8,346.7L26.7,349.6L44.5,353.8L38.2,347.5L34.2,339.7L33.0,335.2L32.5,330.6L33.6,321.9L35.2,317.5L37.5,313.4L43.3,306.9L50.8,302.5L59.3,300.4L64.2,282.8L86.5,289.7L81.0,307.3L84.0,310.3L105.3,285.3Z","x":57.0,"y":263.0,"r":22.0,"j":[18,24,39,40,42],"px":664},{"c":"TRA","k":"LZTRA6A","a":"TRA","b":"6A","n":"LZTRA6A","lo":"4000 AMSL","up":"FL 135","cl":"","v":200,"d":"M343.0,351.9L295.5,362.7L287.2,383.8L321.8,428.9L343.8,410.8L361.1,403.6Z","x":325.0,"y":387.0,"r":32.0,"j":[1,8,15],"px":857},{"c":"TMA","k":"TMA LZTT 4","a":"TMA","b":"LZTT 4","n":"POPRAD TMA 4","lo":"10000 AMSL","up":"FL 135","cl":"D","v":300,"d":"M609.6,74.6L608.5,74.5L608.2,76.1L607.1,76.8L605.3,76.0L600.4,75.9L599.6,79.2L601.9,78.5L600.2,82.1L601.0,85.0L600.6,88.5L599.0,90.7L598.1,90.6L595.4,88.6L592.1,88.7L591.4,90.1L588.9,89.3L588.8,88.6L588.0,89.1L587.0,88.8L586.7,89.4L585.2,90.0L583.3,88.6L582.2,89.4L581.8,90.4L578.7,91.3L577.2,94.7L574.9,94.7L575.4,95.4L574.4,95.9L575.8,98.2L572.7,101.0L572.9,100.1L571.7,97.0L570.8,97.2L570.6,98.5L568.8,100.3L569.1,100.8L568.1,102.8L568.4,103.4L567.2,109.2L563.2,114.5L562.7,118.4L563.3,121.4L562.4,122.1L560.9,125.3L560.4,128.2L560.7,129.9L561.2,130.3L561.0,132.4L559.1,132.7L557.8,132.1L556.3,130.5L554.2,129.7L552.9,127.9L549.7,126.8L547.4,124.0L547.7,122.1L544.5,120.5L543.1,119.1L541.4,119.6L536.2,118.6L534.8,117.9L532.7,118.1L530.0,119.3L530.3,122.2L529.8,123.8L527.5,124.9L526.7,126.2L524.4,127.6L524.3,128.3L521.2,128.2L519.5,129.1L519.3,128.2L518.3,128.0L517.6,126.8L515.9,127.3L513.9,125.8L511.8,127.6L510.0,127.4L509.0,125.9L506.4,125.2L496.2,126.8L490.6,132.0L501.8,139.9L581.5,145.4L609.4,113.9Z","x":587.0,"y":113.0,"r":24.0,"j":[0,3,13,38,50],"px":807},{"c":"R","k":"LZR314","a":"LZR","b":"314","n":"LZR314","lo":"GND","up":"5000 AMSL","cl":"","v":150,"d":"M64.2,282.8L59.3,300.4L54.5,301.2L50.2,302.7L46.1,304.9L42.0,308.1L38.5,311.9L36.0,315.8L34.0,320.6L32.9,325.1L32.5,330.8L33.1,335.9L34.6,340.9L37.2,345.9L40.6,350.4L44.5,353.8L52.0,355.6L80.5,353.0L84.3,349.2L87.3,345.0L89.7,339.9L91.0,334.9L91.3,327.1L89.6,319.6L86.0,312.7L81.0,307.3L86.5,289.7Z","x":77.0,"y":343.0,"r":12.0,"j":[18,21,39,40,46,47,54,69,81],"px":362},{"c":"R","k":"LZR10","a":"LZR","b":"10","n":"Rutol","lo":"7000 AMSL","up":"9000 AMSL","cl":"","v":150,"d":"M288.2,492.5L293.0,495.4L296.8,494.6L300.5,492.5L304.4,492.0L312.5,494.0L318.7,493.7L324.7,491.6L329.2,487.8L330.7,487.4L332.5,485.6L333.4,481.0L334.8,479.8L343.4,477.5L347.4,478.7L352.6,479.2L354.0,476.5L353.0,475.7L351.2,476.0L349.5,474.8L348.3,472.6L348.3,470.6L346.8,469.2L343.9,468.6L343.4,466.8L341.5,466.7L340.8,465.6L339.3,465.9L339.3,465.1L338.4,465.1L338.6,462.6L338.0,459.2L337.3,458.7L338.2,457.1L337.7,455.9L338.3,455.5L337.5,452.8L340.0,449.8L339.8,445.2L340.6,443.8L339.8,442.0L337.2,439.9L337.0,438.5L339.2,436.3L340.7,436.5L342.5,435.8L344.4,436.3L347.2,434.1L348.1,430.5L347.5,429.8L347.1,427.1L348.8,425.1L348.6,423.3L348.1,423.0L295.8,443.1Z","x":317.0,"y":469.0,"r":26.0,"j":[1],"px":702},{"c":"TRA","k":"LZTRA100B","a":"TRA","b":"100B","n":"LZTRA100B","lo":"5000 AMSL","up":"8000 AMSL","cl":"","v":200,"d":"M805.6,105.7L789.9,136.4L809.1,159.1L854.8,150.5L866.0,132.6L827.2,110.9Z","x":819.0,"y":133.0,"r":26.0,"j":[0,5,30,33,34,64],"px":635},{"c":"TMA","k":"TMA LZZI 3","a":"TMA","b":"LZZI 3","n":"ŽILINA TMA 3","lo":"7500 AMSL","up":"9500 AMSL","cl":"D","v":300,"d":"M354.9,105.9L350.8,114.1L338.8,119.6L356.1,127.5L319.5,161.5L302.9,167.0L319.4,201.1L372.1,142.6Z","x":339.0,"y":161.0,"r":18.0,"j":[0,9,10,52,73],"px":557},{"c":"TMA","k":"TMA LZKZ 1A","a":"TMA","b":"LZKZ 1A","n":"KOŠICE TMA 1A","lo":"3500 AMSL","up":"5000 AMSL","cl":"D","v":300,"d":"M747.8,196.1L712.0,213.6L710.9,218.5L731.5,223.2L748.7,214.8L750.0,209.7L783.0,217.4L776.6,244.9L787.6,262.7L808.3,267.6L811.7,253.0L783.5,204.4Z","x":791.0,"y":245.0,"r":16.0,"j":[4,44,51],"px":537},{"c":"R","k":"LZR225B","a":"LZR","b":"225B","n":"LZR225B","lo":"5000 AMSL","up":"8000 AMSL","cl":"","v":150,"d":"M435.5,278.8L417.6,298.0L416.9,321.4L473.5,323.5L474.8,289.5L445.4,288.4Z","x":441.0,"y":303.0,"r":20.0,"j":[0,8,17,36,49,74],"px":471},{"c":"TRA","k":"LZTRA9W","a":"TRA","b":"9W","n":"LZTRA9W","lo":"8000 AMSL","up":"FL 245","cl":"","v":200,"d":"M789.9,136.4L757.3,142.7L768.4,189.3L789.3,194.1L809.1,159.1Z","x":787.0,"y":155.0,"r":20.0,"j":[2,4,26,33,34,56],"px":421},{"c":"TMA","k":"TMA LZPP 2","a":"TMA","b":"LZPP 2","n":"PIEŠŤANY TMA 2","lo":"3500 AMSL","up":"5000 AMSL","cl":"D","v":300,"d":"M150.3,236.3L131.8,242.9L112.9,276.4L115.9,313.8L137.5,326.2L141.3,319.4L138.6,283.9Z","x":129.0,"y":271.0,"r":14.0,"j":[1,18,20,67],"px":395},{"c":"TMA","k":"TMA LZZI 2","a":"TMA","b":"LZZI 2","n":"ŽILINA TMA 2","lo":"4500 AMSL","up":"9500 AMSL","cl":"D","v":300,"d":"M296.3,64.7L295.0,65.4L294.3,67.2L292.4,67.9L293.1,69.2L291.1,70.2L290.2,72.1L290.1,74.0L286.8,75.5L285.6,77.0L285.7,78.0L282.8,78.1L279.4,76.6L277.9,77.2L278.8,78.9L279.1,82.3L279.9,84.6L278.7,86.4L277.0,87.3L278.0,89.0L276.5,89.4L275.3,90.8L273.8,94.0L271.5,95.5L265.0,97.1L263.2,98.5L260.7,99.2L261.0,100.2L260.2,100.6L257.1,100.8L251.8,103.1L247.4,102.9L246.9,103.5L246.0,103.3L245.1,103.9L244.4,103.4L243.3,104.4L242.4,104.3L241.0,105.1L241.0,109.5L237.6,111.6L237.0,113.4L234.8,114.9L234.9,118.2L234.4,119.8L236.4,119.7L235.7,122.2L236.1,123.1L235.0,123.4L235.2,125.9L234.2,127.5L336.2,79.4Z","x":295.0,"y":83.0,"r":16.0,"j":[0,9,52],"px":468},{"c":"TRA","k":"LZTRA100A","a":"TRA","b":"100A","n":"LZTRA100A","lo":"5000 AMSL","up":"8000 AMSL","cl":"","v":200,"d":"M777.4,99.1L748.1,104.7L757.3,142.7L789.9,136.4L805.6,105.7Z","x":775.0,"y":119.0,"r":20.0,"j":[0,26,30],"px":425},{"c":"TRA","k":"LZTRA100C","a":"TRA","b":"100C","n":"LZTRA100C","lo":"5000 AMSL","up":"8000 AMSL","cl":"","v":200,"d":"M854.8,150.5L809.1,159.1L789.3,194.1L822.9,202.0Z","x":821.0,"y":175.0,"r":20.0,"j":[5,26,30],"px":427},{"c":"TSA","k":"LZTSA39","a":"TSA","b":"39","n":"LZTSA39","lo":"FL 145","up":"FL 285","cl":"","v":200,"d":"M109.0,225.3L105.6,224.1L102.7,225.5L101.5,223.4L96.6,219.7L96.1,217.4L93.4,217.9L92.1,216.4L89.4,215.2L88.8,213.6L87.7,213.2L85.7,213.6L83.3,211.7L81.2,211.6L79.9,210.8L78.8,211.0L76.0,209.1L74.1,210.2L71.2,214.2L69.2,215.4L67.8,217.6L60.6,221.0L59.7,222.8L59.9,226.6L112.9,276.4Z","x":93.0,"y":235.0,"r":18.0,"j":[18,70,75],"px":313},{"c":"R","k":"LZR225C","a":"LZR","b":"225C","n":"LZR225C","lo":"6000 AMSL","up":"8000 AMSL","cl":"","v":150,"d":"M437.3,228.1L435.5,278.8L445.4,288.4L474.8,289.5L475.3,277.6L444.3,228.4Z","x":453.0,"y":269.0,"r":18.0,"j":[0,11,17,29],"px":388},{"c":"TMA","k":"TMA LZKZ 1C","a":"TMA","b":"LZKZ 1C","n":"KOŠICE TMA 1C","lo":"3500 AMSL","up":"5000 AMSL","cl":"D","v":300,"d":"M705.1,243.7L694.2,292.1L700.2,290.0L701.2,290.1L702.4,291.7L703.3,295.5L704.5,294.4L704.4,296.5L705.1,296.0L706.9,296.6L706.9,299.8L708.5,300.1L710.3,299.0L711.2,300.8L712.5,299.7L712.7,298.6L714.4,298.3L725.8,248.3Z","x":711.0,"y":263.0,"r":12.0,"j":[4,51],"px":268},{"c":"TMA","k":"TMA LZTT 2","a":"TMA","b":"LZTT 2","n":"POPRAD TMA 2","lo":"6000 AMSL","up":"8000 AMSL","cl":"D","v":300,"d":"M501.8,139.9L498.8,185.2L520.0,186.6L523.0,141.3Z","x":511.0,"y":153.0,"r":12.0,"j":[3,23,50],"px":240},{"c":"R","k":"LZR31A","a":"LZR","b":"31A","n":"LZR31A","lo":"GND","up":"FL 520","cl":"","v":150,"d":"M55.5,291.4L42.4,305.0L41.5,337.0L58.5,343.8L68.2,329.2L80.4,314.6L76.5,311.4L63.9,321.8L51.3,308.4L63.2,298.0Z","x":49.0,"y":313.0,"r":8.0,"j":[21,24,42,47,69],"px":133},{"c":"TMA","k":"TMA LZIB 2","a":"TMA","b":"LZIB 2","n":"BRATISLAVA TMA 2","lo":"2500 AMSL","up":"5000 AMSL","cl":"C","v":300,"d":"M26.7,349.6L26.7,350.3L24.6,352.4L24.3,353.5L26.5,359.1L28.4,361.6L28.8,363.1L33.0,363.7L34.8,365.5L33.8,367.5L33.0,372.7L35.5,375.9L35.8,378.3L38.1,384.5L38.0,388.7L44.3,393.7L46.3,396.5L48.4,396.9L51.6,395.9L44.2,369.1L52.0,355.6Z","x":39.0,"y":361.0,"r":10.0,"j":[21,24,54],"px":152},{"c":"R","k":"LZR28A","a":"LZR","b":"28A","n":"LZR28A","lo":"GND","up":"FL 315","cl":"","v":150,"d":"M909.4,191.6L882.3,202.2L872.5,219.8L905.2,217.6Z","x":891.0,"y":211.0,"r":8.0,"j":[0,5,16,48,86],"px":107},{"c":"R","k":"LZR31E","a":"LZR","b":"31E","n":"LZR31E","lo":"GND","up":"FL 520","cl":"","v":150,"d":"M85.2,260.3L55.5,291.4L63.2,298.0L79.5,287.7L96.6,266.8Z","x":75.0,"y":281.0,"r":10.0,"j":[18,21,39,45,46,75],"px":123},{"c":"R","k":"LZR24","a":"LZR","b":"24","n":"Lešť","lo":"GND","up":"FL 245","cl":"","v":150,"d":"M434.6,323.2L423.2,330.0L416.2,340.5L424.5,358.1L443.9,342.4Z","x":429.0,"y":341.0,"r":14.0,"j":[8,15,49],"px":132},{"c":"TMA","k":"TMA LZKZ 1B","a":"TMA","b":"LZKZ 1B","n":"KOŠICE TMA 1B","lo":"4000 AMSL","up":"5000 AMSL","cl":"D","v":300,"d":"M787.6,262.7L781.5,289.1L782.3,289.3L782.8,290.1L784.2,290.2L785.2,289.1L785.3,285.2L786.4,284.0L788.4,283.6L790.1,286.2L791.3,285.8L793.4,288.4L795.2,288.8L796.4,290.4L798.2,289.9L798.4,291.3L799.8,291.4L799.4,291.9L800.7,292.3L801.4,293.3L800.9,295.1L801.5,296.0L808.3,267.6Z","x":795.0,"y":275.0,"r":12.0,"j":[4,28,51],"px":127},{"c":"R","k":"LZR31D","a":"LZR","b":"31D","n":"LZR31D","lo":"GND","up":"FL 520","cl":"","v":150,"d":"M96.6,266.8L79.5,287.7L90.8,300.7L109.3,274.3Z","x":93.0,"y":285.0,"r":10.0,"j":[18,42,46,75],"px":89},{"c":"R","k":"LZR31C","a":"LZR","b":"31C","n":"LZR31C","lo":"GND","up":"FL 520","cl":"","v":150,"d":"M79.5,287.7L63.2,298.0L76.5,311.4L90.8,300.7Z","x":77.0,"y":301.0,"r":12.0,"j":[18,24,42,45,47],"px":88},{"c":"R","k":"LZR31B","a":"LZR","b":"31B","n":"LZR31B","lo":"GND","up":"FL 520","cl":"","v":150,"d":"M63.2,298.0L51.3,308.4L63.9,321.8L76.5,311.4Z","x":63.0,"y":307.0,"r":10.0,"j":[24,39,46,69],"px":69},{"c":"R","k":"LZR28","a":"LZR","b":"28","n":"LZR28","lo":"GND","up":"FL 135","cl":"","v":150,"d":"M892.4,188.3L882.3,202.2L901.7,205.7L909.4,191.6Z","x":899.0,"y":199.0,"r":8.0,"j":[5,41,86],"px":50},{"c":"R","k":"LZR241","a":"LZR","b":"241","n":"LZR241","lo":"GND","up":"4000 AMSL","cl":"","v":150,"d":"M426.9,320.3L424.9,320.4L413.7,330.6L416.2,340.5L423.2,330.0L434.6,323.2Z","x":423.0,"y":325.0,"r":4.0,"j":[8,29,43],"px":36},{"c":"CTR","k":"CTR LZTT","a":"CTR","b":"LZTT","n":"TATRY CTR","lo":"GND","up":"8000 AMSL","cl":"D","v":400,"d":"M523.0,141.3L520.0,186.6L604.2,192.4L620.9,173.0L638.7,174.3L640.5,149.7Z","x":545.0,"y":165.0,"r":24.0,"j":[3,13,23,38,63,88],"px":1023},{"c":"CTR","k":"CTR LZKZ","a":"CTR","b":"LZKZ","n":"KOŠICE CTR","lo":"GND","up":"5000 AMSL","cl":"D","v":400,"d":"M750.0,209.7L748.7,214.8L731.5,223.2L714.4,298.3L716.8,297.1L718.2,297.8L719.4,297.4L720.0,298.4L723.2,298.6L723.3,299.6L725.4,298.7L726.8,300.0L729.4,300.7L730.8,302.6L730.2,305.3L731.3,306.7L734.0,307.5L736.7,306.6L738.2,303.2L740.0,301.0L741.1,300.7L741.4,299.8L743.5,299.7L744.5,300.6L745.4,300.0L745.9,299.0L746.4,299.5L746.6,298.5L747.7,299.1L749.4,298.3L749.5,296.7L750.7,297.2L751.4,295.7L753.5,296.6L753.4,295.3L754.5,295.2L759.0,298.6L759.5,298.8L759.8,298.3L764.1,299.8L764.3,299.4L765.6,299.6L766.2,298.7L765.3,299.0L765.2,298.4L767.4,296.8L766.4,295.8L766.4,295.0L767.8,295.1L767.4,294.2L768.3,293.1L767.1,292.8L767.0,292.3L769.2,291.6L769.1,291.0L767.4,291.2L768.0,289.7L769.0,289.5L768.6,290.6L773.0,289.9L778.1,290.5L781.5,289.1L787.6,262.7L776.6,244.9L783.0,217.4Z","x":753.0,"y":231.0,"r":22.0,"j":[4,28,37,44,85],"px":1077},{"c":"CTR","k":"CTR LZZI","a":"CTR","b":"LZZI","n":"ŽILINA CTR","lo":"GND","up":"5000 AMSL","cl":"D","v":400,"d":"M336.2,79.4L250.6,119.7L269.0,158.0L302.9,142.0L308.4,143.7L314.6,144.1L320.3,143.1L325.7,140.9L331.0,137.0L335.2,131.8L337.9,125.7L338.8,119.6L350.8,114.1L354.9,105.9L343.5,82.0Z","x":283.0,"y":129.0,"r":24.0,"j":[0,9,27,32,78],"px":956},{"c":"CTR","k":"CTR UKLU","a":"CTR","b":"UKLU","n":"CTR UZHHOROD WEST","lo":"GND","up":"5000 AMSL","cl":"D","v":400,"d":"M879.2,231.6L860.5,238.5L851.0,279.6L870.4,301.2L907.0,312.1L909.0,298.4L909.4,288.1L911.2,283.0L913.8,279.0L914.1,277.4L915.7,277.4L916.5,276.9L918.6,274.4L921.0,274.6L922.8,272.8L924.3,269.8L924.4,267.8L929.8,264.2L931.2,262.2L933.0,261.2L933.2,260.4L936.4,258.9L939.4,258.5L939.6,257.7L916.1,239.7Z","x":889.0,"y":269.0,"r":36.0,"j":[0,14,16],"px":1081},{"c":"CTR","k":"CTR LZIB","a":"CTR","b":"LZIB","n":"ŠTEFÁNIK CTR","lo":"GND","up":"5000 AMSL","cl":"D","v":400,"d":"M98.0,351.6L52.0,355.6L44.2,369.1L51.7,396.4L52.8,399.9L53.4,400.2L53.6,400.9L52.5,401.5L53.6,402.9L55.0,403.2L54.3,404.4L55.3,405.0L55.0,405.5L57.6,407.1L56.8,407.9L57.7,409.2L57.1,409.0L54.5,410.6L54.6,411.4L54.0,411.9L55.3,412.6L54.2,414.5L56.6,415.8L53.5,418.4L56.2,419.7L56.8,420.8L53.3,424.5L57.1,427.4L60.5,424.5L63.3,427.1L65.0,426.6L66.2,427.3L69.0,430.8L74.1,428.0L75.4,428.0L75.6,427.5L80.1,428.3L82.7,426.8L83.4,427.8L83.9,431.7L86.7,433.2L112.1,406.5L105.1,399.8L106.7,394.2L107.1,388.5L106.4,382.9L104.7,377.5L114.3,367.4Z","x":93.0,"y":369.0,"r":18.0,"j":[7,24,40,77,80,81],"px":840},{"c":"CTR","k":"CTR LZPP","a":"CTR","b":"LZPP","n":"PIEŠŤANY CTR","lo":"GND","up":"5000 AMSL","cl":"D","v":400,"d":"M174.4,227.8L165.7,230.9L153.2,282.8L157.1,290.6L160.1,294.2L163.2,296.9L158.3,317.4L181.7,323.2L186.7,302.6L191.1,301.4L195.8,299.3L200.1,296.3L203.7,292.7L206.7,288.5L208.8,284.3L210.1,279.9L210.8,274.7L208.7,252.6Z","x":179.0,"y":247.0,"r":16.0,"j":[1,6,10,20,72],"px":770},{"c":"AD","k":"LZPW","a":"","b":"LZPW","n":"PREŠOV","lo":"","up":"","cl":"","v":500,"d":"M778.1,171.3L777.8,174.1L776.9,176.8L775.4,179.2L773.4,181.2L771.0,182.6L768.4,183.6L765.6,183.9L762.8,183.6L760.1,182.6L757.7,181.2L755.7,179.2L754.2,176.8L753.3,174.1L753.0,171.3L753.3,168.5L754.2,165.9L755.7,163.5L757.7,161.5L760.1,160.0L762.8,159.1L765.6,158.8L768.4,159.1L771.0,160.0L773.4,161.5L775.4,163.5L776.9,165.9L777.8,168.5Z","x":765.6,"y":171.3,"r":12.6,"j":[2,30],"px":122},{"c":"AD","k":"LZZH","a":"","b":"LZZH","n":"JANOVA LEHOTA","lo":"","up":"","cl":"","v":500,"d":"M356.7,270.3L356.4,273.1L355.4,275.7L353.9,278.1L351.9,280.1L349.6,281.6L346.9,282.5L344.1,282.8L341.3,282.5L338.6,281.6L336.3,280.1L334.3,278.1L332.8,275.7L331.8,273.1L331.5,270.3L331.8,267.5L332.8,264.8L334.3,262.4L336.3,260.4L338.6,258.9L341.3,258.0L344.1,257.7L346.9,258.0L349.6,258.9L351.9,260.4L353.9,262.4L355.4,264.8L356.4,267.5Z","x":344.1,"y":270.3,"r":12.6,"j":[1,8],"px":121},{"c":"AD","k":"LZLU","a":"","b":"LZLU","n":"LUČENEC","lo":"","up":"","cl":"","v":500,"d":"M514.3,345.9L514.0,348.7L513.1,351.4L511.6,353.8L509.6,355.8L507.2,357.3L504.6,358.2L501.8,358.5L499.0,358.2L496.3,357.3L493.9,355.8L491.9,353.8L490.4,351.4L489.5,348.7L489.2,345.9L489.5,343.1L490.4,340.5L491.9,338.1L493.9,336.1L496.3,334.6L499.0,333.7L501.8,333.4L504.6,333.7L507.2,334.6L509.6,336.1L511.6,338.1L513.1,340.5L514.0,343.1Z","x":501.8,"y":345.9,"r":12.6,"j":[0,19],"px":120},{"c":"AD","k":"LZNZ","a":"","b":"LZNZ","n":"NOVÉ ZÁMKY","lo":"","up":"","cl":"","v":500,"d":"M253.6,442.2L253.2,445.0L252.3,447.7L250.8,450.1L248.8,452.0L246.4,453.5L243.8,454.5L241.0,454.8L238.2,454.5L235.5,453.5L233.2,452.0L231.2,450.1L229.7,447.7L228.7,445.0L228.4,442.2L228.7,439.4L229.7,436.8L231.2,434.4L233.2,432.4L235.5,430.9L238.2,430.0L241.0,429.7L243.8,430.0L246.4,430.9L248.8,432.4L250.8,434.4L252.3,436.8L253.2,439.4Z","x":241.0,"y":442.2,"r":12.6,"j":[1,76],"px":123},{"c":"AD","k":"LZTN","a":"","b":"LZTN","n":"TRENČÍN","lo":"","up":"","cl":"","v":500,"d":"M221.3,212.6L221.0,215.4L220.1,218.1L218.6,220.5L216.6,222.5L214.2,223.9L211.6,224.9L208.8,225.2L206.0,224.9L203.3,223.9L200.9,222.5L198.9,220.5L197.4,218.1L196.5,215.4L196.2,212.6L196.5,209.8L197.4,207.2L198.9,204.8L200.9,202.8L203.3,201.3L206.0,200.4L208.8,200.1L211.6,200.4L214.2,201.3L216.6,202.8L218.6,204.8L220.1,207.2L221.0,209.8Z","x":208.8,"y":212.6,"r":12.6,"j":[1,6],"px":125},{"c":"AD","k":"LZDB","a":"","b":"LZDB","n":"DUBNICA","lo":"","up":"","cl":"","v":500,"d":"M255.0,178.9L254.6,181.7L253.7,184.3L252.2,186.7L250.2,188.7L247.8,190.2L245.2,191.1L242.4,191.4L239.6,191.1L236.9,190.2L234.6,188.7L232.6,186.7L231.1,184.3L230.1,181.7L229.8,178.9L230.1,176.1L231.1,173.4L232.6,171.0L234.6,169.0L236.9,167.5L239.6,166.6L242.4,166.3L245.2,166.6L247.8,167.5L250.2,169.0L252.2,171.0L253.7,173.4L254.6,176.1Z","x":242.4,"y":178.9,"r":12.6,"j":[1,6],"px":124},{"c":"AD","k":"LZSL","a":"","b":"LZSL","n":"SLIAČ","lo":"","up":"","cl":"","v":500,"d":"M413.3,270.1L412.9,272.9L412.0,275.6L410.5,278.0L408.5,280.0L406.1,281.5L403.5,282.4L400.7,282.7L397.9,282.4L395.2,281.5L392.9,280.0L390.9,278.0L389.4,275.6L388.4,272.9L388.1,270.1L388.4,267.3L389.4,264.7L390.9,262.3L392.9,260.3L395.2,258.8L397.9,257.9L400.7,257.6L403.5,257.9L406.1,258.8L408.5,260.3L410.5,262.3L412.0,264.7L412.9,267.3Z","x":400.7,"y":270.1,"r":12.6,"j":[17,74],"px":123},{"c":"AD","k":"LZTT","a":"","b":"LZTT","n":"POPRAD-Tatry","lo":"","up":"","cl":"","v":500,"d":"M599.3,159.4L599.0,162.1L598.1,164.8L596.6,167.2L594.6,169.2L592.2,170.7L589.5,171.6L586.7,171.9L583.9,171.6L581.3,170.7L578.9,169.2L576.9,167.2L575.4,164.8L574.5,162.1L574.2,159.4L574.5,156.6L575.4,153.9L576.9,151.5L578.9,149.5L581.3,148.0L583.9,147.1L586.7,146.8L589.5,147.1L592.2,148.0L594.6,149.5L596.6,151.5L598.1,153.9L599.0,156.6Z","x":586.7,"y":159.4,"r":12.6,"j":[50],"px":125},{"c":"AD","k":"LZSK","a":"","b":"LZSK","n":"SVIDNÍK","lo":"","up":"","cl":"","v":500,"d":"M822.7,93.1L822.4,95.9L821.5,98.6L820.0,101.0L818.0,103.0L815.6,104.5L812.9,105.4L810.1,105.7L807.3,105.4L804.7,104.5L802.3,103.0L800.3,101.0L798.8,98.6L797.9,95.9L797.6,93.1L797.9,90.3L798.8,87.7L800.3,85.3L802.3,83.3L804.7,81.8L807.3,80.9L810.1,80.6L812.9,80.9L815.6,81.8L818.0,83.3L820.0,85.3L821.5,87.7L822.4,90.3Z","x":810.1,"y":93.1,"r":12.6,"j":[0,26],"px":128},{"c":"AD","k":"LZPT","a":"","b":"LZPT","n":"PARTIZÁNSKE","lo":"","up":"","cl":"","v":500,"d":"M278.7,274.7L278.4,277.5L277.4,280.1L275.9,282.5L273.9,284.5L271.6,286.0L268.9,286.9L266.1,287.2L263.3,286.9L260.7,286.0L258.3,284.5L256.3,282.5L254.8,280.1L253.9,277.5L253.5,274.7L253.9,271.9L254.8,269.2L256.3,266.8L258.3,264.8L260.7,263.4L263.3,262.4L266.1,262.1L268.9,262.4L271.6,263.4L273.9,264.8L275.9,266.8L277.4,269.2L278.4,271.9Z","x":266.1,"y":274.7,"r":12.6,"j":[1,6,10],"px":124},{"c":"AD","k":"LZPE","a":"","b":"LZPE","n":"PRIEVIDZA","lo":"","up":"","cl":"","v":500,"d":"M321.6,237.3L321.2,240.1L320.3,242.7L318.8,245.1L316.8,247.1L314.4,248.6L311.8,249.5L309.0,249.9L306.2,249.5L303.5,248.6L301.1,247.1L299.2,245.1L297.7,242.7L296.7,240.1L296.4,237.3L296.7,234.5L297.7,231.8L299.2,229.5L301.1,227.5L303.5,226.0L306.2,225.0L309.0,224.7L311.8,225.0L314.4,226.0L316.8,227.5L318.8,229.5L320.3,231.8L321.2,234.5Z","x":309.0,"y":237.3,"r":12.6,"j":[1,6],"px":124},{"c":"AD","k":"LZTR","a":"","b":"LZTR","n":"BOLERÁZ/Štefan Banič","lo":"","up":"","cl":"","v":500,"d":"M143.1,317.1L142.7,319.9L141.8,322.5L140.3,324.9L138.3,326.9L135.9,328.4L133.3,329.3L130.5,329.6L127.7,329.3L125.0,328.4L122.6,326.9L120.7,324.9L119.2,322.5L118.2,319.9L117.9,317.1L118.2,314.3L119.2,311.6L120.7,309.2L122.6,307.2L125.0,305.8L127.7,304.8L130.5,304.5L133.3,304.8L135.9,305.8L138.3,307.2L140.3,309.2L141.8,311.6L142.7,314.3Z","x":130.5,"y":317.1,"r":12.6,"j":[7,20,31],"px":125},{"c":"AD","k":"LZJS","a":"","b":"LZJS","n":"JASNA","lo":"","up":"","cl":"","v":500,"d":"M475.9,165.9L475.6,168.7L474.6,171.3L473.1,173.7L471.2,175.7L468.8,177.2L466.1,178.1L463.3,178.5L460.5,178.1L457.9,177.2L455.5,175.7L453.5,173.7L452.0,171.3L451.1,168.7L450.8,165.9L451.1,163.1L452.0,160.4L453.5,158.0L455.5,156.1L457.9,154.6L460.5,153.6L463.3,153.3L466.1,153.6L468.8,154.6L471.2,156.1L473.1,158.0L474.6,160.4L475.6,163.1Z","x":463.3,"y":165.9,"r":12.6,"j":[11,71],"px":124},{"c":"AD","k":"LZMC","a":"","b":"LZMC","n":"MALACKY","lo":"","up":"","cl":"","v":500,"d":"M74.5,329.9L74.2,332.7L73.3,335.4L71.8,337.8L69.8,339.8L67.4,341.3L64.7,342.2L62.0,342.5L59.2,342.2L56.5,341.3L54.1,339.8L52.1,337.8L50.6,335.4L49.7,332.7L49.4,329.9L49.7,327.1L50.6,324.5L52.1,322.1L54.1,320.1L56.5,318.6L59.2,317.7L62.0,317.4L64.7,317.7L67.4,318.6L69.8,320.1L71.8,322.1L73.3,324.5L74.2,327.1Z","x":62.0,"y":329.9,"r":12.6,"j":[24,39,47],"px":120},{"c":"AD","k":"LZHL","a":"","b":"LZHL","n":"HOLÍČ","lo":"","up":"","cl":"","v":500,"d":"M77.1,226.3L76.8,229.1L75.8,231.8L74.3,234.2L72.4,236.2L70.0,237.7L67.3,238.6L64.5,238.9L61.7,238.6L59.1,237.7L56.7,236.2L54.7,234.2L53.2,231.8L52.3,229.1L52.0,226.3L52.3,223.5L53.2,220.9L54.7,218.5L56.7,216.5L59.1,215.0L61.7,214.1L64.5,213.8L67.3,214.1L70.0,215.0L72.4,216.5L74.3,218.5L75.8,220.9L76.8,223.5Z","x":64.5,"y":226.3,"r":12.6,"j":[18,35],"px":84},{"c":"AD","k":"LZRU","a":"","b":"LZRU","n":"RUŽOMBEROK","lo":"","up":"","cl":"","v":500,"d":"M452.7,156.3L452.4,159.1L451.4,161.8L449.9,164.1L447.9,166.1L445.6,167.6L442.9,168.6L440.1,168.9L437.3,168.6L434.6,167.6L432.3,166.1L430.3,164.1L428.8,161.8L427.8,159.1L427.5,156.3L427.8,153.5L428.8,150.9L430.3,148.5L432.3,146.5L434.6,145.0L437.3,144.1L440.1,143.7L442.9,144.1L445.6,145.0L447.9,146.5L449.9,148.5L451.4,150.9L452.4,153.5Z","x":440.1,"y":156.3,"r":12.6,"j":[0,11,68],"px":121},{"c":"AD","k":"LZPP","a":"","b":"LZPP","n":"PIEŠŤANY","lo":"","up":"","cl":"","v":500,"d":"M193.8,273.4L193.5,276.2L192.6,278.9L191.1,281.3L189.1,283.3L186.7,284.8L184.1,285.7L181.3,286.0L178.5,285.7L175.8,284.8L173.4,283.3L171.4,281.3L169.9,278.9L169.0,276.2L168.7,273.4L169.0,270.6L169.9,268.0L171.4,265.6L173.4,263.6L175.8,262.1L178.5,261.2L181.3,260.9L184.1,261.2L186.7,262.1L189.1,263.6L191.1,265.6L192.6,268.0L193.5,270.6Z","x":181.3,"y":273.4,"r":12.6,"j":[55],"px":124},{"c":"AD","k":"LZMA","a":"","b":"LZMA","n":"MARTIN","lo":"","up":"","cl":"","v":500,"d":"M382.5,161.5L382.1,164.3L381.2,166.9L379.7,169.3L377.7,171.3L375.3,172.8L372.7,173.7L369.9,174.0L367.1,173.7L364.4,172.8L362.1,171.3L360.1,169.3L358.6,166.9L357.6,164.3L357.3,161.5L357.6,158.7L358.6,156.0L360.1,153.6L362.1,151.6L364.4,150.1L367.1,149.2L369.9,148.9L372.7,149.2L375.3,150.1L377.7,151.6L379.7,153.6L381.2,156.0L382.1,158.7Z","x":369.9,"y":161.5,"r":12.6,"j":[0,27],"px":120},{"c":"AD","k":"LZOC","a":"","b":"LZOC","n":"OČOVÁ","lo":"","up":"","cl":"","v":500,"d":"M435.4,281.0L435.1,283.8L434.2,286.5L432.7,288.9L430.7,290.9L428.3,292.4L425.6,293.3L422.8,293.6L420.0,293.3L417.4,292.4L415.0,290.9L413.0,288.9L411.5,286.5L410.6,283.8L410.3,281.0L410.6,278.2L411.5,275.6L413.0,273.2L415.0,271.2L417.4,269.7L420.0,268.8L422.8,268.5L425.6,268.8L428.3,269.7L430.7,271.2L432.7,273.2L434.2,275.6L435.1,278.2Z","x":422.8,"y":281.0,"r":12.6,"j":[17,29,62],"px":123},{"c":"AD","k":"LZSE","a":"","b":"LZSE","n":"SENICA","lo":"","up":"","cl":"","v":500,"d":"M110.0,265.1L109.7,267.9L108.8,270.6L107.3,273.0L105.3,275.0L102.9,276.5L100.2,277.4L97.4,277.7L94.6,277.4L92.0,276.5L89.6,275.0L87.6,273.0L86.1,270.6L85.2,267.9L84.9,265.1L85.2,262.3L86.1,259.7L87.6,257.3L89.6,255.3L92.0,253.8L94.6,252.9L97.4,252.6L100.2,252.9L102.9,253.8L105.3,255.3L107.3,257.3L108.8,259.7L109.7,262.3Z","x":97.4,"y":265.1,"r":12.6,"j":[18,35,42,45],"px":124},{"c":"AD","k":"LZKA","a":"","b":"LZKA","n":"KOMOČA","lo":"","up":"","cl":"","v":500,"d":"M229.4,439.9L229.1,442.7L228.2,445.4L226.7,447.8L224.7,449.7L222.3,451.2L219.7,452.2L216.9,452.5L214.1,452.2L211.4,451.2L209.0,449.7L207.0,447.8L205.5,445.4L204.6,442.7L204.3,439.9L204.6,437.1L205.5,434.5L207.0,432.1L209.0,430.1L211.4,428.6L214.1,427.7L216.9,427.3L219.7,427.7L222.3,428.6L224.7,430.1L226.7,432.1L228.2,434.5L229.1,437.1Z","x":216.9,"y":439.9,"r":12.6,"j":[1,59],"px":125},{"c":"AD","k":"LZIB","a":"","b":"LZIB","n":"BRATISLAVA/M. R. Štefánik","lo":"","up":"","cl":"","v":500,"d":"M90.3,389.2L90.0,392.0L89.1,394.7L87.6,397.0L85.6,399.0L83.2,400.5L80.6,401.5L77.8,401.8L75.0,401.5L72.3,400.5L69.9,399.0L67.9,397.0L66.4,394.7L65.5,392.0L65.2,389.2L65.5,386.4L66.4,383.8L67.9,381.4L69.9,379.4L72.3,377.9L75.0,377.0L77.8,376.6L80.6,377.0L83.2,377.9L85.6,379.4L87.6,381.4L89.1,383.8L90.0,386.4Z","x":77.8,"y":389.2,"r":12.6,"j":[54],"px":125},{"c":"AD","k":"LZZI","a":"","b":"LZZI","n":"ŽILINA","lo":"","up":"","cl":"","v":500,"d":"M325.8,118.7L325.5,121.5L324.5,124.1L323.0,126.5L321.0,128.5L318.7,130.0L316.0,130.9L313.2,131.3L310.4,130.9L307.8,130.0L305.4,128.5L303.4,126.5L301.9,124.1L301.0,121.5L300.6,118.7L301.0,115.9L301.9,113.2L303.4,110.9L305.4,108.9L307.8,107.4L310.4,106.4L313.2,106.1L316.0,106.4L318.7,107.4L321.0,108.9L323.0,110.9L324.5,113.2L325.5,115.9Z","x":313.2,"y":118.7,"r":12.6,"j":[52],"px":126},{"c":"AD","k":"LZDN","a":"","b":"LZDN","n":"DOBRÁ NIVA","lo":"","up":"","cl":"","v":500,"d":"M407.8,308.1L407.5,310.9L406.6,313.6L405.1,315.9L403.1,317.9L400.7,319.4L398.0,320.4L395.2,320.7L392.4,320.4L389.8,319.4L387.4,317.9L385.4,315.9L383.9,313.6L383.0,310.9L382.7,308.1L383.0,305.3L383.9,302.6L385.4,300.3L387.4,298.3L389.8,296.8L392.4,295.8L395.2,295.5L398.0,295.8L400.7,296.8L403.1,298.3L405.1,300.3L406.6,302.6L407.5,305.3Z","x":395.2,"y":308.1,"r":12.6,"j":[8,17],"px":124},{"c":"AD","k":"LZKV","a":"","b":"LZKV","n":"KVETOSLAVOV","lo":"","up":"","cl":"","v":500,"d":"M113.3,421.0L113.0,423.8L112.1,426.4L110.6,428.8L108.6,430.8L106.2,432.3L103.5,433.2L100.7,433.5L97.9,433.2L95.3,432.3L92.9,430.8L90.9,428.8L89.4,426.4L88.5,423.8L88.2,421.0L88.5,418.2L89.4,415.5L90.9,413.1L92.9,411.1L95.3,409.6L97.9,408.7L100.7,408.4L103.5,408.7L106.2,409.6L108.6,411.1L110.6,413.1L112.1,415.5L113.0,418.2Z","x":100.7,"y":421.0,"r":12.6,"j":[7,54],"px":133},{"c":"AD","k":"LZDV","a":"","b":"LZDV","n":"DUBOVÁ","lo":"","up":"","cl":"","v":500,"d":"M114.5,344.2L114.2,347.0L113.3,349.6L111.8,352.0L109.8,354.0L107.4,355.5L104.7,356.4L101.9,356.8L99.1,356.4L96.5,355.5L94.1,354.0L92.1,352.0L90.6,349.6L89.7,347.0L89.4,344.2L89.7,341.4L90.6,338.7L92.1,336.4L94.1,334.4L96.5,332.9L99.1,331.9L101.9,331.6L104.7,331.9L107.4,332.9L109.8,334.4L111.8,336.4L113.3,338.7L114.2,341.4Z","x":101.9,"y":344.2,"r":12.6,"j":[7,18,24,54],"px":120},{"c":"AD","k":"LZSV","a":"","b":"LZSV","n":"SPIŠSKÁ NOVÁ VES","lo":"","up":"","cl":"","v":500,"d":"M648.5,193.2L648.2,196.0L647.2,198.7L645.7,201.0L643.7,203.0L641.4,204.5L638.7,205.5L635.9,205.8L633.1,205.5L630.4,204.5L628.1,203.0L626.1,201.0L624.6,198.7L623.6,196.0L623.3,193.2L623.6,190.4L624.6,187.7L626.1,185.4L628.1,183.4L630.4,181.9L633.1,180.9L635.9,180.6L638.7,180.9L641.4,181.9L643.7,183.4L645.7,185.4L647.2,187.7L648.2,190.4Z","x":635.9,"y":193.2,"r":12.6,"j":[13],"px":125},{"c":"AD","k":"LZSY","a":"","b":"LZSY","n":"ŠURANY","lo":"","up":"","cl":"","v":500,"d":"M241.8,413.2L241.5,416.0L240.6,418.6L239.1,421.0L237.1,423.0L234.7,424.5L232.1,425.4L229.3,425.7L226.5,425.4L223.8,424.5L221.4,423.0L219.4,421.0L217.9,418.6L217.0,416.0L216.7,413.2L217.0,410.4L217.9,407.7L219.4,405.3L221.4,403.4L223.8,401.9L226.5,400.9L229.3,400.6L232.1,400.9L234.7,401.9L237.1,403.4L239.1,405.3L240.6,407.7L241.5,410.4Z","x":229.3,"y":413.2,"r":12.6,"j":[1],"px":126},{"c":"AD","k":"LZNI","a":"","b":"LZNI","n":"NITRA","lo":"","up":"","cl":"","v":500,"d":"M244.9,361.4L244.6,364.2L243.7,366.8L242.2,369.2L240.2,371.2L237.8,372.7L235.2,373.6L232.4,374.0L229.6,373.6L226.9,372.7L224.5,371.2L222.6,369.2L221.1,366.8L220.1,364.2L219.8,361.4L220.1,358.6L221.1,355.9L222.6,353.5L224.5,351.6L226.9,350.1L229.6,349.1L232.4,348.8L235.2,349.1L237.8,350.1L240.2,351.6L242.2,353.5L243.7,355.9L244.6,358.6Z","x":232.4,"y":361.4,"r":12.6,"j":[1],"px":123},{"c":"AD","k":"LZKZ","a":"","b":"LZKZ","n":"KOŠICE","lo":"","up":"","cl":"","v":500,"d":"M767.4,263.8L767.1,266.6L766.1,269.3L764.6,271.6L762.7,273.6L760.3,275.1L757.6,276.1L754.8,276.4L752.0,276.1L749.4,275.1L747.0,273.6L745.0,271.6L743.5,269.3L742.6,266.6L742.2,263.8L742.6,261.0L743.5,258.3L745.0,256.0L747.0,254.0L749.4,252.5L752.0,251.5L754.8,251.2L757.6,251.5L760.3,252.5L762.7,254.0L764.6,256.0L766.1,258.3L767.1,261.0Z","x":754.8,"y":263.8,"r":12.6,"j":[51],"px":125},{"c":"AD","k":"LZKC","a":"","b":"LZKC","n":"KAMENICA NAD CIROCHOU","lo":"","up":"","cl":"","v":500,"d":"M894.0,194.3L893.6,197.1L892.7,199.7L891.2,202.1L889.2,204.1L886.8,205.6L884.2,206.5L881.4,206.8L878.6,206.5L875.9,205.6L873.6,204.1L871.6,202.1L870.1,199.7L869.1,197.1L868.8,194.3L869.1,191.5L870.1,188.8L871.6,186.4L873.6,184.4L875.9,182.9L878.6,182.0L881.4,181.7L884.2,182.0L886.8,182.9L889.2,184.4L891.2,186.4L892.7,188.8L893.6,191.5Z","x":881.4,"y":194.3,"r":12.6,"j":[5,41,48],"px":123},{"c":"AD","k":"LZRY","a":"","b":"LZRY","n":"RAŽŇANY","lo":"","up":"","cl":"","v":500,"d":"M743.6,158.2L743.3,161.0L742.4,163.6L740.9,166.0L738.9,168.0L736.5,169.5L733.9,170.4L731.1,170.7L728.3,170.4L725.6,169.5L723.2,168.0L721.2,166.0L719.7,163.6L718.8,161.0L718.5,158.2L718.8,155.4L719.7,152.7L721.2,150.3L723.2,148.3L725.6,146.8L728.3,145.9L731.1,145.6L733.9,145.9L736.5,146.8L738.9,148.3L740.9,150.3L742.4,152.7L743.3,155.4Z","x":731.1,"y":158.2,"r":12.6,"j":[0,2],"px":126},{"c":"AD","k":"LZHR","a":"","b":"LZHR","n":"HRABUŠICE-Podlesok","lo":"","up":"","cl":"","v":500,"d":"M623.6,186.0L623.3,188.8L622.4,191.4L620.9,193.8L618.9,195.8L616.5,197.3L613.9,198.2L611.1,198.6L608.3,198.2L605.6,197.3L603.2,195.8L601.2,193.8L599.7,191.4L598.8,188.8L598.5,186.0L598.8,183.2L599.7,180.5L601.2,178.2L603.2,176.2L605.6,174.7L608.3,173.7L611.1,173.4L613.9,173.7L616.5,174.7L618.9,176.2L620.9,178.2L622.4,180.5L623.3,183.2Z","x":611.1,"y":186.0,"r":12.6,"j":[13,50],"px":126}]};
+/* ============================================================
+   DOBYVATEĽ — 2 až 4 hráči, VFR mapa Slovenska rozdelená na skutočné
+   priestory (letiská, CTR, TMA, TRA/TSA, LZR, trieda G EAST/WEST).
+   Hranice sú z verejnej VFR mapy LPS SR (DQ_MAP). Hru riadi prehliadač
+   hostiteľa: posiela všetkým stav, ostatní posielajú len svoje ťahy.
+   ============================================================ */
+const DQ_COL = ['#f0562e', '#2f7fe6', '#9b4fe0', '#e0a100'];
+const DQ_CAT = { AD: ['LETISKO', '#ffffff'], CTR: ['CTR', '#8fb8ff'], TMA: ['TMA', '#c3d6ff'], TRA: ['TRA', '#d9c2f5'], TSA: ['TSA', '#c7a6ee'],
+  R: ['LZR', '#f7b3b3'], P: ['LZP', '#f08a8a'], D: ['LZD', '#f5c9a0'], G: ['TRIEDA G', '#dfe8e2'] };
+const DQ_QS = [['ac', 'MOD 01', 'TYPY LIETADIEL'], ['ap', 'MOD 02', 'LETISKÁ'], ['px', 'MOD 02', 'PREFIXY ŠTÁTOV'], ['cs', 'MOD 03', 'VOLAČKY'], ['hd', 'MOD 05', 'KURZY'], ['co', 'MOD 06', 'FREKVENCIE']];
+const DQ_OPT = { max: [2, 3, 4], time: [10, 15, 20, 30], claim: [4, 6, 8, 10, 12], war: [0, 2, 3, 4, 6] };
+const DQ_FIX = { claimrev: 4000, pick: 12000, warpick: 15000, duelrev: 5000 };
+const DQ = { id: null, room: null, host: false, S: null, net: null, H: null, my: null, k: -1, qT0: 0, deadline: 0, sig: '', sb: null, err: '', lastState: 0, loop: null, bar: null, reported: null, guest: '', prev: null };
+try { DQ.id = sessionStorage.getItem('atcoDqId'); if (!DQ.id) { DQ.id = Math.random().toString(36).slice(2, 10); sessionStorage.setItem('atcoDqId', DQ.id); } } catch (e) { DQ.id = Math.random().toString(36).slice(2, 10); }
+function dqDur(phase) { return (phase === 'claimq' || phase === 'duelq') ? DQ.S.cfg.time * 1000 : (DQ_FIX[phase] || 0); }
+function dqPad(n) { n = ((n - 1) % 360 + 360) % 360 + 1; return String(n).padStart(3, '0'); }
+
+/* otázky do hry: len také, ktoré sa dajú položiť textom a majú jednu správnu odpoveď */
+function dqGenQ(mods) {
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const mk = (mod, prompt, sub, right, pool) => {
+    const o = [right]; let g = 0;
+    while (o.length < 4 && g++ < 600) { const x = pick(pool); if (x && o.indexOf(x) < 0) o.push(x); }
+    const opts = shuffle(o);
+    return { mod, prompt, sub, opts, ans: opts.indexOf(right) };
+  };
+  const once = (arr, f) => { const c = {}; arr.forEach(x => { c[f(x)] = (c[f(x)] || 0) + 1; }); return arr.filter(x => c[f(x)] === 1); };
+  const K = {
+    ac: () => { const a = pick(AIRCRAFT); return Math.random() < 0.5 ? mk('MOD 01 · TYPY', a.icao, 'Ktorý typ lietadla má toto ICAO označenie?', a.name, AIRCRAFT.map(x => x.name))
+      : mk('MOD 01 · TYPY', a.name, 'Aké je ICAO označenie tohto typu?', a.icao, AIRCRAFT.map(x => x.icao)); },
+    ap: () => { const a = pick(AIRPORTS); return Math.random() < 0.5 ? mk('MOD 02 · LETISKÁ', a.icao, 'V ktorom meste je toto letisko?', a.city, AIRPORTS.filter(x => x.cat === a.cat).map(x => x.city))
+      : mk('MOD 02 · LETISKÁ', a.city, 'Ktorý ICAO kód patrí letisku v tomto meste?', a.icao, AIRPORTS.filter(x => x.city !== a.city && x.cat === a.cat).map(x => x.icao)); },
+    px: () => { const P = once(ICAO_STATES, s => s.name), a = pick(P); return mk('MOD 02 · PREFIXY', a.name, 'Ktorým prefixom sa začínajú ICAO kódy letísk tohto štátu?', a.p, ICAO_STATES.filter(s => s.name !== a.name).map(s => s.p)); },
+    cs: () => { const P = CALLSIGNS.filter(c => c.sim && CS_BY_ICAO[c.icao].length === 1 && CS_BY_CALL[c.call].length === 1), a = pick(P);
+      return Math.random() < 0.5 ? mk('MOD 03 · VOLAČKY', a.icao, 'Akú volačku má tento kód prevádzkovateľa?', a.call, P.map(x => x.call))
+        : mk('MOD 03 · VOLAČKY', '„' + a.call + '“', 'Ktorý kód prevádzkovateľa patrí k tejto volačke?', a.icao, P.map(x => x.icao)); },
+    hd: () => {
+      const h = 5 * (1 + Math.floor(Math.random() * 72));
+      if (Math.random() < 0.4) { const r = h + 180; return mk('MOD 05 · KURZY', dqPad(h) + '°', 'Aký je opačný kurz?', dqPad(r), [r + 10, r - 10, r + 20, r - 20, r + 90, r - 90].map(dqPad)); }
+      const by = 10 * (1 + Math.floor(Math.random() * 17)), right = Math.random() < 0.5, r = h + (right ? by : -by);
+      return mk('MOD 05 · KURZY', dqPad(h) + '° · ' + (right ? 'doprava' : 'doľava') + ' o ' + by + '°', 'Aký bude nový kurz po zatáčke?', dqPad(r), [h + (right ? -by : by), r + 10, r - 10, r + 20, r - 20, r + 100, r - 100].map(dqPad));
+    },
+    co: () => { const P = once(CO_UNITS.filter(u => u.f && !u.alt), u => u.n), a = pick(P); return mk('MOD 06 · FREKVENCIE', a.n, 'Na akej frekvencii pracuje toto stanovište?', a.f, CO_UNITS.filter(u => u.f && u.f !== a.alt).map(u => u.f)); },
+  };
+  const ks = (mods || []).filter(m => K[m]), use = ks.length ? ks : Object.keys(K), H = DQ.H;
+  for (let i = 0; i < 40; i++) {
+    const q = K[pick(use)]();
+    if (q.opts.length === 4 && q.ans >= 0 && !(H && H.used[q.prompt + q.sub])) { if (H) H.used[q.prompt + q.sub] = 1; return q; }
+  }
+  return K[pick(use)]();
+}
+
+/* ---------- spojenie ---------- */
+function dqLoadSb() {
+  if (DQ.sb) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+    s.onload = () => { try { DQ.sb = window.supabase.createClient(SB_URL, SB_KEY); res(); } catch (e) { rej(e); } };
+    s.onerror = () => rej(new Error('NET'));
+    document.head.appendChild(s);
+  });
+}
+async function dqNet(code, onMsg) {
+  if (SB_ON) {
+    await dqLoadSb();
+    const ch = DQ.sb.channel('atco-dq-' + code, { config: { broadcast: { self: false } } });
+    ch.on('broadcast', { event: 'm' }, p => onMsg(p.payload));
+    await new Promise((res, rej) => { ch.subscribe(st => { if (st === 'SUBSCRIBED') res(); else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT') rej(new Error('NET')); }); });
+    return { send: m => ch.send({ type: 'broadcast', event: 'm', payload: m }), close: () => DQ.sb.removeChannel(ch) };
+  }
+  const bc = new BroadcastChannel('atco-dq-' + code);
+  bc.onmessage = e => onMsg(e.data);
+  return { send: m => bc.postMessage(m), close: () => bc.close() };
+}
+function dqNick() { return RK.acct ? RK.acct.nick : (DQ.guest || '').trim().slice(0, 16); }
+function dqSend(m) { m.id = DQ.id; if (DQ.host) dqHostMsg(m); else if (DQ.net) DQ.net.send(m); }
+function dqMe() { return DQ.S ? DQ.S.players.findIndex(p => p.id === DQ.id) : -1; }
+function dqLeave(msg) {
+  if (DQ.net) { try { DQ.net.send({ t: DQ.host ? 'bye' : 'leave', id: DQ.id }); DQ.net.close(); } catch (e) {} }
+  if (DQ.H) { clearTimeout(DQ.H.timer); DQ.H.bots.forEach(clearTimeout); }
+  clearInterval(DQ.loop);
+  DQ.room = null; DQ.host = false; DQ.S = null; DQ.net = null; DQ.H = null; DQ.sig = ''; DQ.k = -1; DQ.prev = null; DQ.err = msg || '';
+  dqShow();
+}
+function dqShow() { if (state.mode === 'conquer') { DQ.sig = ''; dqRender(document.getElementById('qcard')); } }
+async function dqCreate() {
+  if (!dqNick()) { DQ.err = 'Najprv si napíš prezývku.'; return dqShow(); }
+  const L = 'ABCDEFGHJKLMNPRSTUVXYZ'; let code = '';
+  for (let i = 0; i < 4; i++) code += L.charAt(Math.floor(Math.random() * L.length));
+  try { DQ.net = await dqNet(code, dqHostMsg); } catch (e) { DQ.err = 'Nepodarilo sa otvoriť miestnosť — skontroluj pripojenie.'; return dqShow(); }
+  DQ.room = code; DQ.host = true; DQ.err = '';
+  DQ.H = { ans: -1, got: {}, deadline: 0, timer: null, seen: {}, used: {}, bots: [], next: null };
+  DQ.S = { gid: '', k: 0, phase: 'lobby', players: [{ id: DQ.id, nick: dqNick(), bot: false, on: true, bonus: 0 }], cfg: { max: 3, time: 15, claim: 8, war: 3, mods: DQ_QS.map(x => x[0]) },
+    own: [], round: 0, wr: 0, wq: [], q: null, rev: null, picks: [], allowed: [], chooser: -1, duel: null, answered: [], dur: 0, tot: 0 };
+  clearInterval(DQ.loop); DQ.loop = setInterval(dqHostLoop, 2000);
+  dqCast();
+}
+async function dqJoin(code) {
+  code = (code || '').toUpperCase().replace(/[^A-Z]/g, '');
+  if (!dqNick()) { DQ.err = 'Najprv si napíš prezývku.'; return dqShow(); }
+  if (code.length !== 4) { DQ.err = 'Kód miestnosti má štyri písmená.'; return dqShow(); }
+  try { DQ.net = await dqNet(code, dqClientMsg); } catch (e) { DQ.err = 'Nepodarilo sa pripojiť — skontroluj pripojenie.'; return dqShow(); }
+  DQ.room = code; DQ.host = false; DQ.S = null; DQ.err = ''; DQ.lastState = Date.now(); DQ.joinAt = Date.now();
+  const hello = () => DQ.net && DQ.net.send({ t: 'join', id: DQ.id, nick: dqNick() });
+  hello();
+  clearInterval(DQ.loop);
+  DQ.loop = setInterval(() => {
+    if (!DQ.room) return;
+    if (dqMe() < 0) { if (Date.now() - DQ.joinAt > 7000) return dqLeave('Miestnosť s kódom ' + code + ' nie je otvorená.'); hello(); }
+    else DQ.net.send({ t: 'ping', id: DQ.id });
+    if (Date.now() - DQ.lastState > 12000 && dqMe() >= 0) dqLeave('Spojenie s hostiteľom sa stratilo.');
+  }, 1500);
+  dqShow();
+}
+function dqClientMsg(m) {
+  if (!m || DQ.host) return;
+  if (m.t === 'state') dqApply(m.S);
+  else if (m.t === 'bye') dqLeave('Hostiteľ ukončil miestnosť.');
+  else if (m.t === 'no' && m.to === DQ.id) dqLeave(m.why);
+}
+function dqApply(S) {
+  DQ.S = S; DQ.lastState = Date.now();
+  if (S.k !== DQ.k) { DQ.k = S.k; DQ.qT0 = Date.now(); DQ.my = null; }
+  DQ.deadline = Date.now() + (S.dur || 0);
+  if (S.phase === 'end' && DQ.reported !== S.gid) {
+    DQ.reported = S.gid;
+    const me = dqMe(), place = S.rank.indexOf(me);
+    if (me >= 0 && S.league[me] != null && S.humans >= 2) { rkAdd('conquer', { p: S.league[me], g: 1, v: place === 0 ? 1 : 0 }); lsSet(RK_PEND, RK.pend); rkFlush(); }
+  }
+  const sig = JSON.stringify(Object.assign({}, S, { dur: 0 })) + JSON.stringify(DQ.my);
+  if (sig !== DQ.sig && state.mode === 'conquer') { DQ.sig = sig; dqRender(document.getElementById('qcard')); }
+}
+
+/* ---------- hostiteľ: pravidlá hry ---------- */
+function dqCast() { const S = DQ.S, H = DQ.H; S.dur = Math.max(0, H.deadline - Date.now()); if (DQ.net) DQ.net.send({ t: 'state', S }); dqApply(S); }
+function dqPhase(phase, fn) {
+  const S = DQ.S, H = DQ.H;
+  S.phase = phase; S.k++; S.tot = dqDur(phase); H.next = fn; H.deadline = Date.now() + S.tot;
+  clearTimeout(H.timer); H.timer = setTimeout(fn, S.tot);
+  dqCast();
+}
+function dqHostLoop() {
+  const S = DQ.S, H = DQ.H, now = Date.now();
+  if (!S) return;
+  S.players.forEach(p => { if (!p.bot && p.id !== DQ.id) p.on = now - (H.seen[p.id] || 0) < 9000; });
+  if (S.phase === 'lobby') S.players = S.players.filter(p => p.on);
+  else if (S.phase !== 'end') { dqNudge(); dqAllIn(); }
+  dqCast();
+}
+function dqHostMsg(m) {
+  const S = DQ.S, H = DQ.H;
+  if (!m || !S || !DQ.host) return;
+  if (m.id) H.seen[m.id] = Date.now();
+  const pi = S.players.findIndex(p => p.id === m.id);
+  if (m.t === 'join') {
+    if (pi >= 0) { S.players[pi].on = true; return dqCast(); }
+    if (S.phase !== 'lobby') return DQ.net.send({ t: 'no', to: m.id, why: 'Hra v tejto miestnosti už beží.' });
+    if (S.players.length >= S.cfg.max) return DQ.net.send({ t: 'no', to: m.id, why: 'Miestnosť je plná.' });
+    let nick = String(m.nick || 'HRÁČ').slice(0, 16), n = 2;
+    while (S.players.some(p => p.nick === nick)) nick = String(m.nick).slice(0, 14) + ' ' + n++;
+    S.players.push({ id: m.id, nick, bot: false, on: true, bonus: 0 });
+    return dqCast();
+  }
+  if (pi < 0) return;
+  if (m.t === 'leave') { if (S.phase === 'lobby') S.players.splice(pi, 1); else { S.players[pi].on = false; H.seen[m.id] = 0; dqNudge(); dqAllIn(); } return dqCast(); }
+  if (pi === 0 && S.phase === 'lobby') {
+    if (m.t === 'bot' && S.players.length < S.cfg.max) {
+      const n = S.players.filter(p => p.bot).length + 1;
+      S.players.push({ id: 'bot' + n + Date.now(), nick: 'POČÍTAČ ' + n, bot: true, on: true, bonus: 0 });
+      return dqCast();
+    }
+    if (m.t === 'kick' && m.who > 0) { S.players.splice(m.who, 1); return dqCast(); }
+    if (m.t === 'cfg') {
+      if (m.key === 'mods') { const i = S.cfg.mods.indexOf(m.val); if (i < 0) S.cfg.mods.push(m.val); else if (S.cfg.mods.length > 1) S.cfg.mods.splice(i, 1); }
+      else if (DQ_OPT[m.key] && DQ_OPT[m.key].indexOf(m.val) >= 0 && (m.key !== 'max' || m.val >= S.players.length)) S.cfg[m.key] = m.val;
+      return dqCast();
+    }
+    if (m.t === 'start' && S.players.length >= 2) return dqStart();
+  }
+  if (m.t === 'again' && pi === 0 && S.phase === 'end') { S.phase = 'lobby'; S.k++; S.players = S.players.filter(p => p.on); S.players.forEach(p => { p.bonus = 0; }); return dqCast(); }
+  if (m.t === 'ans' && m.k === S.k && (S.phase === 'claimq' || S.phase === 'duelq') && S.q.who.indexOf(pi) >= 0 && !H.got[pi]) {
+    H.got[pi] = { c: m.c, ms: Math.max(0, Math.min(S.tot, +m.ms || 0)) };
+    S.answered = Object.keys(H.got).map(Number);
+    dqCast(); return dqAllIn();
+  }
+  if (m.t === 'pick' && m.k === S.k && (S.phase === 'pick' || S.phase === 'warpick') && pi === S.chooser && S.allowed.indexOf(m.terr) >= 0) return dqChoose(m.terr);
+}
+function dqStart() {
+  const S = DQ.S, H = DQ.H;
+  S.gid = DQ.room + Date.now();
+  S.own = DQ_MAP.t.map(() => -1);
+  S.players.forEach(p => { p.bonus = 0; });
+  S.humans = S.players.filter(p => !p.bot).length;
+  S.round = 0; S.wr = 0; S.wq = []; S.duel = null; S.rank = null; S.league = null; H.used = {};
+  dqClaimQ();
+}
+function dqAsk(phase, who, next) {
+  const S = DQ.S, H = DQ.H, q = dqGenQ(S.cfg.mods);
+  H.ans = q.ans; H.got = {}; S.answered = []; S.rev = null;
+  S.q = { mod: q.mod, prompt: q.prompt, sub: q.sub, opts: q.opts, who };
+  dqPhase(phase, next);
+  const k = S.k, T = S.tot;
+  who.forEach(pi => {
+    const p = S.players[pi];
+    if (!p.bot) return;
+    const ms = Math.min(T - 600, 2200 + Math.random() * 6000), c = Math.random() < 0.6 ? q.ans : (q.ans + 1 + Math.floor(Math.random() * 3)) % 4;
+    H.bots.push(setTimeout(() => { if (DQ.S && DQ.S.k === k) dqHostMsg({ t: 'ans', id: p.id, k, c, ms }); }, ms));
+  });
+}
+/* keď odpovedali všetci, na ktorých sa čaká, netreba čakať do konca času */
+function dqAllIn() {
+  const S = DQ.S, H = DQ.H;
+  if (S.phase !== 'claimq' && S.phase !== 'duelq') return;
+  if (S.q.who.every(pi => H.got[pi] || (!S.players[pi].bot && !S.players[pi].on))) { clearTimeout(H.timer); const f = H.next; H.timer = setTimeout(f, 350); }
+}
+/* na rade je počítač alebo odpojený hráč — vyberie sa zaňho */
+function dqNudge() {
+  const S = DQ.S, H = DQ.H;
+  if (S.phase !== 'pick' && S.phase !== 'warpick') return;
+  const p = S.players[S.chooser], k = S.k;
+  if (p && (p.bot || !p.on) && !H.nudged) { H.nudged = true; H.bots.push(setTimeout(() => { if (DQ.S && DQ.S.k === k) dqAuto(); }, p.bot ? 1500 : 600)); }
+}
+/* počítač (a vypršaný čas) berie to najcennejšie, čo môže */
+function dqAuto() {
+  const S = DQ.S;
+  if (!S.allowed.length) return;
+  const best = Math.max.apply(null, S.allowed.map(t => DQ_MAP.t[t].v)), top = S.allowed.filter(t => DQ_MAP.t[t].v === best);
+  dqChoose(top[Math.floor(Math.random() * top.length)]);
+}
+function dqRes() {
+  const S = DQ.S, H = DQ.H, res = {};
+  S.q.who.forEach(pi => { const g = H.got[pi]; res[pi] = g ? { c: g.c, ms: Math.round(g.ms), ok: g.c === H.ans } : { c: -1, ms: 0, ok: false }; });
+  return res;
+}
+function dqFree() { return DQ.S.own.map((o, i) => o < 0 ? i : -1).filter(i => i >= 0); }
+function dqScore(S, i) { let s = S.players[i].bonus || 0; S.own.forEach((o, t) => { if (o === i) s += DQ_MAP.t[t].v; }); return s; }
+function dqClaimQ() {
+  const S = DQ.S;
+  if (!dqFree().length || S.round >= S.cfg.claim) return dqWarRound();
+  S.round++; S.duel = null;
+  dqAsk('claimq', S.players.map((p, i) => i), dqClaimRev);
+}
+/* správni si vyberajú podľa rýchlosti; najrýchlejší má dva výbery */
+function dqClaimRev() {
+  const S = DQ.S, H = DQ.H, res = dqRes();
+  const ok = Object.keys(res).map(Number).filter(pi => res[pi].ok).sort((a, b) => res[a].ms - res[b].ms);
+  S.picks = (ok.length ? [ok[0]].concat(ok) : []).slice(0, dqFree().length);
+  S.rev = { ans: H.ans, res };
+  dqPhase('claimrev', dqPickNext);
+}
+function dqPickNext() {
+  const S = DQ.S, H = DQ.H, free = dqFree();
+  if (!S.picks.length || !free.length) { S.picks = []; return dqClaimQ(); }
+  const pi = S.picks[0];
+  let al = free.filter(t => DQ_MAP.t[t].j.some(a => S.own[a] === pi));
+  if (!al.length) al = free;
+  S.chooser = pi; S.allowed = al; H.nudged = false;
+  dqPhase('pick', dqAuto);
+  dqNudge();
+}
+function dqChoose(terr) {
+  const S = DQ.S;
+  if (S.phase === 'pick') { S.own[terr] = S.chooser; S.picks.shift(); S.allowed = []; return dqPickNext(); }
+  S.duel = { a: S.chooser, d: S.own[terr], t: terr }; S.allowed = [];
+  dqAsk('duelq', S.duel.d >= 0 ? [S.duel.a, S.duel.d] : [S.duel.a], dqDuelRev);
+}
+/* kolo súbojov: každý hráč útočí raz, začína ten s najmenším počtom bodov */
+function dqWarRound() {
+  const S = DQ.S;
+  S.q = null; S.rev = null; S.picks = []; S.duel = null;
+  if (S.wr >= S.cfg.war) return dqEnd();
+  S.wr++;
+  S.wq = S.players.map((p, i) => i).sort((a, b) => dqScore(S, a) - dqScore(S, b));
+  dqWarPick();
+}
+function dqWarPick() {
+  const S = DQ.S, H = DQ.H;
+  if (!S.wq.length) return dqWarRound();
+  const a = S.wq[0], other = S.own.map((o, i) => o !== a ? i : -1).filter(i => i >= 0);
+  let al = other.filter(t => DQ_MAP.t[t].j.some(x => S.own[x] === a));
+  if (!al.length) al = other;
+  if (!al.length) { S.wq.shift(); return dqWarPick(); }
+  S.chooser = a; S.allowed = al; S.duel = null; S.q = null; S.rev = null; H.nudged = false;
+  dqPhase('warpick', dqAuto);
+  dqNudge();
+}
+function dqDuelRev() {
+  const S = DQ.S, H = DQ.H, res = dqRes(), D = S.duel, ra = res[D.a], rd = D.d >= 0 ? res[D.d] : null;
+  const win = ra.ok && (!rd || !rd.ok || ra.ms < rd.ms);
+  if (win) S.own[D.t] = D.a;
+  else if (rd && rd.ok) S.players[D.d].bonus += 100;
+  S.rev = { ans: H.ans, res, win, what: win ? 'took' : (rd && rd.ok ? 'held' : 'miss') };
+  dqPhase('duelrev', () => { S.wq.shift(); dqWarPick(); });
+}
+function dqEnd() {
+  const S = DQ.S, H = DQ.H;
+  clearTimeout(H.timer);
+  S.rank = S.players.map((p, i) => i).sort((a, b) => dqScore(S, b) - dqScore(S, a));
+  const pts = [30, 15, 8, 4]; if (S.players.length === 2) pts[1] = 10;
+  S.league = S.players.map((p, i) => pts[S.rank.indexOf(i)]);
+  S.phase = 'end'; S.k++; S.q = null; S.duel = null; S.allowed = []; S.tot = 0; H.deadline = 0;
+  dqCast();
+}
+
+/* ---------- kreslenie ---------- */
+function dqTerrInfo(t, S) {
+  const o = DQ_MAP.t[t], own = S && S.own[t] >= 0 ? S.players[S.own[t]] : null;
+  const lim = o.lo || o.up ? ' · ' + (o.lo || '?') + ' – ' + (o.up || '?') : '';
+  return `<b>${dqEsc(o.k)}</b><span>${dqEsc(o.c === 'AD' ? 'letisko ' + o.n : o.n)}${o.cl ? ' · trieda ' + dqEsc(o.cl) : ''}${dqEsc(lim)}</span><em>${o.v} b.</em>${own ? `<i style="background:${DQ_COL[S.own[t]]}"></i><small>${dqEsc(own.nick)}</small>` : '<small>voľné</small>'}`;
+}
+function dqMapSVG(S, me) {
+  const M = DQ_MAP, mine = (S.phase === 'pick' || S.phase === 'warpick') && S.chooser === me, prev = DQ.prev || [];
+  let h = `<svg class="dq-map" viewBox="-8 -8 ${M.w + 16} ${Math.round(M.h) + 16}"><defs><clipPath id="dq-clip"><path d="${M.border}"/></clipPath>
+    <filter id="dq-glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="5"/></filter></defs>
+    <path d="${M.border}" class="dq-halo" filter="url(#dq-glow)"/><g clip-path="url(#dq-clip)">`;
+  M.t.forEach((o, i) => {
+    const ow = S.own[i], can = S.allowed.indexOf(i) >= 0, tgt = S.duel && S.duel.t === i, fl = prev.length && prev[i] !== ow;
+    h += `<path d="${o.d}" data-t="${i}" class="dq-cell c-${o.c}${ow >= 0 ? ' own' : ''}${can ? ' can' : ''}${can && mine ? ' click' : ''}${tgt ? ' tgt' : ''}${fl ? ' flash' : ''}" fill="${ow >= 0 ? DQ_COL[ow] : (o.k === 'G EAST' ? '#d2ded7' : DQ_CAT[o.c][1])}"/>`;
+  });
+  h += `</g><path d="${M.border}" class="dq-out"/>`;
+  M.t.forEach((o, i) => {
+    const ow = S.own[i] >= 0;
+    if (o.c === 'AD') h += `<text class="dq-lab ad${ow ? ' own' : ''}" x="${o.x}" y="${o.y + 2.3}">${o.b}</text>`;
+    else if (o.c === 'G') h += `<text class="dq-lab g${ow ? ' own' : ''}" x="${o.x}" y="${o.y}">${o.k}</text>`;
+    else if (o.r >= 8) { const fs = Math.max(5.2, Math.min(11.5, o.r * 0.42)); h += `<text class="dq-lab${ow ? ' own' : ''}" x="${o.x}" y="${o.y}" font-size="${fs.toFixed(1)}"><tspan x="${o.x}" dy="-0.15em" class="t">${o.a}</tspan><tspan x="${o.x}" dy="1.05em">${o.b}</tspan></text>`; }
+  });
+  return h + '</svg>';
+}
+function dqLegendHTML() {
+  return `<div class="dq-legend">${['AD', 'CTR', 'TMA', 'TRA', 'R', 'G'].map(c => `<span><i style="background:${DQ_CAT[c][1]}"></i>${c === 'TRA' ? 'TRA / TSA' : DQ_CAT[c][0]} <b>${{ AD: 500, CTR: 400, TMA: 300, TRA: 200, R: 150, G: 100 }[c]}</b></span>`).join('')}</div>`;
+}
+function dqScoreHTML(S, me) {
+  const sc = S.players.map((p, i) => dqScore(S, i)), mx = Math.max(1, ...sc);
+  return `<div class="dq-score">${S.players.map((p, i) => {
+    const active = ((S.phase === 'pick' || S.phase === 'warpick') && S.chooser === i) || (S.duel && (S.duel.a === i || S.duel.d === i) && S.phase !== 'warpick');
+    const ans = (S.phase === 'claimq' || S.phase === 'duelq') && S.answered.indexOf(i) >= 0;
+    return `<div class="dq-pl${active ? ' act' : ''}${p.on ? '' : ' off'}"><i style="background:${DQ_COL[i]}"></i><span>${dqEsc(p.nick)}${i === me ? ' <em>(ty)</em>' : ''}${p.on ? '' : ' <em>odpojený</em>'}${ans ? ' <em class="in">✓ odpovedal</em>' : ''}</span><small>${S.own.filter(o => o === i).length} úz.</small><b>${sc[i]}</b><u style="width:${Math.round(sc[i] / mx * 100)}%;background:${DQ_COL[i]}"></u></div>`;
+  }).join('')}</div>`;
+}
+function dqQuestionHTML(S, me) {
+  const q = S.q, R = S.rev, can = q.who.indexOf(me) >= 0, my = DQ.my;
+  const sec = ms => (ms / 1000).toFixed(1).replace('.', ',') + ' s';
+  let h = `<div class="dq-q"><div class="dq-q-mod">${dqEsc(q.mod)}</div><div class="dq-q-p">${dqEsc(q.prompt)}</div><div class="dq-q-s">${dqEsc(q.sub)}</div></div><div class="choice-grid dq-opts">`;
+  q.opts.forEach((o, i) => {
+    const cls = R ? (i === R.ans ? ' ok' : (my && my.c === i ? ' no' : '')) : (my && my.c === i ? ' sel' : '');
+    const who = R ? q.who.filter(pi => R.res[pi].c === i).map(pi => `<i style="background:${DQ_COL[pi]}"></i>`).join('') : '';
+    h += `<button class="choice-btn${cls}" data-c="${i}" ${R || my || !can ? 'disabled' : ''}>${dqEsc(o)}${who ? `<span class="dq-who">${who}</span>` : ''}</button>`;
+  });
+  h += '</div>';
+  if (R) h += `<div class="dq-res">${q.who.map(pi => { const r = R.res[pi]; return `<span class="${r.ok ? 'ok' : 'no'}"><i style="background:${DQ_COL[pi]}"></i>${dqEsc(S.players[pi].nick)} ${r.c < 0 ? '— bez odpovede' : r.ok ? '✓ ' + sec(r.ms) : '✗'}</span>`; }).join('')}</div>`;
+  else if (!can) h += `<div class="dq-note">Pozeráš sa — odpovedá ${q.who.map(pi => dqEsc(S.players[pi].nick)).join(' a ')}.</div>`;
+  else if (my) h += `<div class="dq-note">Odpoveď je zapísaná. Čaká sa na ostatných…</div>`;
+  else h += `<div class="dq-note">Klikni na odpoveď alebo stlač 1–4. Rozhoduje aj rýchlosť.</div>`;
+  return h;
+}
+function dqRulesHTML() {
+  return `<div class="dq-rules">
+      <div><b>1</b><strong>OBSADZOVANIE</strong><span>V každom kole dostanú všetci tú istú otázku. Kto odpovie správne, vyberie si voľný priestor — najrýchlejší vyberá prvý a berie si dva. Ďalší priestor musí susediť s tvojím.</span></div>
+      <div><b>2</b><strong>SÚBOJE</strong><span>V každom kole zaútočí každý hráč raz na susedný priestor. Ak je voľný, stačí odpovedať správne. Ak patrí súperovi, odpovedáte obaja — útočník vyhrá, len ak je správne a rýchlejšie.</span></div>
+      <div><b>3</b><strong>BODY</strong><span>Letisko 500, CTR 400, TMA 300, TRA/TSA 200, LZR 150, trieda G 100. Za ubránený priestor +100. Vyhráva ten, kto má po poslednom kole najviac bodov.</span></div>
+    </div>`;
+}
+function dqCfgHTML(S) {
+  const c = S.cfg, host = DQ.host;
+  const row = (lab, key, arr, fmt) => `<div class="dq-cfg-row"><span>${lab}</span><div>${arr.map(v => `<button class="rk-chip${c[key] === v ? ' on' : ''}" data-cfg="${key}" data-val="${v}" ${host ? '' : 'disabled'}>${fmt(v)}</button>`).join('')}</div></div>`;
+  return `<div class="dq-cfg">
+      <div class="dq-cfg-t">NASTAVENIE HRY${host ? '' : ' <em>— mení ho len hostiteľ</em>'}</div>
+      ${row('HRÁČI', 'max', DQ_OPT.max, v => v)}
+      ${row('ČAS NA OTÁZKU', 'time', DQ_OPT.time, v => v + ' s')}
+      ${row('KOLÁ OBSADZOVANIA', 'claim', DQ_OPT.claim, v => v)}
+      ${row('KOLÁ SÚBOJOV', 'war', DQ_OPT.war, v => v || 'BEZ')}
+      <div class="dq-cfg-row"><span>OTÁZKY Z</span><div>${DQ_QS.map(x => `<button class="rk-chip${c.mods.indexOf(x[0]) >= 0 ? ' on' : ''}" data-cfg="mods" data-val="${x[0]}" ${host ? '' : 'disabled'}>${x[1]} · ${x[2]}</button>`).join('')}</div></div>
+    </div>`;
+}
+function dqRender(card) {
+  const S = DQ.S, M = DQ_MAP;
+  document.getElementById('qnum').textContent = '•';
+  document.getElementById('qtotal').textContent = DQ.room ? 'miestnosť ' + DQ.room : 'hra';
+  const inGame = !!(S && S.phase !== 'lobby');
+  document.querySelector('.app').classList.toggle('wide', inGame);
+  card.classList.toggle('dq-on', inGame);
+  clearInterval(DQ.bar);
+  if (!DQ.room) {
+    card.innerHTML = `<div class="dq-home">
+        <h2>DOBYVATEĽ</h2>
+        <p class="dq-lead">Vedomostný súboj o slovenský vzdušný priestor pre 2 až 4 hráčov naživo. Hrá sa na VFR mape rozdelenej na ${M.t.length} skutočných priestorov — letiská, CTR, TMA, TRA/TSA, LZR a triedu G EAST a WEST. Otázky sú z modulov trenažéra a hostiteľ si vyberie, z ktorých.</p>
+        ${dqRulesHTML()}
+        ${DQ.err ? `<div class="rk-err">${dqEsc(DQ.err)}</div>` : ''}
+        <div class="dq-start">
+          <div class="dq-box"><strong>HRÁŠ AKO</strong>${RK.acct ? `<div class="dq-as">${dqEsc(RK.acct.nick)}</div><span>Body za hru sa ti pripíšu do rebríčka.</span>` : `<input type="text" id="dq-nick" maxlength="16" placeholder="tvoja prezývka" value="${dqEsc(DQ.guest)}" autocomplete="off" spellcheck="false"><span>Si neprihlásený — zahrať si môžeš, body do rebríčka sa ale počítajú len prihláseným (karta REBRÍČEK).</span>`}</div>
+          <div class="dq-box"><strong>NOVÁ HRA</strong><button class="btn" id="dq-create">VYTVORIŤ MIESTNOSŤ ▶</button><span>Dostaneš kód zo štyroch písmen, ktorý pošleš kolegom. V miestnosti nastavíš čas, počet kôl aj otázky.</span></div>
+          <div class="dq-box"><strong>MÁM KÓD</strong><div class="dq-row"><input type="text" id="dq-code" maxlength="4" placeholder="KÓD" autocomplete="off" spellcheck="false"><button class="btn ghost" id="dq-join">PRIPOJIŤ SA</button></div><span>Napíš kód, ktorý ti poslal hostiteľ.</span></div>
+        </div>
+        ${SB_ON ? '' : '<div class="rk-warn"><strong>SKÚŠOBNÝ REŽIM</strong> — hra ešte nie je pripojená na server. Proti počítaču funguje hneď; s druhým hráčom zatiaľ len v dvoch kartách toho istého prehliadača.</div>'}
+        <div class="dq-src">Hranice priestorov: VFR Manual, LPS SR, š. p. — platné od ${M.eff}. Pomôcka na učenie, nie na navigáciu.</div>
+      </div>`;
+    const ni = document.getElementById('dq-nick'); if (ni) ni.oninput = () => { DQ.guest = ni.value; };
+    document.getElementById('dq-create').onclick = dqCreate;
+    const ci = document.getElementById('dq-code'), jn = () => dqJoin(ci.value);
+    document.getElementById('dq-join').onclick = jn;
+    ci.addEventListener('keydown', e => { if (e.key === 'Enter') jn(); });
+    return;
+  }
+  if (!S) { card.innerHTML = `<div class="dq-home"><h2>DOBYVATEĽ</h2><p class="dq-lead">Pripájam sa do miestnosti <strong>${DQ.room}</strong>…</p><button class="btn ghost" id="dq-leave">ZRUŠIŤ</button></div>`; document.getElementById('dq-leave').onclick = () => dqLeave(''); return; }
+  const me = dqMe(), nm = i => dqEsc(S.players[i] ? S.players[i].nick : '?');
+  if (S.phase === 'lobby') {
+    DQ.prev = null;
+    const slots = []; for (let i = S.players.length; i < S.cfg.max; i++) slots.push('<div class="dq-pl empty"><span>voľné miesto…</span></div>');
+    card.innerHTML = `<div class="dq-home">
+        <h2>DOBYVATEĽ — MIESTNOSŤ</h2>
+        <div class="dq-lobby-grid">
+          <div>
+            <div class="dq-code"><span>KÓD MIESTNOSTI</span><b>${DQ.room}</b><small>${DQ.host ? 'Pošli ho kolegom. Otvoria kartu DOBYVATEĽ, napíšu kód a dajú PRIPOJIŤ SA.' : 'Si v miestnosti. Hru spustí hostiteľ.'}</small></div>
+            <div class="dq-lobby">${S.players.map((p, i) => `<div class="dq-pl"><i style="background:${DQ_COL[i]}"></i><span>${dqEsc(p.nick)}${i === 0 ? ' <em>hostiteľ</em>' : ''}${i === me ? ' <em>(ty)</em>' : ''}</span>${DQ.host && i > 0 ? `<button class="dq-x" data-kick="${i}" title="Odobrať">✕</button>` : ''}</div>`).join('')}${slots.join('')}</div>
+            <div class="dq-acts">
+              ${DQ.host ? `<button class="btn" id="dq-go" ${S.players.length < 2 ? 'disabled' : ''}>ŠTART ▶</button><button class="btn ghost" id="dq-bot" ${S.players.length >= S.cfg.max ? 'disabled' : ''}>+ POČÍTAČ</button>` : ''}
+              <button class="btn ghost" id="dq-leave">ODÍSŤ</button>
+            </div>
+            ${DQ.host && S.players.length < 2 ? '<div class="dq-note">Na štart treba aspoň dvoch hráčov. Ak nikto nie je poruke, pridaj počítač.</div>' : ''}
+            ${S.players.filter(p => !p.bot).length < 2 ? '<div class="dq-note">Body do rebríčka sa dávajú len za hru aspoň dvoch ľudí — hra proti počítaču je tréning.</div>' : ''}
+          </div>
+          ${dqCfgHTML(S)}
+        </div>
+        ${dqRulesHTML()}
+      </div>`;
+    const go = document.getElementById('dq-go'), bot = document.getElementById('dq-bot');
+    if (go) go.onclick = () => dqSend({ t: 'start' });
+    if (bot) bot.onclick = () => dqSend({ t: 'bot' });
+    card.querySelectorAll('[data-kick]').forEach(b => { b.onclick = () => dqSend({ t: 'kick', who: +b.dataset.kick }); });
+    card.querySelectorAll('[data-cfg]').forEach(b => { b.onclick = () => dqSend({ t: 'cfg', key: b.dataset.cfg, val: b.dataset.cfg === 'mods' ? b.dataset.val : +b.dataset.val }); });
+    document.getElementById('dq-leave').onclick = () => dqLeave('');
+    return;
+  }
+  let side = '', banner = '', stage = '';
+  const chooser = S.chooser, mineTurn = chooser === me;
+  if (S.phase === 'claimq' || S.phase === 'claimrev') {
+    stage = `OBSADZOVANIE · KOLO ${S.round} / ${S.cfg.claim}`;
+    const uniq = S.picks.filter((p, i) => S.picks.indexOf(p) === i);
+    banner = S.phase === 'claimq' ? 'Kto odpovie správne, vyberie si priestor. Najrýchlejší vyberá prvý a berie dva.' : (uniq.length ? 'Vyberajú: ' + uniq.map((p, i) => nm(p) + (i === 0 && S.picks.filter(x => x === p).length > 1 ? ' (2×)' : '')).join(', ') + '.' : 'Nikto neodpovedal správne.');
+    side = dqQuestionHTML(S, me);
+  } else if (S.phase === 'pick') {
+    stage = `OBSADZOVANIE · KOLO ${S.round} / ${S.cfg.claim}`;
+    banner = mineTurn ? 'Si na rade — klikni na jeden zo zvýraznených priestorov na mape.' : 'Vyberá ' + nm(chooser) + '…';
+    side = `<div class="dq-big${mineTurn ? ' me' : ''}">${mineTurn ? '👆 Vyber si priestor na mape' : 'Vyberá ' + nm(chooser)}</div>`;
+  } else if (S.phase === 'warpick') {
+    stage = `SÚBOJE · KOLO ${S.wr} / ${S.cfg.war}`;
+    banner = mineTurn ? 'Útočíš — klikni na zvýraznený priestor, ktorý chceš dobyť.' : 'Útočí ' + nm(chooser) + ' a vyberá cieľ…';
+    side = `<div class="dq-big${mineTurn ? ' me' : ''}">${mineTurn ? '⚔ Vyber priestor, na ktorý zaútočíš' : 'Útočí ' + nm(chooser)}</div>`;
+  } else if (S.phase === 'duelq' || S.phase === 'duelrev') {
+    const D = S.duel, tn = dqEsc(M.t[D.t].k);
+    stage = `SÚBOJE · KOLO ${S.wr} / ${S.cfg.war} · ${tn}`;
+    banner = D.d >= 0 ? `${nm(D.a)} útočí na ${tn} hráča ${nm(D.d)}.` : `${nm(D.a)} dobýja voľný priestor ${tn}.`;
+    if (S.rev) banner = S.rev.what === 'took' ? `${nm(D.a)} získava ${tn} (+${M.t[D.t].v} b.).` : S.rev.what === 'held' ? `${nm(D.d)} ubránil ${tn} (+100 b.).` : `Útok na ${tn} sa nepodaril.`;
+    side = dqQuestionHTML(S, me);
+  } else if (S.phase === 'end') {
+    stage = 'KONIEC HRY';
+    banner = `Vyhráva ${nm(S.rank[0])}.`;
+    side = `<div class="dq-end">${S.rank.map((pi, r) => `<div class="dq-pl${pi === me ? ' act' : ''}"><b>${r + 1}.</b><i style="background:${DQ_COL[pi]}"></i><span>${nm(pi)}</span><small>${dqScore(S, pi)} bodov</small>${S.humans >= 2 && !S.players[pi].bot ? `<em>+${S.league[pi]} do rebríčka</em>` : ''}</div>`).join('')}</div>
+      ${S.humans < 2 ? '<div class="dq-note">Hra proti počítaču sa do rebríčka nepočíta.</div>' : (RK.acct ? '' : '<div class="dq-note">Nie si prihlásený, body do rebríčka sa ti nepripísali.</div>')}
+      <div class="dq-acts">${DQ.host ? '<button class="btn" id="dq-again">ĎALŠIA HRA ▶</button>' : ''}<button class="btn ghost" id="dq-leave">ODÍSŤ</button></div>`;
+  }
+  card.innerHTML = `<div class="dq-game">
+      <div class="dq-stage">${dqMapSVG(S, me)}<div class="dq-info" id="dq-info"><small>Ukáž na priestor a uvidíš jeho kód, hranice a body.</small></div>${dqLegendHTML()}</div>
+      <div class="dq-right">
+        ${dqScoreHTML(S, me)}
+        <div class="dq-banner"><b>${stage}</b>${banner}</div>
+        ${S.phase !== 'end' ? '<div class="dq-timer"><i id="dq-bar"></i></div>' : ''}
+        ${side}
+        ${S.phase !== 'end' ? '<button class="dq-quit" id="dq-leave">Odísť z hry</button>' : ''}
+      </div>
+    </div>`;
+  DQ.prev = S.own.slice();
+  card.querySelectorAll('.dq-opts .choice-btn').forEach(b => { b.onclick = () => {
+    if (DQ.my || b.disabled) return;
+    DQ.my = { c: +b.dataset.c };
+    dqSend({ t: 'ans', k: S.k, c: DQ.my.c, ms: Date.now() - DQ.qT0 });
+    dqShow();
+  }; });
+  const info = document.getElementById('dq-info'), canPick = mineTurn && (S.phase === 'pick' || S.phase === 'warpick');
+  card.querySelectorAll('.dq-cell').forEach(c => {
+    const t = +c.dataset.t;
+    c.onpointerenter = () => { info.innerHTML = dqTerrInfo(t, S); };
+    c.onclick = () => { info.innerHTML = dqTerrInfo(t, S); if (canPick && S.allowed.indexOf(t) >= 0) dqSend({ t: 'pick', k: S.k, terr: t }); };
+  });
+  if (S.duel) info.innerHTML = dqTerrInfo(S.duel.t, S);
+  const again = document.getElementById('dq-again'); if (again) again.onclick = () => dqSend({ t: 'again' });
+  document.getElementById('dq-leave').onclick = () => { if (S.phase === 'end' || confirm('Naozaj odísť z rozohranej hry?')) dqLeave(''); };
+  const bar = document.getElementById('dq-bar'), tot = S.tot || 1;
+  if (bar) { const up = () => { const f = Math.max(0, Math.min(1, (DQ.deadline - Date.now()) / tot)); bar.style.width = (f * 100) + '%'; bar.classList.toggle('low', f < 0.3); }; up(); DQ.bar = setInterval(up, 100); }
+}
+
+/* ============================================================
    QUESTION BUILDERS
    ============================================================ */
 function buildAircraftQuestions() {
@@ -6759,6 +7601,8 @@ function buildWaypointQuestions() {
 function buildQueue() {
   switch(state.mode) {
     case 'home':     return [];   // úvod nemá otázky
+    case 'conquer':  return [];   // hra a rebríček majú vlastné stránky
+    case 'rank':     return [];
     case 'daily':    return buildDaily();
     case 'exam':     return [];   // skúšku spúšťa až tlačidlo
     case 'aircraft': return buildAircraftQuestions();
@@ -6914,6 +7758,15 @@ function renderQuestion() {
   card.classList.toggle('split', split);
   document.querySelector('.app').classList.toggle('wide', split);
   fsSync();
+  /* súťažné stránky — Dobyvateľ a rebríček */
+  const comp = state.mode === 'conquer' || state.mode === 'rank';
+  document.body.classList.toggle('on-comp', comp);
+  if (comp) {
+    document.querySelector('.controls').style.display = 'none';
+    document.getElementById('mode-label').textContent = state.mode === 'conquer' ? 'DOBYVATEĽ' : 'REBRÍČEK';
+    if (state.mode === 'conquer') { DQ.sig = ''; dqRender(card); } else { renderRank(card); rkLoad(); }
+    return;
+  }
   /* MOD 05 — hra na kurzy má vlastnú kartu a vlastnú slučku */
   if (state.mode === 'heading') { document.querySelector('.controls').style.display = ''; renderHeadingGame(card); return; }
   /* na úvode nie je čo nastavovať ani preskakovať */
@@ -7724,7 +8577,7 @@ function labelForId(id) {
 
 function renderFilters() {
   const el = document.getElementById('filters');
-  if (state.mode === 'home') { el.innerHTML = ''; return; }
+  if (state.mode === 'home' || state.mode === 'conquer' || state.mode === 'rank') { el.innerHTML = ''; return; }
   if (state.mode === 'aircraft') {
     const cmp = state.filters.acMode === 'cmp';
     el.innerHTML = `
@@ -8141,6 +8994,7 @@ function nextQuestion() {
 }
 
 function startMode(mode) {
+  rkSample();
   examStop();
   if (typeof hgStop === 'function') hgStop();   // hra z MOD 05 nesmie bežať na pozadí
   state.mode = mode;
