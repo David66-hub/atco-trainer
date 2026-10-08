@@ -315,6 +315,7 @@ function buildQueue() {
     case 'callsign': return buildCallsignQuestions();
     case 'waypoint': return buildWaypointQuestions();
     case 'heading':  return [];   // MOD 05 nemá otázky, beží ako hra
+    case 'theory': case 'wake': case 'metar': case 'phrase': case 'calc': case 'abbr': return [];   // MOD 07 – 12 majú vlastné jadro (GQ)
     case 'coord':    return (state.filters.coMode === 'fill' || state.filters.coMode === 'study') ? [] : buildCoordQuestions();
   }
 }

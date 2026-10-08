@@ -26,6 +26,9 @@ function renderQuestion() {
     if (state.mode === 'conquer') { DQ.sig = ''; dqRender(card); } else if (state.mode === 'profile') { RK.pfKey = null; card._pfHtml = null; renderProfile(card); rkLoad(); } else if (state.mode === 'about') renderAbout(card); else { renderRank(card); rkLoad(); }
     return;
   }
+  document.body.classList.toggle('gq-on', !!GQ.M[state.mode]);
+  /* MOD 07 – 12 — spoločné jadro otázok */
+  if (GQ.M[state.mode]) { document.querySelector('.controls').style.display = ''; document.body.classList.remove('exam-on'); renderGQ(card); return; }
   /* MOD 05 — hra na kurzy má vlastnú kartu a vlastnú slučku */
   if (state.mode === 'heading') { document.querySelector('.controls').style.display = ''; renderHeadingGame(card); return; }
   /* na úvode nie je čo nastavovať ani preskakovať */

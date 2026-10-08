@@ -147,7 +147,11 @@ function nextQuestion() {
 const MODS_LIST = [['daily', 'DNES', 'Dnešný tréning', 'Namiešané otázky zo všetkých modulov podľa toho, čo máš opakovať.', 'calendar'],
   ['aircraft', 'MOD 01', 'Typy lietadiel', 'Spoznaj lietadlo podľa fotky.', 'photo'], ['airport', 'MOD 02', 'Letiská a ICAO kódy', 'Kódy, mestá, mapa a prefixy štátov.', 'map'],
   ['callsign', 'MOD 03', 'Volacie znaky', 'Kód prevádzkovateľa ↔ volačka.', 'cards'], ['waypoint', 'MOD 04', 'Body FRA na mape', 'Význačné body FIR Bratislava.', 'blind'],
-  ['heading', 'MOD 05', 'Hra na kurzy', 'Navádzaj lietadlo kurzami.', 'compass'], ['coord', 'MOD 06', 'Koordinácia', 'Body, hladiny a frekvencie susedov.', 'radio']];
+  ['heading', 'MOD 05', 'Hra na kurzy', 'Navádzaj lietadlo kurzami.', 'compass'], ['coord', 'MOD 06', 'Koordinácia', 'Body, hladiny a frekvencie susedov.', 'radio'],
+  ['theory', 'MOD 07', 'Teória', 'Deväť okruhov, vyše 2 400 otázok — aj s fotkami.', 'theory'], ['wake', 'MOD 08', 'Rozstupy za turbulenciou', 'Dve lietadlá: aký rozstup platí?', 'wake'],
+  ['metar', 'MOD 09', 'METAR', 'Čítaj správy o počasí a kódy v nich.', 'metar'], ['phrase', 'MOD 10', 'Frazeológia', 'Štandardné slová, hláskovanie, čísla, read-back.', 'phrase'],
+  ['calc', 'MOD 11', 'Počty z hlavy', 'Prevodná hladina, čas, klesanie, jednotky.', 'calc'], ['abbr', 'MOD 12', 'Skratky', 'Skratky ICAO a Q-kódy.', 'abbr']];
+const MG_X = { theory: ['📚', '#7b6cff', '#3b2fb3'], wake: ['🌪', '#12c4b4', '#0b6f78'], metar: ['⛅', '#4a98ff', '#1c4fa8'], phrase: ['🎙', '#ffa64d', '#d9541e'], calc: ['🧮', '#22d990', '#0a7d4a'], abbr: ['🔤', '#f06a5c', '#9c2a20'] };
 /* ilustrácie do okna modulov: plné farebné plochy bez obrysov; hýbu sa len pod myšou (trieda mg-*) */
 function modG(id) {
   const G = {
@@ -187,7 +191,7 @@ function modG(id) {
       <path d="M116,48 l8,13 h-16z" fill="#ffd34d"/><text x="116" y="42" text-anchor="middle" fill="#fff" font-family="monospace" font-weight="700" font-size="9.5">COP</text>
       <g class="mg-pop"><rect x="140" y="52" width="84" height="28" rx="14" fill="#fff"/><text x="182" y="71" text-anchor="middle" fill="#1d4f86" font-family="monospace" font-weight="700" font-size="14">134,440</text></g>`,
   };
-  return `<svg class="mg-svg" viewBox="0 0 240 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${G[id] || G.daily}</svg>`;
+  return `<svg class="mg-svg" viewBox="0 0 240 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${G[id] || (MG_X[id] ? `<defs><linearGradient id="mgx-${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${MG_X[id][1]}"/><stop offset="1" stop-color="${MG_X[id][2]}"/></linearGradient></defs><rect width="240" height="120" fill="url(#mgx-${id})"/><circle cx="196" cy="24" r="46" fill="#fff" opacity="0.1"/><circle cx="34" cy="108" r="38" fill="#fff" opacity="0.08"/><text class="mg-float" x="120" y="80" text-anchor="middle" font-size="58">${MG_X[id][0]}</text>` : G.daily)}</svg>`;
 }
 function modsClose() { const w = document.getElementById('mods-wrap'); if (w) { w.classList.add('out'); setTimeout(() => w.remove(), 180); } document.removeEventListener('keydown', modsKey, true); }
 function modsKey(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); modsClose(); } }
@@ -261,6 +265,7 @@ function mzAttach() {
 new MutationObserver(() => mzAttach()).observe(document.getElementById('qcard'), { childList: true, subtree: true });
 function startMode(mode) {
   if (mode !== 'daily') state.drill = false;
+  if (GQ.M[mode] && GQ.st && GQ.st.mode !== mode) GQ.st = null;
   rkSample();
   examStop();
   if (typeof hgStop === 'function') hgStop();   // hra z MOD 05 nesmie bežať na pozadí
@@ -297,6 +302,7 @@ document.getElementById('about-btn').onclick = () => { startMode('about'); windo
 document.getElementById('acct-btn').onclick = () => { if (state.mode === 'profile' && RK.pfTab !== 'over') RK.pfTab = 'over'; startMode('profile'); };
 document.getElementById('inbox-btn').onclick = () => { RK.pfTab = 'inbox'; startMode('profile'); socTick(true); };
 if (RK.acct) { pfLoadMe().then(() => { if (state.mode === 'home') homeHelloFill(); }); socTick(true); psPull(); if (!RK.rows) rkLoad(); }
+gqFeedGame();
 qfixApply(lsGet(QF_KEY, []));
 qfixLoad();
 rkHeadBtn();

@@ -9,6 +9,9 @@
   const c = document.createElement('canvas');
   c.id = 'radar-bg';
   document.body.insertBefore(c, document.body.firstChild);
+  /* lúč radaru je samostatná vrstva, ktorú otáča prehliadač sám (plynulo, bez prekresľovania) — canvas pod ňou kreslí len kruhy a ciele */
+  const sw = document.createElement('div'); sw.id = 'radar-sweep'; c.after(sw);
+  const T0 = performance.now(), SPIN = 0.75;
   const g = c.getContext('2d');
   if (!g) return;
   const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -41,15 +44,6 @@
       const a = k * Math.PI / 6;
       g.beginPath(); g.moveTo(cx - Math.cos(a) * R, cy - Math.sin(a) * R); g.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); g.stroke();
     }
-    /* lúč: žiara, ktorá sa ťahá za čelom lúča */
-    if (g.createConicGradient) {
-      const sw = g.createConicGradient(ang, cx, cy);
-      sw.addColorStop(0, 'rgba(70,235,160,0)'); sw.addColorStop(0.78, 'rgba(70,235,160,0)');
-      sw.addColorStop(0.97, 'rgba(70,235,160,0.20)'); sw.addColorStop(1, 'rgba(150,255,205,0.42)');
-      g.fillStyle = sw; g.beginPath(); g.arc(cx, cy, R, 0, TAU); g.fill();
-    }
-    g.strokeStyle = 'rgba(170,255,215,0.55)'; g.lineWidth = 1.4;
-    g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(ang) * R, cy + Math.sin(ang) * R); g.stroke();
     /* ciele */
     blips.forEach(b => {
       b.x += Math.cos(b.h) * b.v * dt; b.y += Math.sin(b.h) * b.v * dt;
@@ -69,14 +63,14 @@
       g.beginPath(); g.moveTo(b.x, b.y); g.lineTo(b.x + Math.cos(b.h) * 9, b.y + Math.sin(b.h) * 9); g.stroke();
     });
   }
-  /* pozadie je len kulisa: 20 obrázkov za sekundu stačí a nechá výkon na samotnú stránku; počas hry a keď kartu nevidno, stojí */
+  /* ciele sa hýbu pomaly, stačí ich prekresliť 12× za sekundu; uhol lúča sa berie z času, aby sedel s otáčaním vrstvy */
   function frame(ts) {
     if (!still) requestAnimationFrame(frame);
     if (document.hidden || document.body.classList.contains('dq-live') || document.body.classList.contains('fs-on')) { last = 0; return; }
-    if (last && ts - last < 48) return;
-    const dt = last ? Math.min(0.12, (ts - last) / 1000) : 0;
+    if (last && ts - last < 80) return;
+    const dt = last ? Math.min(0.2, (ts - last) / 1000) : 0;
     last = ts;
-    ang = (ang + dt * 0.75) % TAU;
+    ang = (((performance.now() - T0) / 1000) * SPIN) % TAU;
     draw(dt);
   }
   size();

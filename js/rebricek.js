@@ -9,8 +9,8 @@ const SB_KEY = 'sb_publishable_zCtKfNAduJIc6kr4N1YK2w_CRQT8fQz';   // verejný k
 const SB_ON = !!(SB_URL && SB_KEY);
 const RK_ACCT = 'atcoTrainerV2.acct', RK_PEND = 'atcoTrainerV2.rkPend', RK_MOCK = 'atcoTrainerV2.rkMock';
 const RK_MODS = [['aircraft', 'MOD 01 · LIETADLÁ'], ['airport', 'MOD 02 · LETISKÁ'], ['callsign', 'MOD 03 · VOLAČKY'], ['waypoint', 'MOD 04 · BODY FRA'], ['heading', 'MOD 05 · KURZY'],
-  ['coord', 'MOD 06 · KOORDINÁCIA'], ['daily', 'DENNÝ TRÉNING'], ['exam', 'DENNÁ VÝZVA'], ['conquer', 'DOBYVATEĽ'], ['bonus', 'BONUSY · ÚLOHY TÝŽDŇA']];
-const RK_SUBJ = [['q_atm', 'ATM'], ['q_nav', 'NAVIGÁCIA'], ['q_met', 'METEOROLÓGIA'], ['q_eqps', 'ZARIADENIA'], ['q_hum', 'ĽUDSKÉ FAKTORY'], ['q_acft', 'LIETADLÁ'], ['q_pen', 'PRAC. PROSTREDIE'], ['q_hist', 'HISTÓRIA'], ['q_gen', 'VŠEOBECNÝ PREHĽAD']];
+  ['coord', 'MOD 06 · KOORDINÁCIA'], ['daily', 'DENNÝ TRÉNING'], ['exam', 'DENNÁ VÝZVA'], ['conquer', 'DOBYVATEĽ'], ['theory', 'MOD 07 · TEÓRIA'], ['wake', 'MOD 08 · ROZSTUPY'], ['metar', 'MOD 09 · METAR'], ['phrase', 'MOD 10 · FRAZEOLÓGIA'], ['calc', 'MOD 11 · POČTY'], ['abbr', 'MOD 12 · SKRATKY'], ['bonus', 'BONUSY · ÚLOHY TÝŽDŇA']];
+const RK_SUBJ = [['q_atm', 'ATM'], ['q_nav', 'NAVIGÁCIA'], ['q_met', 'METEOROLÓGIA'], ['q_eqps', 'ZARIADENIA'], ['q_hum', 'ĽUDSKÉ FAKTORY'], ['q_acft', 'LIETADLÁ'], ['q_pen', 'PRAC. PROSTREDIE'], ['q_law', 'LETECKÉ PRÁVO'], ['q_hist', 'HISTÓRIA'], ['q_gen', 'VŠEOBECNÝ PREHĽAD']];
 const RK_ERR = { NICK_TAKEN: 'Táto prezývka je už obsadená — skús inú.', BAD_LOGIN: 'Nesprávna prezývka alebo heslo.',
   BAD_NICK: 'Prezývka musí mať 3 až 16 znakov (písmená, čísla, medzera, bodka, pomlčka).', BAD_PASS: 'Heslo musí mať aspoň 6 znakov.', WEAK_PASS: 'Nové heslo musí mať aspoň 8 znakov a obsahovať písmeno aj číslicu.',
   BAD_TOKEN: 'Prihlásenie vypršalo — prihlás sa znova.', NO_PLAYER: 'Hráč s takou prezývkou neexistuje.', SELF: 'Seba si pridať nemôžeš.', NOT_FRIEND: 'Správy sa dajú posielať len potvrdeným priateľom.',
@@ -130,12 +130,19 @@ const HELP = {
   'coord.study': ['MOD 06 · ŠTÚDIUM', [['eye', 'Tu sa nič neskúša', 'Vľavo mapa bodov podľa suseda.'], ['table', 'Vpravo všetko z dohody', 'Frekvencie, hranice a tabuľky.']]],
   'coord.scen': ['MOD 06 · SCENÁR', [['route', 'Jeden let od začiatku', 'Krok za krokom až po odovzdanie.'], ['table', 'Bod, hladina, podmienka', 'Keď určíš bod, lietadlo k nemu vyletí.'], ['radio', 'Nakoniec frekvencia', 'Stanovište podľa vertikálnych hraníc.']]],
   daily: ['DNEŠNÝ TRÉNING', [['mods', 'Všetky moduly naraz', 'Otázky sú namiešané.'], ['calendar', 'Opakovanie podľa kalendára', 'Čo vieš, príde o 1, 3, 7, 14 a 30 dní.'], ['hint', 'Slabé miesta najprv', 'Čo si pokazil, príde hneď zajtra.']]],
-  exam: ['DENNÁ VÝZVA', [['calendar', 'Každý deň nová', 'Dvadsať otázok, pre všetkých tie isté. Počíta sa prvý pokus dňa.'], ['timer', 'Na čas', '12 sekúnd na otázku, pri písaní 20.'], ['eye', 'Bez nápovedí', 'Či si odpovedal správne, uvidíš až na konci.'], ['score', 'Body', 'Správna +3 (pri písaní +6), nesprávna alebo preskočená −2.'], ['podium', 'Od 80 % bonus', 'A ešte väčší za 90 a 100 %.']]],
+  exam: ['DENNÁ VÝZVA', [['calendar', 'Každý deň nová', 'Dvadsať otázok, pre všetkých tie isté. Máš jeden pokus denne.'], ['timer', 'Na čas', '12 sekúnd na otázku, pri písaní 20.'], ['eye', 'Bez nápovedí', 'Či si odpovedal správne, uvidíš až na konci.'], ['score', 'Body', 'Správna +3 (pri písaní +6), nesprávna alebo preskočená −2.'], ['podium', 'Od 80 % bonus', 'A ešte väčší za 90 a 100 %.']]],
   rank: ['REBRÍČEK · AKO SA POČÍTA', [['score', 'Cvičenie v module', 'Správna odpoveď 1 bod, v HARDCORE (písanie) 2 body. Nesprávna 0.'], ['calendar', 'Denný tréning', 'Rovnako: 1 bod, pri písaní 2.'], ['timer', 'Denná výzva', 'Správna +3 (pri písaní +6), nesprávna −2. Bonus od 80 %. Počíta sa prvý pokus dňa.'], ['swords', 'Dobyvateľ', '500 × miesto × výkon × hráči × dĺžka × okruhy. Viac ľudí a kôl = viac bodov.'], ['bars', 'Úspešnosť', 'Správne odpovede delené všetkými. Preskočená otázka je nesprávna.'], ['timer', 'Čas tréningu', 'Beží, len keď odpovedáš. Po 45 sekundách bez odpovede sa zastaví.'], ['podium', 'Mesačné ligy', 'Body za mesiac. Prví traja postupujú, poslední traja zostupujú. Päť líg od Bronzu po Diamant.'], ['podium', 'Celkové poradie', 'Podľa všetkých bodov; pri zhode podľa počtu správnych odpovedí.'], ['login', 'Kto je v rebríčku', 'Len prihlásení. Bez účtu sa nič neukladá.']]],
   profile: ['PROFIL', [['login', 'Tvoj účet', 'Prihlásenie, odhlásenie a vynulovanie skóre.'], ['bars', 'Všetky štatistiky', 'Body, úspešnosť a čas podľa modulov.'], ['calendar', 'Pokrok v učení', 'Koľko máš naučené a čo je dnes na opakovanie.'], ['swords', 'Vzhľad v hre', 'Farba a lietadlo pre Dobyvateľa.']]],
   conquer: ['DOBYVATEĽ · PRAVIDLÁ', [['terr', 'Boj o mapu Slovenska', 'Každý priestor má body: letisko 500, CTR 400, TMA 300, TRA/TSA 200, LZR 150, G 100.'], ['axis', '1 · Štart', 'Tipneš číslo. Kto je najbližšie, vyberá si domovské letisko prvý.'], ['choice', '2 · Obsadzovanie', 'Správna odpoveď = berieš susedný voľný priestor. Najrýchlejší dva.'], ['swords', '3 · Súboje', 'Útočíš na suseda. Odpovedáte obaja; rýchlosť nerozhoduje.'], ['axis', 'Obaja správne? Rozstrel', 'Tipovacia otázka, najviac tri. V tretej rozhodne aj čas.'], ['heart', 'Domovské letisko', 'Má tri životy. Pri treťom zásahu vypadávaš.'], ['joker', 'Žolíky — raz za hru', '50:50, +10 sekúnd a dvojité body pri útoku.'], ['podium', 'Koniec', 'Najviac bodov vyhráva. Do rebríčka ide viac za viac ľudí a kôl.']]],
 };
 /* počas hry: jedna krátka karta k aktuálnej fáze; mimo otázky sa dá pokračovať na všetky pravidlá */
+Object.assign(HELP, {
+  theory: ['MOD 07 · TEÓRIA', [['list', 'Deväť okruhov', 'Vyber si okruh alebo nechaj všetky naraz.'], ['choice', 'Štyri možnosti', 'Klikni alebo stlač 1 až 4. Niektoré otázky majú fotku.'], ['hint', 'Chyby sa pamätajú', 'Zapni LEN MOJE CHYBY a opakuj, čo ti nejde.']]],
+  wake: ['MOD 08 · ROZSTUPY', [['photo', 'Dve lietadlá', 'Jedno letí vpredu, druhé za ním.'], ['choice', 'Urči rozstup', 'Podľa kategórií SUPER, HEAVY, MEDIUM a LIGHT.'], ['table', 'Vysvetlenie', 'Po odpovedi uvidíš, prečo to tak je.']]],
+  metar: ['MOD 09 · METAR', [['type', 'Vygenerovaná správa', 'Každá otázka má novú správu METAR.'], ['choice', 'Jedna vec zo správy', 'Vietor, dohľadnosť, oblačnosť, teplota alebo tlak.'], ['hint', 'Kódy zvlášť', 'V režime ČO ZNAMENÁ KÓD sa učíš skratky počasia.']]],
+  phrase: ['MOD 10 · FRAZEOLÓGIA', [['radio', 'Štandardné slová', 'Čo presne znamená ROGER, WILCO či STANDBY.'], ['type', 'Hláskovanie a čísla', 'Abeceda a ako sa vysielajú čísla.'], ['choice', 'Read-back', 'Čo musí pilot zopakovať a čo stačí potvrdiť.']]],
+  calc: ['MOD 11 · POČTY Z HLAVY', [['calc', 'Rýchle počty', 'Prevodná hladina, čas a vzdialenosť, klesanie, jednotky.'], ['choice', 'Vyber výsledok', 'Štyri možnosti, jedna správna.'], ['hint', 'Postup', 'Po odpovedi uvidíš, ako sa to počíta.']]],
+  abbr: ['MOD 12 · SKRATKY', [['list', 'Skratky ICAO', 'Skratka na význam alebo naopak.'], ['radio', 'Q-kódy', 'QNH, QFE, QDM a ďalšie.'], ['hint', 'Chyby sa pamätajú', 'LEN MOJE CHYBY ti vráti, čo si pokazil.']]] });
 function hpGameNow() {
   const S = DQ.S; if (!S || S.phase === 'lobby') return helpOpen('conquer');
   const ph = S.phase === 'rest' || S.phase === 'count' ? (S.cnt || S.phase) : S.phase;
@@ -202,7 +209,7 @@ function helpOpen(key) { if (HELP[key]) hpDraw(key, 0); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hp]'); if (b) { e.preventDefault(); if (b.dataset.hp === 'game') hpGameNow(); else helpOpen(b.dataset.hp === '*' ? hpKeyNow() : b.dataset.hp); } });
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '5.1.0';
+const APP_VERSION = '5.4.0';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -306,6 +313,7 @@ function rkAdd(mod, d) {
 /* HARDCORE (písanie / ťažšia verzia) dáva dva body, ľahká jeden */
 function rkMult() {
   const F = state.filters, m = state.mode;
+  if (GQ.M[m]) return GQ.st && GQ.st.q && GQ.st.q.typed ? 2 : 1;   // MOD 07 – 12: písaná odpoveď za dva body
   const hard = m === 'aircraft' ? F.acAns === 'type' : m === 'airport' ? F.apAns === 'type' : m === 'callsign' ? F.csAns === 'type' :
     m === 'waypoint' ? F.wpDiff === 'hard' : m === 'heading' ? F.hgDiff === 'hard' : m === 'coord' ? F.coAns === 'type' :
     (m === 'daily' || m === 'exam') ? F.dAns === 'type' : false;
@@ -1004,7 +1012,7 @@ function rkRulesHTML(pts) {
         <table><tbody>
           <tr><th>Cvičenie v module (MOD 01 – 06)</th><td>správna odpoveď <b>+1</b>, v HARDCORE (písanie z hlavy) <b>+2</b>; nesprávna a preskočená 0</td></tr>
           <tr><th>Denný tréning</th><td>rovnako ako cvičenie: <b>+1</b>, pri písaní <b>+2</b></td></tr>
-          <tr><th>Denná výzva</th><td>20 otázok, každý deň rovnaké pre všetkých; do rebríčka ide len prvý pokus dňa<br>správna <b>+3</b> (pri písaní <b>+6</b>), nesprávna alebo preskočená <b>−2</b>; bonus za 80 % = počet otázok, za 90 % dvojnásobok, za 100 % trojnásobok; menej než 0 sa nepripíše; body až po dokončení skúšky</td></tr>
+          <tr><th>Denná výzva</th><td>20 otázok, každý deň rovnaké pre všetkých; jeden pokus denne<br>správna <b>+3</b> (pri písaní <b>+6</b>), nesprávna alebo preskočená <b>−2</b>; bonus za 80 % = počet otázok, za 90 % dvojnásobok, za 100 % trojnásobok; menej než 0 sa nepripíše; body až po dokončení skúšky</td></tr>
           <tr><th>Dobyvateľ</th><td><b>500 × miesto × výkon × hráči × dĺžka × okruhy</b>, najmenej 5<br>miesto: 1. = 1 · 2. = 0,5 · 3. = 0,25 · 4. = 0,12 · 5. = 0,06 · 6. = 0,03<br>výkon: 0,5 až 1 podľa bodov oproti víťazovi<br>hráči: len počítače 0,1 · 2 ľudia 0,6 · 3 = 0,8 · 4 = 1 · 5 = 1,15 · 6 = 1,3 (každý počítač +0,03)<br>dĺžka: (kolá obsadzovania + súbojov) / 10, od 0,4 do 1,6<br>okruhy: 0,6 pri jednej sade až 1 pri všetkých</td></tr>
           <tr><th>Hry a výhry</th><td>počítajú sa len hry Dobyvateľa, v ktorých hrali aspoň dvaja ľudia</td></tr>
           <tr><th>Úspešnosť</th><td>správne odpovede ÷ všetky odpovede; v Dobyvateľovi len z hier aspoň dvoch ľudí</td></tr>
@@ -1033,7 +1041,7 @@ function renderRank(card) {
         ${RK.acct ? '' : '<div class="rk-acct in"><span>Nie si prihlásený — body sa ti nepočítajú a v lige ťa nevidno.</span><div class="rk-acct-b"><button class="btn" id="rk-toprof">PRIHLÁSIŤ SA ▶</button></div></div>'}
         <div class="rk-chips main">${rkTabsHTML(RK.view)}</div>
         ${RK.loadErr ? `<div class="rk-err">${dqEsc(RK.loadErr)}</div>` : ''}
-        ${RK.view === 'dc' ? `<div class="rk-note">Dnešných 20 otázok je pre všetkých rovnakých. Poradie je podľa počtu správnych, pri zhode podľa času. Počíta sa prvý pokus dňa.</div>${hasLg || !RK.rows ? dcTopHTML() : '<div class="rk-empty">Denné poradie čaká na doplnok databázy (supabase-doplnok-v49.sql). Výzvu hrať môžeš, body sa počítajú.</div>'}<div class="pf-acts"><button class="btn" id="rk-godc">ÍSŤ NA DENNÚ VÝZVU ▶</button></div>`
+        ${RK.view === 'dc' ? `<div class="rk-note">Dnešných 20 otázok je pre všetkých rovnakých. Poradie je podľa počtu správnych, pri zhode podľa času. Každý má jeden pokus denne.</div>${hasLg || !RK.rows ? dcTopHTML() : '<div class="rk-empty">Denné poradie čaká na doplnok databázy (supabase-doplnok-v49.sql). Výzvu hrať môžeš, body sa počítajú.</div>'}<div class="pf-acts"><button class="btn" id="rk-godc">ÍSŤ NA DENNÚ VÝZVU ▶</button></div>`
         : !hasLg && RK.rows ? '<div class="rk-empty">Ligy čakajú na doplnok databázy (supabase-doplnok-v49.sql). Celkové poradie funguje ďalej.</div>'
         : `<div class="lg-head" style="--c:${LGC[sel]}"><div class="lg-badge"><b>${sel}</b></div><div><strong>LIGA ${LG[sel]}</strong><span>${meR && (meR.lg || 1) === sel ? 'Tvoja liga. ' : ''}Do konca mesiaca ${left === 0 ? 'ostáva dnešok' : left === 1 ? 'ostáva 1 deň' : 'ostáva ' + left + ' dní'}.</span></div></div>
           <div class="lg-steps">${[1, 2, 3, 4, 5].map(n => `<button class="${n === sel ? 'on' : ''}${meR && (meR.lg || 1) === n ? ' me' : ''}" data-lg="${n}" style="--c:${LGC[n]}">${LG[n]}<small>${(RK.rows || []).filter(r => (r.lg || 1) === n).length}</small></button>`).join('')}</div>
