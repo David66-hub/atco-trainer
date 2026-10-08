@@ -102,6 +102,17 @@ function startCustom(list, mode) {
 }
 
 /* ---------- SKÚŠKA: na čas, bez nápovedí, vyhodnotenie až na konci ---------- */
+/* Skúška od v4.1: čas je daný počtom otázok (12 s na otázku, pri písaní 20 s), hranica úspechu 80 %.
+   Body do rebríčka sa pripíšu až po dokončení: správna +3 (pri písaní +6), nesprávna alebo preskočená −2,
+   bonus za 80 % = počet otázok, za 90 % dvojnásobok, za 100 % trojnásobok. Menej ako 0 sa nepripíše. */
+const EXAM_PASS = 80;
+function examSecs() { const F = state.filters; return F.exN * (F.dAns === 'type' ? 20 : 12); }
+function examClock(sec) { return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
+function examPoints(good, bad, total, typed) {
+  const per = typed ? 6 : 3, pct = Math.round(good / Math.max(1, total) * 100);
+  const bonus = pct >= 100 ? total * 3 : pct >= 90 ? total * 2 : pct >= EXAM_PASS ? total : 0;
+  return { per, plus: good * per, minus: bad * 2, bonus, pct, pts: Math.max(0, good * per - bad * 2) + bonus };
+}
 function examStop() {
   if (state.exam && state.exam.iv) clearInterval(state.exam.iv);
   state.exam = null;
@@ -122,7 +133,7 @@ function examStart() {
   state.queue = examBuild(); state.index = 0; state.total = state.queue.length;
   state.correct = 0; state.wrong = 0; state.streak = 0; state.bestStreak = 0;
   state.current = state.queue[0] || null;
-  state.exam = { recs: [], t0: Date.now(), limit: state.filters.exMin * 60000, applied: false, iv: 0 };
+  state.exam = { recs: [], t0: Date.now(), limit: examSecs() * 1000, typed: state.filters.dAns === 'type', applied: false, iv: 0 };
   state.exam.iv = setInterval(examTick, 250);
   renderStats(); renderQuestion(); examTick();
   window.scrollTo(0, 0);
@@ -155,8 +166,12 @@ function renderExamStart(card) {
   card.innerHTML = `
     <div class="home-hero">
       <div class="home-kicker">SKÚŠKA</div>
-      <h1>${F.exN} otázok, ${F.exMin} minút, žiadne nápovede.</h1>
-      <p>Otázky sú namiešané z typov lietadiel, letísk, volacích znakov a koordinácie. Počas skúšky <strong>nevidíš, či si odpovedal správne</strong> — výsledok a zoznam chýb sa ukážu až na konci. Počet otázok, čas a obtiažnosť si nastav v tabuľke dole.</p>
+      <h1>${F.exN} otázok, čas ${examClock(examSecs())}, žiadne nápovede.</h1>
+      <p>Otázky sú namiešané z typov lietadiel, letísk, volacích znakov a koordinácie. Počas skúšky <strong>nevidíš, či si odpovedal správne</strong> — výsledok a zoznam chýb sa ukážu až na konci. Na otázku je v priemere ${F.dAns === 'type' ? 20 : 12} sekúnd a na úspech treba <strong>${EXAM_PASS} %</strong>.</p>
+      <div class="exam-rules"><strong>BODY DO REBRÍČKA</strong>
+        <span>správna odpoveď <b>+${F.dAns === 'type' ? 6 : 3}</b></span><span>nesprávna alebo preskočená <b>−2</b></span>
+        <span>bonus za ${EXAM_PASS} % <b>+${F.exN}</b></span><span>za 90 % <b>+${F.exN * 2}</b></span><span>za 100 % <b>+${F.exN * 3}</b></span>
+        <em>V bežnom cvičení je správna odpoveď za 1 bod (pri písaní za 2). Body zo skúšky sa pripíšu až po jej dokončení${RK.acct ? '' : ' — a len prihláseným (tlačidlo PRIHLÁSIŤ vpravo hore)'}. Počet otázok a obtiažnosť si nastav v tabuľke dole.</em></div>
       <p><button class="btn" id="exam-go" style="padding:16px 34px;font-size:15px">SPUSTIŤ SKÚŠKU ▶</button></p>
     </div>`;
   document.getElementById('exam-go').onclick = examStart;
@@ -171,6 +186,8 @@ function renderExamResult(card) {
     E.applied = true; E.secs = secs;
     E.recs.forEach(r => { srUpdate(r.q.id, r.ok); if (!r.ok) state.mistakes[r.q.id] = (state.mistakes[r.q.id] || 0) + 1; });
     apSaveProgress(); renderWeak();
+    E.sc = examPoints(good, wrong.length, total, E.typed);
+    if (RK.acct) { rkAdd('exam', { c: good, w: wrong.length, p: E.sc.pts }); rkPendSave(); rkFlush(); }
   }
   document.getElementById('qnum').textContent = E.recs.length;
   document.getElementById('qtotal').textContent = total;
@@ -179,9 +196,11 @@ function renderExamResult(card) {
   E.recs.forEach(r => { const m = modOfId(r.q.id); (byMod[m] = byMod[m] || [0, 0])[r.ok ? 0 : 1]++; });
   card.innerHTML = `
     <div class="session-done" style="padding-bottom:10px">
-      <h2>${E.timeout ? 'ČAS VYPRŠAL' : 'SKÚŠKA DOKONČENÁ'}</h2>
+      <h2>${E.timeout ? 'ČAS VYPRŠAL' : 'SKÚŠKA DOKONČENÁ'} · <span class="${pct >= EXAM_PASS ? 'exam-ok' : 'exam-no'}">${pct >= EXAM_PASS ? 'PREŠIEL SI' : 'NEPREŠIEL SI'}</span></h2>
       <div class="score-big">${pct}%</div>
-      <p>${good} z ${total} správne · čas ${Math.floor(E.secs / 60)}:${String(E.secs % 60).padStart(2, '0')}${E.recs.length < total ? ' · nezodpovedané: ' + (total - E.recs.length) : ''}</p>
+      <p>${good} z ${total} správne · čas ${Math.floor(E.secs / 60)}:${String(E.secs % 60).padStart(2, '0')}${E.recs.length < total ? ' · nezodpovedané: ' + (total - E.recs.length) : ''} · hranica ${EXAM_PASS} %</p>
+      <div class="exam-rules res"><strong>${RK.acct ? 'DO REBRÍČKA +' + E.sc.pts + ' BODOV' : 'BODY: ' + E.sc.pts + ' — NEPRIPÍSANÉ, NIE SI PRIHLÁSENÝ'}</strong>
+        <span>${good} správnych × ${E.sc.per} <b>+${E.sc.plus}</b></span><span>${wrong.length} nesprávnych × 2 <b>−${E.sc.minus}</b></span><span>bonus za ${pct} % <b>+${E.sc.bonus}</b></span></div>
     </div>
     <div class="home-tips">${Object.keys(byMod).map(m => `<div><strong>${MOD_NAME[m]}</strong>${byMod[m][0]} správne, ${byMod[m][1]} zle</div>`).join('')}</div>
     <div class="home-h">${wrong.length ? 'CHYBY (' + wrong.length + ')' : 'BEZ CHYBY'}</div>

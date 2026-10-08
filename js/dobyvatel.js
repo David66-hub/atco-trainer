@@ -420,22 +420,67 @@ const DQ_NUM = [
   ['nav', 'Aký je približný dosah VOR?', 200, 'NM'], ['nav', 'Aká je maximálna celková chyba systému VOR (±)?', 5, '°'], ['nav', 'Kde sa začína frekvenčné pásmo VOR?', 108, 'MHz'], ['nav', 'Kde sa končí frekvenčné pásmo VOR?', 117.975, 'MHz'],
   ['nav', 'Aký uhol má správna zostupová rovina ILS?', 3, '°'], ['nav', 'Pri akom uhle je prvý falošný glide slope lúč ILS?', 6, '°'],
   ['nav', 'Lietadlo má TAS 240 kt a GS 210 kt. Aká silná je zložka protivetra?', 30, 'kt'],
+  /* v4.2 — ďalšie číselné otázky do rozstrelov */
+  ['atm', 'Aký je strop pre lety VFR bez osobitného povolenia? (FL)', 195, ''], ['atm', 'Aká je minimálna letová dohľadnosť pre VMC pod FL 100 v riadenom priestore?', 5, 'km'], ['atm', 'Koľko stôp nad najvyššou prekážkou letí IFR najmenej mimo horského terénu?', 1000, 'ft'],
+  ['atm', 'Koľko stôp nad najvyššou prekážkou letí IFR najmenej v horskom teréne?', 2000, 'ft'], ['atm', 'Aké je základné pozdĺžne vzdialenostné minimum DME/GNSS na rovnakej trati?', 20, 'NM'], ['atm', 'Do akého uhla od roviny súmernosti predbiehaného lietadla ide o predbiehanie? (menej ako …)', 70, '°'],
+  ['atm', 'Koľko sekúnd by malo najviac trvať jedno hlasové vysielanie ATIS?', 30, 's'], ['atm', 'Koľko minút pred vstupom do riadeného priestoru sa najneskôr podáva letový plán za letu?', 10, 'min'], ['atm', 'Aké je radarové minimum pre HEAVY za HEAVY?', 4, 'NM'],
+  ['atm', 'Aké je radarové minimum pre LIGHT za MEDIUM?', 5, 'NM'], ['atm', 'Pod akou základňou oblačnosti už ATC nepovolí zvláštny let VFR?', 600, 'ft'], ['atm', 'O koľko stupňov sa musia najmenej rozbiehať radiály VOR pri priečnom rozstupe?', 15, '°'],
+  ['atm', 'O koľko stupňov sa musia najmenej rozbiehať trate pri priečnom rozstupe pomocou NDB?', 30, '°'], ['atm', 'Koľko NM od zariadenia musí byť aspoň jedno lietadlo pri priečnom rozstupe pomocou VOR?', 15, 'NM'], ['atm', 'Aké minimum platí medzi dvoma odletmi, ak sa trate hneď po vzlete rozbiehajú najmenej o 45°?', 1, 'min'],
+  ['atm', 'Do koľkých minút letu od vyčkávacieho priestoru musí mať iné lietadlo vertikálny rozstup?', 5, 'min'], ['atm', 'Ako blízko k hranici svojho priestoru smie riadiaci vektorovať pri 5 NM minime?', 2.5, 'NM'], ['atm', 'Koľko dní má cyklus AIRAC?', 28, 'dní'],
+  ['atm', 'Koľko príloh (Annexov) má Chicagsky dohovor?', 19, ''], ['atm', 'V ktorom roku bol podpísaný Chicagsky dohovor?', 1944, ''], ['atm', 'Ktorý Annex ICAO obsahuje pravidlá lietania?', 2, ''],
+  ['atm', 'Ktorý Annex ICAO upravuje letové prevádzkové služby?', 11, ''], ['atm', 'Ktorý Annex ICAO upravuje letecké telekomunikácie?', 10, ''], ['atm', 'Ktorý Annex ICAO upravuje leteckú informačnú službu?', 15, ''],
+  ['atm', 'Ktorý Annex ICAO upravuje vyšetrovanie leteckých nehôd?', 13, ''], ['atm', 'Ktorý Annex ICAO upravuje ochranu pred protiprávnymi činmi (security)?', 17, ''], ['atm', 'Ktorý Annex ICAO upravuje spôsobilosť leteckého personálu?', 1, ''],
+  ['atm', 'Koľko písmen má indikátor miesta ICAO?', 4, ''], ['met', 'Ktorý Annex ICAO upravuje meteorologickú službu?', 3, ''], ['met', 'Koľko osmín oblohy je najmenej pokrytých pri BKN?', 5, ''],
+  ['met', 'Koľko osmín oblohy je pokrytých pri OVC?', 8, ''], ['met', 'Koľko osmín oblohy je najviac pokrytých pri SCT?', 4, ''], ['met', 'Koľko osmín oblohy je najviac pokrytých pri FEW?', 2, ''],
+  ['met', 'Pod akou výškou nesmie byť pri CAVOK žiadna oblačnosť?', 5000, 'ft'], ['met', 'Ktorej výške približne zodpovedá tlaková hladina 500 hPa?', 18000, 'ft'], ['met', 'Ktorej výške približne zodpovedá tlaková hladina 850 hPa?', 5000, 'ft'],
+  ['met', 'Ktorej výške približne zodpovedá tlaková hladina 700 hPa?', 10000, 'ft'], ['met', 'Ktorej výške približne zodpovedá tlaková hladina 300 hPa?', 30000, 'ft'], ['met', 'Za koľko minút sa priemeruje vietor v správe METAR?', 10, 'min'],
+  ['met', 'Za koľko minút sa priemeruje vietor hlásený pre vzlet a pristátie?', 2, 'min'], ['met', 'O koľko °C klesá teplota na 100 m pri suchej adiabate?', 1, '°C'], ['met', 'Koľkým uzlom približne zodpovedá vietor 1 m/s?', 2, 'kt'],
+  ['met', 'Teplota je 20 °C a rosný bod 12 °C. V akej výške je približne základňa kopovitej oblačnosti?', 3200, 'ft'], ['eqps', 'Kde sa končí letecké komunikačné pásmo VHF?', 137, 'MHz'], ['eqps', 'Koľko bitov má kód módu A?', 12, ''],
+  ['eqps', 'Aká je najvyššia číslica, ktorá sa môže vyskytnúť v kóde odpovedača?', 7, ''], ['eqps', 'Akú vlnovú dĺžku má frekvencia 300 MHz?', 1, 'm'], ['eqps', 'Akú vlnovú dĺžku má frekvencia 3 GHz?', 10, 'cm'],
+  ['eqps', 'Aká je približne rýchlosť šírenia rádiových vĺn?', 300000, 'km/s'], ['nav', 'Koľko NM je jeden stupeň zemepisnej šírky?', 60, 'NM'], ['nav', 'Koľko metrov je 1 NM?', 1852, 'm'],
+  ['nav', 'Koľko stôp je približne 1 NM?', 6076, 'ft'], ['nav', 'Lietadlo letí GS 240 kt. Koľko NM preletí za 1 minútu?', 4, 'NM'], ['nav', 'Lietadlo letí GS 420 kt. Koľko NM preletí za 3 minúty?', 21, 'NM'],
+  ['nav', 'Lietadlo letí GS 180 kt. Za koľko minút preletí 60 NM?', 20, 'min'], ['nav', 'O koľko stupňov sa Zem otočí za jednu hodinu?', 15, '°'], ['nav', 'Koľko stupňov za sekundu je štandardná zatáčka?', 3, '°/s'],
+  ['nav', 'Koľko minút trvá zatáčka o 360° štandardnou rýchlosťou?', 2, 'min'], ['nav', 'Koľko minút trvá jeden okruh štandardného vyčkávania do 14 000 ft za bezvetria?', 4, 'min'], ['nav', 'Koľko družíc treba najmenej na funkciu RAIM (odhalenie chyby)?', 5, ''],
+  ['nav', 'Koľko družíc treba najmenej na odhalenie a vylúčenie chybnej družice (FDE)?', 6, ''], ['nav', 'Pravidlo 1 v 60: o koľko NM je lietadlo mimo trate po 60 NM pri odchýlke 1°?', 1, 'NM'], ['nav', 'Koľko stôp na 1 NM približne klesá lietadlo na 3° zostupovej rovine?', 300, 'ft'],
+  ['nav', 'Na akej frekvencii pracujú návestidlá (markery) ILS?', 75, 'MHz'], ['nav', 'Magnetický kurz je 180°, deklinácia 6° E. Aký je zemepisný kurz?', 186, '°'], ['nav', 'Lietadlo stúpa 1 500 ft/min z 3 000 ft na FL 120. Koľko minút to trvá?', 6, 'min'],
+  ['hum', 'Koľko minút trvá približne jeden spánkový cyklus?', 90, 'min'], ['acft', 'Od akej rýchlosti VAT sa začína kategória E?', 166, 'kt'], ['acft', 'Koľko motorov má Boeing 747?', 4, ''],
+  ['acft', 'Koľko motorov má ATR 72?', 2, ''], ['acft', 'Aký je násobok zaťaženia v ustálenej zatáčke s náklonom 45°?', 1.41, ''], ['acft', 'Na akej frekvencii VHF vysiela núdzový maják ELT?', 121.5, 'MHz'],
+  ['acft', 'Koľko kilogramov je približne 1 libra (lb)?', 0.454, 'kg'], ['acft', 'Koľko stôp je približne 1 meter?', 3.28, 'ft'], ['acft', 'Koľko litrov je približne 1 americký galón?', 3.785, 'l'],
+  ['pen', 'Koľko období núdze rozlišuje pohotovostná služba?', 3, ''], ['pen', 'Aký je bežný uhol zostupu, ktorý ukazuje PAPI?', 3, '°'], ['pen', 'Koľko písmen má kód letiska IATA?', 3, ''],
+  ['pen', 'Koľko písmen má ICAO označenie prevádzkovateľa?', 3, ''],
 ];
+/* Pamäť položených otázok: hostiteľ si pamätá posledných 1 500 otázok aj medzi hrami,
+   takže sa otázka nezopakuje, kým je z čoho vyberať. Ukladá sa len krátky odtlačok textu. */
+const DQ_SEENK = 'atcoTrainerV2.dqSeen';
+function dqHash(t) { let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+function dqSeenLoad() { if (!DQ.seen) { DQ.seenL = lsGet(DQ_SEENK, []); if (!Array.isArray(DQ.seenL)) DQ.seenL = []; DQ.seen = {}; DQ.seenL.forEach(x => { DQ.seen[x] = 1; }); } }
+function dqSeenHas(key) { dqSeenLoad(); return !!DQ.seen[dqHash(key)]; }
+function dqSeenAdd(key) {
+  dqSeenLoad(); const h = dqHash(key);
+  if (DQ.seen[h]) return;
+  DQ.seen[h] = 1; DQ.seenL.push(h);
+  if (DQ.seenL.length > 1500) DQ.seenL.splice(0, DQ.seenL.length - 1500).forEach(x => { delete DQ.seen[x]; });
+  lsSet(DQ_SEENK, DQ.seenL);
+}
+/* výber s váhami: arr = [[položka, váha], …] */
+function dqWPick(arr) { let t = arr.reduce((a, x) => a + x[1], 0), r = Math.random() * t; for (const x of arr) { r -= x[1]; if (r <= 0) return x[0]; } return arr[arr.length - 1][0]; }
 function dqGenNum(mods) {
   const pick = a => a[Math.floor(Math.random() * a.length)], M = mods || [], H = DQ.H;
   /* jednotka je vždy napísaná v otázke aj pri políčku — aby bolo jasné, či sa píšu kg, NM, minúty… */
   const fin = q => Object.assign(q, { num: true, prompt: q.prompt + (q.unit ? ' [' + q.unit + ']' : ''), sub: (q.unit ? 'Napíš číslo v jednotkách: ' + q.unit + '.' : 'Napíš číslo.') + ' Vyhráva najbližší tip.' });
   const kinds = [];
   const bank = DQ_NUM.filter(x => M.indexOf(x[0]) >= 0);
-  if (bank.length) kinds.push(() => { const x = pick(bank); return { mod: dqSetName(x[0]), key: x[0], prompt: x[1], ans: x[2], unit: x[3] }; });
-  if (M.indexOf('co') >= 0) kinds.push(() => { const c = {}; CO_UNITS.forEach(u => { c[u.n] = (c[u.n] || 0) + 1; }); const u = pick(CO_UNITS.filter(x => x.f && !x.alt && c[x.n] === 1)); return { mod: 'MOD 06 · FREKVENCIE', prompt: u.n + ' — na akej frekvencii pracuje?', ans: +u.f.replace(',', '.'), unit: 'MHz' }; });
-  if (M.indexOf('hd') >= 0) kinds.push(() => { const h = 5 * (1 + Math.floor(Math.random() * 72)); return { mod: 'MOD 05 · KURZY', prompt: 'Aký je opačný kurz ku ' + dqPad(h) + '°?', ans: +dqPad(h + 180), unit: '°' }; });
-  if (!kinds.length) kinds.push(() => { const x = pick(DQ_NUM); return { mod: dqSetName(x[0]), key: x[0], prompt: x[1], ans: x[2], unit: x[3] }; });
-  for (let i = 0; i < 30; i++) {
-    const q = pick(kinds)();
-    if (!(H && H.used['#' + q.prompt])) { if (H) H.used['#' + q.prompt] = 1; return fin(q); }
+  if (bank.length) kinds.push([() => { const x = pick(bank); return { mod: dqSetName(x[0]), key: x[0], prompt: x[1], ans: x[2], unit: x[3] }; }, 84]);
+  if (M.indexOf('co') >= 0) kinds.push([() => { const c = {}; CO_UNITS.forEach(u => { c[u.n] = (c[u.n] || 0) + 1; }); const u = pick(CO_UNITS.filter(x => x.f && !x.alt && c[x.n] === 1)); return { mod: 'MOD 06 · FREKVENCIE', prompt: u.n + ' — na akej frekvencii pracuje?', ans: +u.f.replace(',', '.'), unit: 'MHz' }; }, 7]);
+  if (M.indexOf('hd') >= 0) kinds.push([() => { const h = 5 * (1 + Math.floor(Math.random() * 72)); return { mod: 'MOD 05 · KURZY', prompt: 'Aký je opačný kurz ku ' + dqPad(h) + '°?', ans: +dqPad(h + 180), unit: '°' }; }, 9]);
+  /* okruhy bez vlastných číselných otázok (napr. len typy lietadiel) → berie sa z celej banky, nie len z frekvencií a kurzov */
+  if (!bank.length) kinds.push([() => { const x = pick(DQ_NUM); return { mod: dqSetName(x[0]), key: x[0], prompt: x[1], ans: x[2], unit: x[3] }; }, 84]);
+  for (let i = 0; i < 60; i++) {
+    const q = dqWPick(kinds)(), key = '#' + q.prompt;
+    /* prvých 40 pokusov: otázka nesmie byť ani v pamäti z minulých hier; potom stačí, že nebola v tejto hre */
+    if (!(H && H.used[key]) && (i >= 40 || !H || !dqSeenHas(key))) { if (H) { H.used[key] = 1; dqSeenAdd(key); } return fin(q); }
   }
-  return fin(pick(kinds)());
+  return fin(dqWPick(kinds)());
 }
 /* rýchla hra skracuje všetky pevné fázy okrem odpočtu; pri otázke najvyššej obťažnosti je na odpoveď 60 % času */
 function dqDur(phase) {
@@ -510,12 +555,15 @@ function dqGenQ(mods, lvl) {
     q.key = m; q.lvl = lvl || 0;
     return q;
   };
-  for (let i = 0; i < 40; i++) {
-    const m = pick(use), q = K[m]();
+  /* veľká sada padá častejšie než malá — inak by sa 20 frekvencií točilo rovnako často ako 430 otázok z meteorológie */
+  const WT = { ac: Math.min(300, AIRCRAFT.length * 2), ap: Math.min(300, AIRPORTS.length * 2), px: 70, cs: 220, hd: 60, co: 40 };
+  const W = use.map(m => [m, DQ_BANK[m] ? DQ_BANK[m].length : m === 'cu' ? Math.max(60, CU.length) : WT[m] || 60]);
+  for (let i = 0; i < 80; i++) {
+    const m = dqWPick(W), q = K[m]();
     const key = (q.img || '') + q.prompt + q.sub;
-    if (q.opts.length >= 2 && q.ans >= 0 && !(H && H.used[key])) { if (H) H.used[key] = 1; return fin(q, m); }
+    if (q.opts.length >= 2 && q.ans >= 0 && !(H && H.used[key]) && (i >= 50 || !H || !dqSeenHas(key))) { if (H) { H.used[key] = 1; dqSeenAdd(key); } return fin(q, m); }
   }
-  const m = pick(use); return fin(K[m](), m);
+  const m = dqWPick(W); return fin(K[m](), m);
 }
 
 /* ---------- spojenie ---------- */
@@ -529,23 +577,123 @@ function dqLoadSb() {
     document.head.appendChild(s);
   });
 }
+/* ---------- výpadky: obnova kanála, čakanie na hostiteľa, návrat hostiteľa (v4.1) ---------- */
+const DQ_HOSTK = 'atcoTrainerV2.dqHost';
+/* kanál spadol (uspatý telefón, výpadok siete) → otvorí sa nanovo; najviac raz za 10 sekúnd */
+async function dqReNet() {
+  if (!DQ.room || DQ.reNet) return;
+  DQ.reNet = true; DQ.reNetT = Date.now();
+  const old = DQ.net, room = DQ.room;
+  try { if (old) await old.close(); } catch (e) {}
+  DQ.net = { send() {}, close() {}, ok: () => false };
+  try {
+    const n = await dqNet(room, DQ.host ? dqHostMsg : dqClientMsg);
+    if (DQ.room !== room) { try { n.close(); } catch (e) {} }
+    else { DQ.net = n; if (DQ.host) dqCast(); else n.send(Object.assign({ t: 'join', id: DQ.id, nick: dqNick() }, dqLook())); }
+  } catch (e) {}
+  DQ.reNet = false;
+}
+function dqNetCheck() { if (DQ.room && DQ.net && DQ.net.ok && !DQ.net.ok() && Date.now() - (DQ.reNetT || 0) > 10000) dqReNet(); }
+/* pás „čakám na hostiteľa“ — hráč z hry nevypadne, kým sa hostiteľ do troch minút vráti */
+function dqWaitBar(gap) {
+  let el = document.getElementById('dq-wait');
+  if (!gap) { if (el) el.remove(); return; }
+  if (!el) { el = document.createElement('div'); el.id = 'dq-wait'; document.body.appendChild(el); }
+  el.innerHTML = '<b>HOSTITEĽ JE MIMO HRY</b><span>Čakám, kým sa vráti — hra bude pokračovať tam, kde skončila. Odpojím sa o ' + Math.max(0, Math.ceil((180000 - gap) / 1000)) + ' s.</span>';
+}
+/* obrazovka telefónu počas hry nezhasína (kde to prehliadač dovolí) */
+function dqWake(on) {
+  try {
+    if (on) { if (!DQ.wl && navigator.wakeLock && !document.hidden) navigator.wakeLock.request('screen').then(l => { DQ.wl = l; l.addEventListener('release', () => { DQ.wl = null; }); }).catch(() => {}); }
+    else if (DQ.wl) { DQ.wl.release(); DQ.wl = null; }
+  } catch (e) {}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden || !DQ.room) return;
+  DQ.lastState = Date.now();            // po návrate do okna dostane spojenie čas, aby sa spamätalo
+  dqWake(true); dqNetCheck();
+  if (DQ.host && DQ.S) dqCast();
+});
+/* hostiteľ si priebežne ukladá stav hry, aby ju vedel po obnovení stránky obnoviť */
+function dqHostSave() {
+  const S = DQ.S, H = DQ.H, now = Date.now();
+  if (!DQ.host || !S || !H) return;
+  if (H.savK === S.k && now - (H.savT || 0) < 1500) return;
+  H.savK = S.k; H.savT = now;
+  lsSet(DQ_HOSTK, { room: DQ.room, id: DQ.id, t: now, S, ans: H.ans, got: H.got, used: H.used, pq: H.pq || null });
+}
+function dqBotAns(pi) {
+  const S = DQ.S, H = DQ.H, p = S.players[pi], k = S.k, ms = Math.min(S.tot - 600, 1500 + Math.random() * 4000);
+  let m;
+  if (S.q.num) { const dec = (String(H.ans).split('.')[1] || '').length, off = Math.random() < 0.3 ? 0 : (Math.random() * 2 - 1) * 0.2 * Math.max(1, Math.abs(H.ans)); m = { t: 'ans', id: p.id, k, v: +(H.ans + off).toFixed(dec), ms }; }
+  else m = { t: 'ans', id: p.id, k, c: Math.random() < 0.6 ? H.ans : (H.ans + 1 + Math.floor(Math.random() * (S.q.opts.length - 1))) % S.q.opts.length, ms };
+  H.bots.push(setTimeout(() => { if (DQ.S && DQ.S.k === k) dqHostMsg(m); }, ms));
+}
+function dqDuelGo() { const S = DQ.S, D = S.duel; dqPhase('duelintro', () => dqAskSoon('duelq', D.d >= 0 ? [D.a, D.d] : [D.a], dqDuelRev, false, false, { mods: D.m ? [D.m] : S.cfg.mods, lvl: D.lvl })); }
+function dqTieGo() { const S = DQ.S, D = S.duel; dqAskSoon('tieq', [D.a, D.d], dqTieRev, false, true, { mods: D.m ? [D.m] : S.cfg.mods }); }
+/* obnovená hra pokračuje od fázy, v ktorej sa prerušila; čo má nasledovať, sa určí z fázy (funkcie sa uložiť nedajú) */
+function dqResumePhase() {
+  const S = DQ.S, H = DQ.H, D = S.duel, ph = S.phase, NEXT = { startq: dqStartRev, claimq: dqClaimRev, duelq: dqDuelRev, tieq: dqTieRev };
+  const who = p => p === 'duelq' ? (D.d >= 0 ? [D.a, D.d] : [D.a]) : p === 'tieq' ? [D.a, D.d] : dqLive(S);
+  const hold = (fn, ms) => { S.tot = Math.max(ms || S.tot || 0, 4000); H.next = fn; H.deadline = Date.now() + S.tot; clearTimeout(H.timer); H.timer = setTimeout(fn, S.tot); dqCast(); };
+  if (ph === 'lobby' || ph === 'end') return dqCast();
+  if (NEXT[ph] && S.q) { hold(NEXT[ph], dqDur(ph)); S.q.who.forEach(pi => { if (S.players[pi].bot && !H.got[pi]) dqBotAns(pi); }); return; }
+  if (ph === 'startrev') return hold(dqStartPick);
+  if (ph === 'claimrev') return hold(dqPickNext);
+  if ((ph === 'duelrev' || ph === 'tierev') && D && S.rev) return hold(S.rev.what === 'tie' || S.rev.what === 'again' ? dqTieGo : () => dqDuelDone(!!S.rev.win));
+  if (dqPicking(S) && S.allowed.length) { H.nudged = false; hold(dqAuto, dqDur(ph)); return dqNudge(); }
+  if (ph === 'modpick' && D) { H.modGo = dqDuelGo; hold(dqModAuto, dqDur(ph)); const p = S.players[D.a], k = S.k; if (p.bot || !p.on) H.bots.push(setTimeout(() => { if (DQ.S && DQ.S.k === k) dqModAuto(); }, 1300)); return; }
+  if (ph === 'duelintro' && D) return dqDuelGo();
+  if (ph === 'rest' || ph === 'count') {
+    const c = S.cnt;
+    if (c === 'war') return hold(dqWarRound);
+    if (c === 'end') return hold(dqEnd);
+    if (NEXT[c] && (D || c === 'startq' || c === 'claimq')) {
+      const mods = D && D.m ? [D.m] : S.cfg.mods;
+      if (!H.pq) { H.pq = c === 'startq' || c === 'tieq' ? dqGenNum(mods) : dqGenQ(mods, D && c === 'duelq' ? D.lvl : 0); S.pre = H.pq.img || ''; }
+      return dqPhase('count', () => dqAsk(c, who(c), NEXT[c]));
+    }
+  }
+  /* neznámy stav: pokračuje sa ďalším ťahom tej časti hry, ktorá práve bežala */
+  if (S.wr > 0) { S.duel = null; return dqWarPick(); }
+  return dqClaimQ();
+}
+async function dqHostResume() {
+  const L = lsGet(DQ_HOSTK, null);
+  if (!L || !L.S || !L.room) return;
+  DQ.id = L.id; try { sessionStorage.setItem('atcoDqId', L.id); } catch (e) {}
+  try { DQ.net = await dqNet(L.room, dqHostMsg); } catch (e) { DQ.err = 'Miestnosť sa nepodarilo obnoviť — skontroluj pripojenie a skús to znova.'; return dqShow(); }
+  const S = L.S, now = Date.now(), seen = {};
+  S.players.forEach(p => { if (!p.bot) { seen[p.id] = now; p.on = true; } });
+  DQ.room = L.room; DQ.host = true; DQ.err = ''; DQ.S = S;
+  if (S.map && DQ_MAPS[S.map]) DQ_MAP = DQ_MAPS[S.map];
+  DQ.H = { ans: L.ans, got: L.got || {}, deadline: 0, timer: null, seen, used: L.used || {}, bots: [], next: null, pq: L.pq || null };
+  /* moja vlastná odpoveď na práve bežiacu otázku ostáva zapísaná */
+  const g = S.q && !S.rev && dqAsking(S) ? DQ.H.got[dqMe()] : null;
+  DQ.k = S.k; DQ.qT0 = now; DQ.my = g ? (S.q.num ? { v: g.v } : { c: g.c }) : null; DQ.sig = ''; DQ.prev = null;
+  clearInterval(DQ.loop); DQ.loop = setInterval(dqHostLoop, 2000);
+  try { dqResumePhase(); } catch (e) { DQ.err = 'Hru sa nepodarilo obnoviť.'; lsSet(DQ_HOSTK, null); return dqLeave(DQ.err); }
+  dqShow();
+}
 async function dqNet(code, onMsg) {
   if (SB_ON) {
     await dqLoadSb();
     const ch = DQ.sb.channel('atco-dq-' + code, { config: { broadcast: { self: false } } });
     ch.on('broadcast', { event: 'm' }, p => onMsg(p.payload));
     await new Promise((res, rej) => { ch.subscribe(st => { if (st === 'SUBSCRIBED') res(); else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT') rej(new Error('NET')); }); });
-    return { send: m => ch.send({ type: 'broadcast', event: 'm', payload: m }), close: () => DQ.sb.removeChannel(ch) };
+    return { send: m => ch.send({ type: 'broadcast', event: 'm', payload: m }), close: () => DQ.sb.removeChannel(ch), ok: () => ch.state === 'joined' || ch.state === 'joining' };
   }
   const bc = new BroadcastChannel('atco-dq-' + code);
   bc.onmessage = e => onMsg(e.data);
-  return { send: m => bc.postMessage(m), close: () => bc.close() };
+  return { send: m => bc.postMessage(m), close: () => bc.close(), ok: () => true };
 }
 function dqNick() { return RK.acct ? RK.acct.nick : (DQ.guest || '').trim().slice(0, 16); }
 function dqSend(m) { m.id = DQ.id; if (DQ.host) dqHostMsg(m); else if (DQ.net) DQ.net.send(m); }
 function dqMe() { return DQ.S ? DQ.S.players.findIndex(p => p.id === DQ.id) : -1; }
 function dqLeave(msg, keep) {
   if (!keep) lsSet(DQ_LASTK, null);
+  if (DQ.host && !keep) lsSet(DQ_HOSTK, null);      // hostiteľ odišiel sám → miestnosť sa neobnovuje
+  dqWaitBar(0); dqWake(false);
   if (DQ.net) { try { DQ.net.send({ t: DQ.host ? 'bye' : 'leave', id: DQ.id }); DQ.net.close(); } catch (e) {} }
   if (DQ.H) { clearTimeout(DQ.H.timer); DQ.H.bots.forEach(clearTimeout); }
   clearInterval(DQ.loop);
@@ -578,8 +726,13 @@ async function dqJoin(code) {
   DQ.loop = setInterval(() => {
     if (!DQ.room) return;
     if (dqMe() < 0) { if (Date.now() - DQ.joinAt > 7000) return dqLeave('Miestnosť s kódom ' + code + ' nie je otvorená.'); hello(); }
-    else DQ.net.send({ t: 'ping', id: DQ.id });
-    if (Date.now() - DQ.lastState > 12000 && dqMe() >= 0) dqLeave('Spojenie s hostiteľom sa stratilo. Ak hra ešte beží, môžeš sa do nej vrátiť.', true);
+    else { try { DQ.net.send({ t: 'ping', id: DQ.id }); } catch (e) {} }
+    const gap = Date.now() - DQ.lastState;
+    if (dqMe() >= 0) {
+      dqWaitBar(gap > 7000 ? gap : 0);
+      if (gap > 180000) return dqLeave('Hostiteľ sa do troch minút nevrátil. Ak hru obnoví, môžeš sa do nej vrátiť.', true);
+      if (gap > 9000 && Date.now() - (DQ.reNetT || 0) > 15000) dqReNet(); else dqNetCheck();
+    }
   }, 1500);
   dqShow();
 }
@@ -591,6 +744,7 @@ function dqClientMsg(m) {
 }
 function dqApply(S) {
   DQ.S = S; DQ.lastState = Date.now();
+  if (!DQ.host) dqWaitBar(0);
   if (S.k !== DQ.k) { DQ.k = S.k; DQ.qT0 = Date.now(); DQ.my = null; DQ.sel = -1; if (S.phase !== 'lobby' && S.phase !== 'end') RK.lastAns = Date.now(); }
   /* úspešnosť aj z Dobyvateľa: každá moja vyhodnotená odpoveď v hre aspoň dvoch ľudí */
   if (S.rev && S.q && DQ.revK !== S.gid + S.k) {
@@ -617,7 +771,7 @@ function dqApply(S) {
 }
 
 /* ---------- hostiteľ: pravidlá hry ---------- */
-function dqCast() { const S = DQ.S, H = DQ.H; S.dur = Math.max(0, H.deadline - Date.now()); if (DQ.net) DQ.net.send({ t: 'state', S }); dqApply(S); }
+function dqCast() { const S = DQ.S, H = DQ.H; S.dur = Math.max(0, H.deadline - Date.now()); if (DQ.net) { try { DQ.net.send({ t: 'state', S }); } catch (e) {} } dqApply(S); dqHostSave(); }
 function dqPhase(phase, fn) {
   const S = DQ.S, H = DQ.H;
   S.phase = phase; S.k++; S.tot = dqDur(phase); H.next = fn; H.deadline = Date.now() + S.tot;
@@ -627,6 +781,7 @@ function dqPhase(phase, fn) {
 function dqHostLoop() {
   const S = DQ.S, H = DQ.H, now = Date.now();
   if (!S) return;
+  dqNetCheck();
   S.players.forEach(p => { if (!p.bot && p.id !== DQ.id) p.on = now - (H.seen[p.id] || 0) < 9000; });
   if (S.phase === 'lobby') S.players = S.players.filter(p => p.on);
   else if (S.phase !== 'end') { dqNudge(); dqAllIn(); }
@@ -788,12 +943,12 @@ function dqNumRes() {
   order.forEach((pi, n) => { res[pi].ok = n === 0 && res[pi].v !== null; });
   return { res, order };
 }
-/* Po obsadzovacích kolách sa zvyšné voľné priestory rozdelia tak, aby sa podiely hráčov nezmenili:
-   kto mal 40 % bodov, má 40 % aj potom. Prideľuje sa len priestor susediaci s tým, čo hráč už má.
-   Postup: v každom kroku sa urobí to pridelenie, po ktorom sú podiely najbližšie pôvodným; platí posledný stav,
-   v ktorom sa žiadny podiel bodov nepohol o viac než DQ_FAIR a žiadny rozdiel medzi dvoma hráčmi sa nezmenšil.
-   Čo sa takto rozdeliť nedá, ostane voľné. */
-const DQ_FAIR = 0.012;
+/* Po obsadzovacích kolách sa zvyšné voľné priestory rozdelia v pomere bodov: kto mal 40 % bodov, má potom 37 až 43 %.
+   Prideľuje sa len priestor susediaci s tým, čo hráč už má. Postup: v každom kroku sa urobí to pridelenie, po ktorom
+   sú podiely najbližšie pôvodným; platí posledný stav, v ktorom sa žiadny podiel bodov nepohol o viac než DQ_FAIR
+   (3 percentuálne body) a poradie hráčov ostalo rovnaké. Čo sa takto rozdeliť nedá, ostane voľné.
+   Odmerané simuláciou (v4.1): rozdelí sa 58 – 75 % voľných priestorov; pri pôvodnej hranici 1,2 % to bolo len 9 – 43 %. */
+const DQ_FAIR = 0.03;
 function dqFairSplit(own0, live, T) {
   let own = own0.slice();
   const sum = a => a.reduce((x, y) => x + y, 0);
@@ -803,7 +958,7 @@ function dqFairSplit(own0, live, T) {
   const fair = () => {
     const s = pts(), c = cnt(), S = sum(s), C = sum(c); let d = 0, gapOk = true;
     live.forEach((p, k) => { d = Math.max(d, Math.abs(s[k] / S - s0[k] / S0), 0.5 * Math.abs(c[k] / C - c0[k] / C0)); });
-    live.forEach((p, a) => live.forEach((q, b) => { if (s0[a] > s0[b] && (s[a] - s[b]) / S < (s0[a] - s0[b]) / S0 - 0.004) gapOk = false; }));
+    live.forEach((p, a) => live.forEach((q, b) => { if (s0[a] > s0[b] && s[a] <= s[b]) gapOk = false; }));
     return { d, gapOk };
   };
   let best = own.slice(), bestN = 0, n = 0;
@@ -846,7 +1001,8 @@ function dqPickNext() {
   if (!S.picks.length || !free.length) { S.picks = []; return dqClaimQ(); }
   const pi = S.picks[0];
   let al = free.filter(t => DQ_MAP.t[t].j.some(a => S.own[a] === pi));
-  if (!al.length) al = free;
+  /* hráč nemá voľného suseda → smie si vybrať ktorýkoľvek voľný priestor okrem letiska (letisko len ak nič iné neostalo) */
+  if (!al.length) { al = free.filter(t => DQ_MAP.t[t].c !== 'AD'); if (!al.length) al = free; }
   S.chooser = pi; S.allowed = al; H.nudged = false;
   dqPhase('pick', dqAuto);
   dqNudge();
@@ -892,7 +1048,7 @@ function dqWarPick() {
   /* útočiť sa dá len na susedný priestor súpera; susedný voľný priestor sa dá obsadiť */
   const a = S.wq[0];
   let al = S.own.map((o, i) => o !== a && DQ_MAP.t[i].j.some(x => S.own[x] === a) ? i : -1).filter(i => i >= 0);
-  if (!al.length) al = dqFree();
+  if (!al.length) { al = dqFree().filter(t => DQ_MAP.t[t].c !== 'AD'); if (!al.length) al = dqFree(); }
   if (!al.length) { S.wq.shift(); return dqWarPick(); }
   S.chooser = a; S.allowed = al; S.duel = null; S.q = null; S.rev = null; H.nudged = false;
   dqPhase('warpick', dqAuto);
@@ -905,6 +1061,7 @@ function dqWinKind() { const S = DQ.S, D = S.duel; return !D.base ? 'took' : (S.
 function dqDuelRev() {
   const S = DQ.S, H = DQ.H, res = dqRes(), D = S.duel, ra = res[D.a], rd = D.d >= 0 ? res[D.d] : null;
   const tie = !!(rd && ra.ok && rd.ok), win = ra.ok && !tie;
+  if (tie) D.tn = 1;
   if (rd && rd.ok && !ra.ok) S.players[D.d].bonus += 100;
   S.rev = { ans: H.ans, res, win, what: tie ? 'tie' : win ? dqWinKind() : (rd && rd.ok ? 'held' : 'miss') };
   S.rev.fire = dqTally(res);
@@ -913,8 +1070,10 @@ function dqDuelRev() {
 function dqTieRev() {
   const S = DQ.S, H = DQ.H, R = dqNumRes(), D = S.duel;
   const ra = R.res[D.a], rd = R.res[D.d];
-  /* obaja tipli rovnako presne → čas nerozhoduje, rozstrel sa opakuje (najviac trikrát, potom rozhodne rýchlosť) */
-  if (ra.v !== null && rd.v !== null && ra.err === rd.err && (D.tn = (D.tn || 0) + 1) <= 3) {
+  /* rozstrel má najviac tri kolá: v 1. a 2. pri rovnako presných tipoch čas nerozhoduje a ide sa ďalej, v 3. rozhodne rýchlosť */
+  D.tn = D.tn || 1;
+  if (ra.v !== null && rd.v !== null && ra.err === rd.err && D.tn < 3) {
+    D.tn++;
     ra.ok = rd.ok = false;
     S.rev = { num: true, ans: H.ans, unit: S.q.unit, res: R.res, order: R.order, win: false, what: 'again' };
     return dqPhase('tierev', () => dqAskSoon('tieq', [D.a, D.d], dqTieRev, false, true, { mods: D.m ? [D.m] : S.cfg.mods }));
@@ -966,7 +1125,7 @@ function dqGuideHTML() {
   return `<div class="dq-guide">
       <h3>NÁVOD NA HRU</h3>
       ${sec('1 · Ako začať', `<ol>
-        <li><b>Prezývka.</b> Ak si prihlásený (karta REBRÍČEK), hráš pod svojím účtom a body sa ti počítajú. Inak napíš prezývku a hráš ako hosť bez bodov.</li>
+        <li><b>Prezývka.</b> Ak si prihlásený (tlačidlo vpravo hore), hráš pod svojím účtom a body sa ti počítajú. Inak napíš prezývku a hráš ako hosť bez bodov.</li>
         <li><b>Hostiteľ</b> dá VYTVORIŤ MIESTNOSŤ. Dostane kód zo štyroch písmen a pošle ho ostatným.</li>
         <li><b>Ostatní</b> napíšu kód do poľa MÁM KÓD a dajú PRIPOJIŤ SA.</li>
         <li>Hostiteľ nastaví hru (kapitola 6), prípadne pridá počítač tlačidlom + POČÍTAČ, a dá ŠTART. Treba aspoň dvoch hráčov, najviac ich je šesť.</li>
@@ -974,11 +1133,11 @@ function dqGuideHTML() {
       ${sec('2 · Štart a domovské letisko', `<p>Hra sa začína <b>tipovacou otázkou</b>: napíšeš číslo a kto je najbližšie, vyberá si domovské letisko prvý. Jednotka (kg, NM, min…) je vždy uvedená v otázke aj pri políčku.</p>
         <p>Domovské letisko má <b>tri životy</b> — sú to tri červené bodky na jeho krúžku. Z neho sa rozširuješ ďalej.</p>`)}
       ${sec('3 · Obsadzovanie', `<p>V každom kole dostanú všetci tú istú otázku so štyrmi možnosťami. Kto odpovie správne, vyberie si voľný priestor <b>susediaci</b> s tým, čo už má. Najrýchlejší zo správnych vyberá prvý a berie si dva priestory.</p>
-        <p>Po poslednom kole sa zvyšné voľné priestory rozdelia tak, aby sa pomer bodov medzi hráčmi nezmenil. Čo sa spravodlivo rozdeliť nedá, ostane voľné a dá sa získať v súbojoch.</p>`)}
+        <p>Po poslednom kole sa zvyšné voľné priestory rozdelia v pomere bodov: podiel žiadneho hráča sa nezmení o viac než 3 % a poradie ostane rovnaké. Každý dostáva len priestory susediace s tým, čo už má. Čo sa takto rozdeliť nedá, ostane voľné a dá sa získať v súbojoch.</p>`)}
       ${sec('4 · Súboje', `<p>V každom kole je každý hráč raz na rade, začína ten, kto má najmenej bodov. Na rade môžeš:</p>
         <ul><li><b>zaútočiť</b> na susedný priestor súpera (je označený mečmi), alebo</li><li><b>obsadiť</b> susedný voľný priestor — vtedy odpovedáš sám.</li></ul>
         <p>Pri útoku odpovedá útočník aj obranca na tú istú otázku. <b>Rýchlosť nerozhoduje:</b></p>
-        <ul><li>útočník správne, obranca zle → priestor je dobytý,</li><li>obranca správne, útočník zle → ubránené, obranca dostane +100 bodov,</li><li>obaja zle → nič sa nemení,</li><li>obaja správne → <b>rozstrel</b> tipovacou otázkou, vyhráva presnejší tip. Ak tipnete rovnako presne, rozstrel sa opakuje.</li></ul>
+        <ul><li>útočník správne, obranca zle → priestor je dobytý,</li><li>obranca správne, útočník zle → ubránené, obranca dostane +100 bodov,</li><li>obaja zle → nič sa nemení,</li><li>obaja správne → <b>rozstrel</b> tipovacou otázkou, vyhráva presnejší tip. Rozstrely sú najviac tri a sú očíslované: ak v prvom alebo druhom tipnete rovnako presne, ide sa na ďalší; v treťom pri rovnakom tipe vyhráva rýchlejší.</li></ul>
         <p><b>Útok na domovské letisko</b> mu pri výhre uberie jeden život. Pri treťom zásahu hráč vypadáva a všetky jeho priestory berie útočník.</p>`)}
       ${sec('5 · Body a víťaz', `<p>Letisko 500 · CTR 400 · TMA 300 · TRA/TSA 200 · LZR 150 · časť triedy G 100 · ubránenie +100 · každá tretia správna odpoveď v rade +50.</p>
         <p>Vyhráva hráč s najviac bodmi po poslednom kole súbojov, alebo ten, kto ostane na mape sám. Do rebríčka ide 30 bodov za 1. miesto, potom 15, 8, 4, 2 a 1 (pri dvoch hráčoch 30 a 10) — len v hre aspoň dvoch ľudí.</p>`)}
@@ -1004,8 +1163,10 @@ function dqGuideHTML() {
       ${sec('9 · Po hre: chyby a hlásenie otázok', `<p>Na konci partie nájdeš tlačidlo <b>MOJE CHYBY</b>: zoznam otázok, ktoré si pokazil, so správnou odpoveďou. <b>PRECVIČIŤ ZNOVA</b> ti ich dáva dookola, kým každú nezodpovieš správne.</p>
         <p>Ak je otázka alebo odpoveď chybná, daj <b>⚑ NAHLÁSIŤ OTÁZKU</b> — pri vyhodnotení otázky alebo v zozname chýb. Hlásenie sa uloží autorovi stránky.</p>`)}
       ${sec('10 · Rebríček', `<p>V karte REBRÍČEK je celkové poradie, poradie v Dobyvateľovi (body, hry, výhry) a <b>OKRUHY TEÓRIE</b> — koľko otázok z každého predmetu si v Dobyvateľovi zodpovedal a s akou úspešnosťou. Hra proti počítaču sa nepočíta.</p>`)}
-      ${sec('11 · Keď vypadne spojenie', `<p>Ak ti spadne internet alebo obnovíš stránku, na úvode karty DOBYVATEĽ sa ukáže <b>VRÁTIŤ SA DO HRY</b>. Kým si preč, tvoje ťahy robí hra za teba. Vrátiť sa dá do 20 minút.</p>
-        <p>Hostiteľ sa vrátiť nevie — ak zavrie stránku on, hra sa končí všetkým.</p>`)}
+      ${sec('11 · Keď vypadne spojenie', `<p><b>Hráč:</b> ak ti spadne internet alebo obnovíš stránku, na úvode karty DOBYVATEĽ sa ukáže <b>VRÁTIŤ SA DO HRY</b>. Kým si preč, tvoje ťahy robí hra za teba. Vrátiť sa dá do 20 minút.</p>
+        <p><b>Hostiteľ:</b> hra beží v jeho prehliadači. Keď mu zhasne telefón alebo obnoví stránku, ostatní uvidia pás <b>HOSTITEĽ JE MIMO HRY</b> a hra na neho tri minúty počká. Hostiteľ na úvode karty DOBYVATEĽ nájde <b>OBNOVIŤ HRU</b> — hra pokračuje od fázy, v ktorej sa prerušila (rozbehnutá otázka dostane čas nanovo). Obnoviť sa dá do 30 minút.</p>
+        <p>Počas hry stránka drží obrazovku telefónu zapnutú, ak to prehliadač dovolí. Hostiteľ by aj tak nemal prepínať do inej aplikácie — telefón vtedy stránku uspí a hra všetkým stojí.</p>
+        <p>Ak hostiteľ odíde tlačidlom ODÍSŤ, miestnosť sa končí všetkým.</p>`)}
       ${sec('12 · Žolíky, série a reakcie', `<p><b>Žolíky</b> má každý hráč tri a každý sa dá použiť raz za hru. Sú pod otázkou, kým neodpovieš:</p>
         <ul><li><b>½ 50:50</b> — zmiznú ti dve nesprávne odpovede (len otázky s možnosťami),</li><li><b>⏱ +10 s</b> — desať sekúnd navyše; čas sa predĺži všetkým, ktorí práve odpovedajú,</li><li><b>×2 BODY</b> — len keď útočíš: ak útok vyhráš, hodnota priestoru sa ti pripíše ešte raz.</li></ul>
         <p>Ostatní vidia, že si žolíka použil. Hostiteľ môže žolíky vypnúť v nastavení hry.</p>
@@ -1132,7 +1293,7 @@ function dqNumFmt(v, unit) { return v === null || v === undefined ? '—' : Stri
 function dqRevText(S, nm) {
   const D = S.duel, R = S.rev, tn = dqEsc(DQ_MAP.t[D.t].k), a = nm(D.a), d = D.d >= 0 ? nm(D.d) : '';
   if (R.what === 'tie') return `Obaja odpovedali správne — rozhodne tipovacia otázka.`;
-  if (R.what === 'again') return `Rovnako presné tipy — rozstrel sa opakuje.`;
+  if (R.what === 'again') return `Rovnako presné tipy — nasleduje rozstrel ${D.tn} / 3${D.tn === 3 ? ', v ňom rozhodne aj čas' : ''}.`;
   if (R.what === 'took') return `${a} získava ${tn} (+${DQ_MAP.t[D.t].v * (D.x2 ? 2 : 1)} b.${D.x2 ? ' · žolík ×2' : ''})`;
   if (R.what === 'hit') return `${a} zasiahol domovské letisko ${tn} — hráčovi ${d} ostáva ${S.lives[D.d] - 1} ${S.lives[D.d] - 1 === 1 ? 'život' : 'životy'}`;
   if (R.what === 'out') return `${a} dobyl domovské letisko ${tn} — ${d} vypadáva a všetky jeho priestory berie ${a}`;
@@ -1162,6 +1323,9 @@ function dqPopHTML(S, me, stage, ctx) {
   const q = S.q, R = S.rev, can = q.who.indexOf(me) >= 0, my = DQ.my, nm = i => dqEsc(S.players[i] ? S.players[i].nick : '?');
   const sec = ms => (ms / 1000).toFixed(1).replace('.', ',') + ' s';
   const sus = dqSus(S), hid = (q.hid && q.hid[me]) || [], J = S.players[me] && S.players[me].jk;
+  /* číslo rozstrelu: pri vyhodnotení „ešte raz“ je D.tn už o jedno ďalej */
+  const tieOn = (S.phase === 'tieq' || S.phase === 'tierev') && S.duel, tieN = tieOn ? Math.max(1, (S.duel.tn || 1) - (R && R.what === 'again' ? 1 : 0)) : 0;
+  if (tieOn) stage = 'ROZSTREL ' + tieN + ' / 3' + (tieN === 3 ? ' · NA ČAS' : '');
   let rib = '';
   if (R) {
     const mine = R.res[me], D = S.duel, k = D ? dqEsc(DQ_MAP.t[D.t].k) : '';
@@ -1185,7 +1349,7 @@ function dqPopHTML(S, me, stage, ctx) {
     const el = dqLow() ? 99 : (Date.now() - (DQ.susT0 || 0)) / 1000, rows = sus ? R.order.slice().sort((a, b) => a - b) : R.order;
     h += `<div class="dq-numrev">${dqAxisSVG(S, el)}<div class="dq-numtab"><div class="dq-numans">Správna odpoveď <b>${sus ? '?' : dqNumFmt(R.ans, R.unit)}</b></div>
         ${rows.map((pi, n) => { const r = R.res[pi]; return `<div class="dq-numrow${!sus && n === 0 && r.v !== null && R.what !== 'again' ? ' best' : ''}"><b>${sus || r.v === null ? '–' : n + 1 + '.'}</b><i style="background:${dqC(pi)}"></i><span>${nm(pi)}</span><strong>${dqNumFmt(r.v, R.unit)}</strong><small>${r.v === null ? 'bez odpovede' : sus ? '…' : (r.err === 0 ? 'presne' : 'vedľa o ' + dqNumFmt(+r.err.toFixed(3))) + ' · ' + sec(r.ms)}</small></div>`; }).join('')}
-        <div class="dq-numnote">${S.phase === 'tierev' ? 'Vyhráva najbližší tip. Pri rovnako presných tipoch sa rozstrel opakuje.' : 'Poradie je podľa presnosti tipu, pri rovnakom tipe podľa času.'}</div></div></div>`;
+        <div class="dq-numnote">${S.phase === 'tierev' ? (tieN === 3 ? 'Tretí rozstrel: vyhráva najbližší tip, pri rovnako presných tipoch rýchlejší.' : 'Vyhráva najbližší tip. Pri rovnako presných tipoch nasleduje ďalší rozstrel (najviac tri, v treťom rozhodne čas).') : 'Poradie je podľa presnosti tipu, pri rovnakom tipe podľa času.'}</div></div></div>`;
   } else if (q.num) {
     h += can ? (my ? `<div class="dq-numbox done">Tvoj tip: <b>${dqNumFmt(my.v, q.unit)}</b></div>`
       : `<div class="dq-numbox"><input type="text" id="dq-numin" inputmode="decimal" autocomplete="off" placeholder="${q.unit ? 'číslo v ' + dqEsc(q.unit) : 'napíš číslo'}" maxlength="12">${q.unit ? `<span class="dq-unit">${dqEsc(q.unit)}</span>` : ''}<button class="dq-btn pri" id="dq-numok">POTVRDIŤ ▶</button></div>`)
@@ -1375,14 +1539,16 @@ function dqRender(card) {
   if (!live) dqHideStage();
   if (!DQ.room) {
     const L0 = lsGet(DQ_LASTK, null), back = L0 && L0.room && Date.now() - L0.t < 20 * 60000 ? L0 : null;
+    const H0 = lsGet(DQ_HOSTK, null), hback = H0 && H0.S && H0.room && H0.S.phase !== 'end' && Date.now() - H0.t < 30 * 60000 ? H0 : null;
     card.innerHTML = `<div class="dq-home">
         <h2>DOBYVATEĽ</h2>
         <p class="dq-lead">Vedomostný súboj o slovenský vzdušný priestor pre 2 až 6 hráčov naživo. Hrá sa na mape cez celú obrazovku rozdelenej na skutočné priestory — letiská, CTR, TMA, TRA/TSA, LZR a triedu G. Mapa sa prispôsobí počtu hráčov: malá má ${DQ_MAPS.s.t.length} priestorov, stredná ${DQ_MAPS.m.t.length} a veľká ${DQ_MAPS.l.t.length}. Otázky sú z modulov trenažéra a zo siedmich okruhov teórie (ATM, navigácia, meteorológia, zariadenia, ľudské faktory, lietadlá, pracovné prostredie); hostiteľ si vyberie, z ktorých.</p>
         ${dqRulesHTML()}
         ${DQ.err ? `<div class="rk-err">${dqEsc(DQ.err)}</div>` : ''}
         ${back ? `<div class="dq-back"><div><strong>ROZOHRANÁ HRA · ${dqEsc(back.room)}</strong><span>Vypadol si z hry. Ak ešte beží, môžeš sa do nej vrátiť — tvoje priestory na teba čakajú.</span></div><button class="btn" id="dq-rejoin">VRÁTIŤ SA DO HRY ▶</button><button class="btn ghost" id="dq-forget">ZAHODIŤ</button></div>` : ''}
+        ${hback ? `<div class="dq-back"><div><strong>TVOJA MIESTNOSŤ · ${dqEsc(hback.room)}</strong><span>Bol si hostiteľ a ${hback.S.phase === 'lobby' ? 'miestnosť čakala na štart' : 'hra bola rozohraná'}. Môžeš ju obnoviť — pokračuje tam, kde skončila, a hráči, ktorí ostali na stránke, sa pripoja sami.</span></div><button class="btn" id="dq-hresume">OBNOVIŤ HRU ▶</button><button class="btn ghost" id="dq-hforget">ZAHODIŤ</button></div>` : ''}
         <div class="dq-start">
-          <div class="dq-box"><strong>HRÁŠ AKO</strong>${RK.acct ? `<div class="dq-as">${dqEsc(RK.acct.nick)}</div><span>Body za hru sa ti pripíšu do rebríčka.</span>` : `<input type="text" id="dq-nick" maxlength="16" placeholder="tvoja prezývka" value="${dqEsc(DQ.guest)}" autocomplete="off" spellcheck="false"><span>Si neprihlásený — zahrať si môžeš, body do rebríčka sa ale počítajú len prihláseným (karta REBRÍČEK).</span>`}</div>
+          <div class="dq-box"><strong>HRÁŠ AKO</strong>${RK.acct ? `<div class="dq-as">${dqEsc(RK.acct.nick)}</div><span>Body za hru sa ti pripíšu do rebríčka.</span>` : `<input type="text" id="dq-nick" maxlength="16" placeholder="tvoja prezývka" value="${dqEsc(DQ.guest)}" autocomplete="off" spellcheck="false"><span>Si neprihlásený — zahrať si môžeš, body do rebríčka sa ale počítajú len prihláseným (tlačidlo PRIHLÁSIŤ vpravo hore).</span>`}</div>
           <div class="dq-box"><strong>NOVÁ HRA</strong><button class="btn" id="dq-create">VYTVORIŤ MIESTNOSŤ ▶</button><span>Dostaneš kód zo štyroch písmen, ktorý pošleš kolegom. V miestnosti nastavíš čas, počet kôl aj otázky.</span></div>
           <div class="dq-box"><strong>MÁM KÓD</strong><div class="dq-row"><input type="text" id="dq-code" maxlength="4" placeholder="KÓD" autocomplete="off" spellcheck="false"><button class="btn ghost" id="dq-join">PRIPOJIŤ SA</button></div><span>Napíš kód, ktorý ti poslal hostiteľ.</span></div>
         </div>
@@ -1395,6 +1561,9 @@ function dqRender(card) {
     const rj = document.getElementById('dq-rejoin'), fg = document.getElementById('dq-forget');
     if (rj) rj.onclick = dqRejoin;
     if (fg) fg.onclick = () => { lsSet(DQ_LASTK, null); dqShow(); };
+    const hr = document.getElementById('dq-hresume'), hf = document.getElementById('dq-hforget');
+    if (hr) hr.onclick = dqHostResume;
+    if (hf) hf.onclick = () => { lsSet(DQ_HOSTK, null); dqShow(); };
     const ci = document.getElementById('dq-code'), jn = () => dqJoin(ci.value);
     document.getElementById('dq-join').onclick = jn;
     ci.addEventListener('keydown', e => { if (e.key === 'Enter') jn(); });
@@ -1447,7 +1616,7 @@ function dqRender(card) {
   /* ---- hra beží: mapa cez celú obrazovku, otázka ako okno nad ňou ---- */
   card.innerHTML = '<div class="dq-home"><h2>DOBYVATEĽ</h2><p class="dq-lead">Hra beží na celej obrazovke.</p></div>';
   const st = dqStageEl(), $ = id => document.getElementById(id);
-  st.style.display = ''; document.body.classList.add('dq-live');
+  st.style.display = ''; document.body.classList.add('dq-live'); dqWake(true);
   /* kostra sa stavia raz za hru — pri každej zmene sa prekresľuje len to, čo sa zmenilo, aby nič neblikalo */
   if (st.dataset.gid !== S.gid || !$('dq-maph')) {
     st.dataset.gid = S.gid;
@@ -1519,10 +1688,10 @@ function dqRender(card) {
   let pop = '', banner = '', myTurn = false;
   const stage = dqStageName(S);
   if (S.phase === 'rest') {
-    const dist = S.dist ? ` Zvyšné priestory (${S.dist}) boli rozdelené v pomere bodov — podiely hráčov sa nezmenili.${S.left ? ' ' + S.left + ' ostalo voľných, lebo sa nedali rozdeliť spravodlivo.' : ''}` : (S.left && S.round >= S.cfg.claim ? ` Voľných ostalo ${S.left} priestorov — spravodlivo sa rozdeliť nedali.` : '');
+    const dist = S.dist ? ` Zvyšné priestory (${S.dist}) boli rozdelené v pomere bodov — podiel žiadneho hráča sa nezmenil o viac než 3 % a poradie ostalo rovnaké.${S.left ? ' ' + S.left + ' ostalo voľných, lebo sa nedali rozdeliť spravodlivo.' : ''}` : (S.left && S.round >= S.cfg.claim ? ` Voľných ostalo ${S.left} priestorov — spravodlivo sa rozdeliť nedali.` : '');
     banner = S.cnt === 'end' ? 'Hra sa skončila — vyhodnocujem…' + dist : S.cnt === 'war' ? 'Obsadzovanie sa skončilo — začínajú súboje.' + dist : 'Ďalšia otázka o chvíľu…';
   } else if (S.phase === 'count') {
-    banner = S.cnt === 'tieq' ? 'Obaja odpovedali správne — rozstrel: kto tipne číslo presnejšie?' : S.cnt === 'startq' ? 'Tipovacia otázka o poradie výberu domovského letiska.' : S.cnt === 'duelq' && S.duel ? (S.duel.d >= 0 ? `⚔ ${nm(S.duel.a)} útočí na ${dqEsc(M.t[S.duel.t].k)} hráča ${nm(S.duel.d)}` : `${nm(S.duel.a)} obsadzuje voľný priestor ${dqEsc(M.t[S.duel.t].k)}`) : 'Priprav sa na otázku.';
+    banner = S.cnt === 'tieq' ? `Rozstrel ${(S.duel && S.duel.tn) || 1} / 3: kto tipne číslo presnejšie?${S.duel && S.duel.tn === 3 ? ' Pri rovnakom tipe rozhodne čas.' : ''}` : S.cnt === 'startq' ? 'Tipovacia otázka o poradie výberu domovského letiska.' : S.cnt === 'duelq' && S.duel ? (S.duel.d >= 0 ? `⚔ ${nm(S.duel.a)} útočí na ${dqEsc(M.t[S.duel.t].k)} hráča ${nm(S.duel.d)}` : `${nm(S.duel.a)} obsadzuje voľný priestor ${dqEsc(M.t[S.duel.t].k)}`) : 'Priprav sa na otázku.';
     pop = `<div class="dq-pop count"><div class="dq-pop-top"><span>${stage}</span><span></span><span></span></div><div class="dq-count" id="dq-count"></div><div class="dq-pop-s">${banner}</div></div>`;
     if (S.pre) dqPhoto(S.pre);
   } else if (S.phase === 'startq' || S.phase === 'startrev') {
@@ -1553,7 +1722,7 @@ function dqRender(card) {
     const D = S.duel, tn = dqEsc(M.t[D.t].k);
     banner = D.d >= 0 ? `⚔ ${nm(D.a)} útočí na ${tn} hráča ${nm(D.d)}` : `${nm(D.a)} obsadzuje voľný priestor ${tn}`;
     if (S.phase === 'duelintro' && DQ.toastK !== S.k) { DQ.toastK = S.k; toast(`<small>${D.d >= 0 ? 'ÚTOK' : 'VOĽNÝ PRIESTOR'}${D.lvl ? ' · OTÁZKA ' + DQ_LVN[D.lvl] : ''}</small><div class="dq-vs"><span style="--c:${dqC(D.a)}"><i>${dqI(D.a)}</i>${nm(D.a)}</span><u>${D.d >= 0 ? 'VS' : '→'}</u>${D.d >= 0 ? `<span style="--c:${dqC(D.d)}"><i>${dqI(D.d)}</i>${nm(D.d)}</span>` : `<span class="free"><i>◯</i>${tn}</span>`}</div><em>${tn} · ${M.t[D.t].v} b.${D.m && S.cfg.pm ? ' · ' + dqEsc(dqSetName(D.m)) : ''}</em>`, dqC(D.a), 'vs' + (D.d === me ? ' lose' : '')); }
-    if (S.phase === 'tieq') banner = `Rozstrel o ${tn}: ${nm(D.a)} proti ${nm(D.d)} — vyhráva presnejší tip.`;
+    if (S.phase === 'tieq') banner = `Rozstrel ${D.tn || 1} / 3 o ${tn}: ${nm(D.a)} proti ${nm(D.d)} — vyhráva presnejší tip${(D.tn || 1) === 3 ? ', pri rovnakom rýchlejší' : ''}.`;
     if (D.x2 && !S.rev) banner += ' · žolík ×2';
     if (S.rev) banner = sus ? 'Vyhodnocujem…' : dqRevText(S, nm);
     if (S.phase !== 'duelintro') pop = dqPopHTML(S, me, stage, banner);

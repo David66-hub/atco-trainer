@@ -628,7 +628,7 @@ function labelForId(id) {
 
 function renderFilters() {
   const el = document.getElementById('filters');
-  if (state.mode === 'home' || state.mode === 'conquer' || state.mode === 'rank') { el.innerHTML = ''; return; }
+  if (state.mode === 'home' || state.mode === 'conquer' || state.mode === 'rank' || state.mode === 'profile') { el.innerHTML = ''; return; }
   if (state.mode === 'aircraft') {
     const cmp = state.filters.acMode === 'cmp';
     el.innerHTML = `
@@ -803,7 +803,7 @@ function renderFilters() {
     let h = lab('OBTIAŽNOSŤ:') + chip(F.dAns==='choice', 'dans', 'choice', 'ĽAHKÁ (výber z možností)') + chip(F.dAns==='type', 'dans', 'type', 'HARDCORE (písanie)');
     if (ex) {
       h += br + lab('POČET OTÁZOK:') + [20, 30, 50].map(n => chip(F.exN===n, 'exn', n, n)).join('');
-      h += br + lab('ČAS:') + [5, 10, 15].map(n => chip(F.exMin===n, 'exmin', n, n + ' minút')).join('');
+      h += br + lab('ČAS: ' + examClock(examSecs()) + ' — ' + (F.dAns === 'type' ? '20' : '12') + ' s na otázku');
     } else {
       h += br + lab('POČET OTÁZOK:') + [15, 25, 40].map(n => chip(F.dCount===n, 'dcount', n, n)).join('');
       const I = state.dailyInfo;

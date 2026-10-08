@@ -171,6 +171,8 @@ function tickClock() {
 setInterval(tickClock, 1000); tickClock();
 
 document.querySelectorAll('.tab').forEach(t => { t.onclick = () => startMode(t.dataset.mode); });
+document.getElementById('acct-btn').onclick = () => startMode('profile');
+rkHeadBtn();
 document.getElementById('btn-skip').onclick = () => {
   if (state.mode === 'exam') { if (state.exam && state.current) examRecord(state.current, false, '— preskočené —'); return; }
   if (state.mode === 'heading' && state.filters.hgMode === 'static') { hsRender(document.getElementById('qcard')); return; }

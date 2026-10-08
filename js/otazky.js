@@ -304,6 +304,7 @@ function buildWaypointQuestions() {
 function buildQueue() {
   switch(state.mode) {
     case 'home':     return [];   // úvod nemá otázky
+    case 'profile':  return [];
     case 'conquer':  return [];   // hra a rebríček majú vlastné stránky
     case 'rank':     return [];
     case 'daily':    return buildDaily();

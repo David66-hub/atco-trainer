@@ -19,7 +19,7 @@ function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '4.0';
+const APP_VERSION = '4.2';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -86,7 +86,7 @@ function rkMult() {
 /* počítadlá správne / zle vedie každý modul po svojom — tu sa len sleduje ich prírastok */
 function rkSample(now) {
   const c = state.correct || 0, w = state.wrong || 0;
-  if (c >= RK.lastC && w >= RK.lastW && (c > RK.lastC || w > RK.lastW) && state.mode !== 'conquer' && state.mode !== 'rank' && state.mode !== 'home') {
+  if (c >= RK.lastC && w >= RK.lastW && (c > RK.lastC || w > RK.lastW) && state.mode !== 'conquer' && state.mode !== 'rank' && state.mode !== 'profile' && state.mode !== 'home') {
     const dc = c - RK.lastC, dw = w - RK.lastW;
     rkAdd(state.mode, { c: dc, w: dw, p: dc * rkMult() });
     RK.lastAns = now || Date.now();
@@ -123,7 +123,7 @@ function rkOwnsClock(now) {
 function rkTick(now, hidden) {
   rkSample(now);
   RK.n++;
-  const m = state.mode, playing = m === 'conquer' ? !!(DQ.room && DQ.S && DQ.S.phase !== 'lobby' && DQ.S.phase !== 'end') : (m !== 'home' && m !== 'rank');
+  const m = state.mode, playing = m === 'conquer' ? !!(DQ.room && DQ.S && DQ.S.phase !== 'lobby' && DQ.S.phase !== 'end') : (m !== 'home' && m !== 'rank' && m !== 'profile');
   if (RK.acct && playing && !hidden && now - RK.lastAns < 45000 && rkOwnsClock(now)) rkAdd(m, { s: 1 });
   if (RK.n % 10 === 0) rkPendSave();
   if (RK.n % 30 === 0) rkFlush();
@@ -150,6 +150,7 @@ async function rkLoad() {
   try { RK.rows = await rkRpc('atco_ranking', {}); RK.loadErr = ''; } catch (e) { RK.loadErr = rkErrText(e); }
   RK.loading = false;
   if (state.mode === 'rank') renderRank(document.getElementById('qcard'));
+  if (state.mode === 'profile') renderProfile(document.getElementById('qcard'));
 }
 function rkTime(s) { s = s || 0; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? h + ' h ' + m + ' min' : m ? m + ' min' : s ? s + ' s' : '—'; }
 /* potvrdzovacie okno v štýle stránky */
@@ -192,6 +193,82 @@ function rkBindAccount(after) {
   const pw = document.getElementById('rk-pass');
   if (pw) pw.addEventListener('keydown', e => { if (e.key === 'Enter') go('in'); });
 }
+/* tlačidlo vpravo hore: neprihlásený → PRIHLÁSIŤ, prihlásený → jeho prezývka; vedie na stránku PROFIL */
+function rkHeadBtn() {
+  const b = document.getElementById('acct-btn'); if (!b) return;
+  b.textContent = RK.acct ? '👤 ' + RK.acct.nick : 'PRIHLÁSIŤ';
+  b.classList.toggle('in', !!RK.acct); b.classList.toggle('on', state.mode === 'profile');
+}
+/* PROFIL — účet, všetky štatistiky hráča a jeho nastavenia na jednom mieste */
+function renderProfile(card) {
+  document.getElementById('qnum').textContent = '•';
+  document.getElementById('qtotal').textContent = 'profil';
+  rkHeadBtn();
+  const again = () => { renderProfile(card); rkLoad(); };
+  if (!RK.acct) {
+    card.innerHTML = `<div class="rk pf">
+        <div class="rk-head"><div><h2>PROFIL</h2><p>Prihlás sa alebo si vytvor účet. Potom sa ti počítajú body, čas a úspešnosť, uvidíš sa v rebríčku a v Dobyvateľovi hráš pod svojím menom. Bez prihlásenia trenažér funguje ďalej, len sa nič z toho neukladá.</p></div></div>
+        ${SB_ON ? '' : '<div class="rk-warn"><strong>SKÚŠOBNÝ REŽIM</strong> — účty sú zatiaľ len v tomto prehliadači.</div>'}
+        ${rkAccountHTML()}
+        ${pfLocalHTML()}
+      </div>`;
+    rkBindAccount(again); pfBindLocal(card);
+    return;
+  }
+  const rowsAll = (RK.rows || []).map(r => { const M = r.mods || {}, o = { nick: r.nick, p: 0 }; RK_MODS.forEach(x => { o.p += (M[x[0]] || {}).p || 0; }); return o; }).sort((a, b) => b.p - a.p || a.nick.localeCompare(b.nick));
+  const pos = rowsAll.findIndex(o => o.nick === RK.acct.nick), mine = ((RK.rows || []).find(r => r.nick === RK.acct.nick) || {}).mods || {};
+  const g = m => Object.assign({ p: 0, c: 0, w: 0, s: 0, g: 0, v: 0 }, mine[m] || {}), T = { p: 0, c: 0, w: 0, s: 0 };
+  RK_MODS.forEach(x => { const a = g(x[0]); 'pcws'.split('').forEach(f => { T[f] += a[f]; }); });
+  const pct = (c, w) => (c + w) ? Math.round(c / (c + w) * 100) + ' %' : '—', cq = g('conquer'), ex = g('exam');
+  const pend = Object.keys(RK.pend || {}).reduce((a, m) => a + ((RK.pend[m] || {}).p || 0), 0);
+  const mxP = Math.max(1, ...RK_MODS.map(x => g(x[0]).p)), sub = RK_SUBJ.map(x => [x[1], g(x[0])]), anySub = sub.some(x => x[1].c + x[1].w > 0);
+  card.innerHTML = `<div class="rk pf">
+      <div class="rk-head"><div><h2>PROFIL · ${dqEsc(RK.acct.nick)}</h2><p>Všetko o tvojom účte na jednom mieste: poradie, body, úspešnosť a čas podľa modulov, Dobyvateľ, okruhy teórie a pokrok v učení.</p></div><button class="btn ghost" id="pf-refresh">${RK.loading ? 'NAČÍTAVAM…' : '↻ OBNOVIŤ'}</button></div>
+      ${RK.loadErr ? `<div class="rk-err">${dqEsc(RK.loadErr)}</div>` : ''}${RK.err ? `<div class="rk-err">${dqEsc(RK.err)}</div>` : ''}
+      <div class="rk-me"><div class="rk-me-top pf-top">
+        <div><b>${pos >= 0 ? pos + 1 + '.' : '—'}</b><span>miesto z ${rowsAll.length || '—'}</span></div><div><b>${T.p}</b><span>bodov spolu</span></div><div><b>${rkTime(T.s)}</b><span>čas tréningu</span></div>
+        <div><b>${pct(T.c, T.w)}</b><span>úspešnosť</span></div><div><b>${T.c + T.w}</b><span>odpovedí</span></div><div><b>${cq.g}</b><span>hier Dobyvateľa</span></div></div></div>
+      ${pend ? `<div class="rk-note">Na odoslanie čaká ešte ${pend} bodov z tohto zariadenia — pripíšu sa do pol minúty alebo po stlačení OBNOVIŤ.</div>` : ''}
+      <h3 class="pf-h">MODULY</h3>
+      <div class="rk-tbl"><table><thead><tr><th>MODUL</th><th>BODY</th><th class="pf-bar"></th><th>SPRÁVNE</th><th>ZLE</th><th>ÚSPEŠNOSŤ</th><th>ČAS</th></tr></thead><tbody>
+        ${RK_MODS.map(x => { const a = g(x[0]); return `<tr><td class="rk-nick">${x[1]}</td><td class="rk-pts">${a.p}</td><td class="pf-bar"><i><em style="width:${Math.round(a.p / mxP * 100)}%"></em></i></td><td>${a.c}</td><td>${a.w}</td><td>${pct(a.c, a.w)}</td><td>${rkTime(a.s)}</td></tr>`; }).join('')}
+      </tbody></table></div>
+      <div class="pf-grid">
+        <div class="pf-box"><h3>DOBYVATEĽ</h3><div class="pf-kv"><span>Odohrané hry</span><b>${cq.g}</b><span>Výhry</span><b>${cq.v}</b><span>Podiel výhier</span><b>${cq.g ? Math.round(cq.v / cq.g * 100) + ' %' : '—'}</b><span>Body do rebríčka</span><b>${cq.p}</b><span>Úspešnosť odpovedí</span><b>${pct(cq.c, cq.w)}</b></div><small>Počítajú sa len hry aspoň dvoch ľudí.</small></div>
+        <div class="pf-box"><h3>SKÚŠKY</h3><div class="pf-kv"><span>Body zo skúšok</span><b>${ex.p}</b><span>Zodpovedané otázky</span><b>${ex.c + ex.w}</b><span>Úspešnosť</span><b>${pct(ex.c, ex.w)}</b></div><small>Správna odpoveď +3 (pri písaní +6), nesprávna −2, bonus od 80 %.</small></div>
+      </div>
+      <h3 class="pf-h">OKRUHY TEÓRIE</h3>
+      ${anySub ? `<div class="rk-tbl"><table><thead><tr><th>OKRUH</th><th>SPRÁVNE</th><th>ODPOVEDE</th><th>ÚSPEŠNOSŤ</th><th class="pf-bar"></th></tr></thead><tbody>${sub.map(x => { const n = x[1].c + x[1].w; return `<tr><td class="rk-nick">${x[0]}</td><td class="rk-pts">${x[1].c}</td><td>${n}</td><td>${pct(x[1].c, x[1].w)}</td><td class="pf-bar"><i><em style="width:${n ? Math.round(x[1].c / n * 100) : 0}%"></em></i></td></tr>`; }).join('')}</tbody></table></div>`
+        : '<div class="rk-empty">Zatiaľ nič — okruhy sa počítajú z otázok v Dobyvateľovi, v hre aspoň dvoch ľudí.</div>'}
+      ${pfLocalHTML()}
+      <h3 class="pf-h">ÚČET</h3>
+      ${rkAccountHTML()}
+    </div>`;
+  rkBindAccount(again); pfBindLocal(card);
+  document.getElementById('pf-refresh').onclick = again;
+}
+/* čo je uložené len v tomto zariadení: pokrok v učení a vzhľad v Dobyvateľovi */
+function pfLocalHTML() {
+  const L = dqLook(), mods = ['aircraft', 'airport', 'callsign', 'waypoint', 'coord'];
+  const weak = Object.keys(state.mistakes || {}).filter(k => state.mistakes[k] > 0).length;
+  return `<h3 class="pf-h">POKROK V UČENÍ <em>— uložený v tomto zariadení</em></h3>
+      <div class="rk-tbl"><table><thead><tr><th>MODUL</th><th>NAUČENÉ</th><th class="pf-bar"></th><th>NA OPAKOVANIE DNES</th><th>SLABÉ MIESTA</th></tr></thead><tbody>
+        ${mods.map(m => { const p = modProgress(m); return `<tr><td class="rk-nick">${MOD_NAME[m]}</td><td class="rk-pts">${p.done} / ${p.total}</td><td class="pf-bar"><i><em style="width:${p.total ? Math.round(p.done / p.total * 100) : 0}%"></em></i></td><td>${p.due}</td><td>${p.weak}</td></tr>`; }).join('')}
+      </tbody></table></div>
+      <div class="rk-note">Naučené = otázka zodpovedaná správne aspoň dvakrát po sebe s odstupom. Slabých miest spolu: ${weak}.</div>
+      <h3 class="pf-h">VZHĽAD V DOBYVATEĽOVI</h3>
+      <div class="dq-look"><strong>TVOJA FARBA A LIETADLO</strong>
+        <div class="dq-look-row">${DQ_PAL.map((c, ci) => `<button class="dq-sw${L.col === ci ? ' on' : ''}" data-pfcol="${ci}" style="background:${c}"></button>`).join('')}</div>
+        <div class="dq-look-row">${DQ_ICO.map((ic, ii) => `<button class="dq-ic${L.ico === ii ? ' on' : ''}" data-pfico="${ii}">${ic}</button>`).join('')}</div>
+        <div class="dq-look-row"><button class="rk-chip${dqLow() ? '' : ' on'}" id="pf-low">ANIMÁCIE: ${dqLow() ? 'MENEJ' : 'PLNÉ'}</button><small>Farbu dostaneš, ak ju v miestnosti nemá nikto pred tebou; inak ti hra pridelí prvú voľnú.</small></div>
+      </div>`;
+}
+function pfBindLocal(card) {
+  const save = ch => { lsSet(DQ_LOOKK, Object.assign(dqLook(), ch)); renderProfile(card); };
+  card.querySelectorAll('[data-pfcol]').forEach(b => { b.onclick = () => save({ col: +b.dataset.pfcol }); });
+  card.querySelectorAll('[data-pfico]').forEach(b => { b.onclick = () => save({ ico: +b.dataset.pfico }); });
+  const lw = document.getElementById('pf-low'); if (lw) lw.onclick = () => { DQ.low = !dqLow(); lsSet(DQ_LOWK, DQ.low ? 1 : 0); renderProfile(card); };
+}
 function renderRank(card) {
   document.getElementById('qnum').textContent = '•';
   document.getElementById('qtotal').textContent = 'liga';
@@ -223,7 +300,7 @@ function renderRank(card) {
     <div class="rk">
       <div class="rk-head"><div><h2>REBRÍČEK</h2><p>Bod za každú správnu odpoveď, v HARDCORE dva. K tomu body z Dobyvateľa. Úspešnosť je podiel správnych zo všetkých odpovedí. Čas beží len vtedy, keď odpovedáš — po 45 sekundách bez odpovede sa zastaví.</p></div><button class="btn ghost" id="rk-refresh">${RK.loading ? 'NAČÍTAVAM…' : '↻ OBNOVIŤ'}</button></div>
       ${SB_ON ? '' : '<div class="rk-warn"><strong>SKÚŠOBNÝ REŽIM</strong> — rebríček ešte nie je pripojený na databázu. Účty a body sú zatiaľ len v tomto prehliadači a kolegovia ich nevidia.</div>'}
-      ${rkAccountHTML()}
+      ${RK.acct ? '' : '<div class="rk-acct in"><span>Nie si prihlásený — body sa ti nepočítajú a v rebríčku ťa nevidno.</span><div class="rk-acct-b"><button class="btn" id="rk-toprof">PRIHLÁSIŤ SA ▶</button></div></div>'}
       ${mine}
       <div class="rk-chips">${[['all', 'CELKOVO']].concat(RK_MODS).map(x => `<button class="rk-chip${v === x[0] ? ' on' : ''}" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
       <div class="rk-chips sub"><span>OKRUHY TEÓRIE</span>${RK_SUBJ.map(x => `<button class="rk-chip${v === x[0] ? ' on' : ''}" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
@@ -232,7 +309,7 @@ function renderRank(card) {
       ${rows.length ? `<div class="rk-tbl"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(line).join('')}</tbody></table></div>`
         : `<div class="rk-empty">${RK.rows ? 'Zatiaľ tu nikto nemá body. Buď prvý.' : 'Načítavam rebríček…'}</div>`}
     </div>`;
-  rkBindAccount(() => { renderRank(card); rkLoad(); });
+  const tp = document.getElementById('rk-toprof'); if (tp) tp.onclick = () => startMode('profile');
   document.getElementById('rk-refresh').onclick = () => { renderRank(card); rkLoad(); };
   card.querySelectorAll('.rk-chip').forEach(b => { b.onclick = () => { RK.view = b.dataset.v; renderRank(card); }; });
 }

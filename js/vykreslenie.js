@@ -14,13 +14,14 @@ function renderQuestion() {
   document.querySelector('.app').classList.toggle('wide', split);
   fsSync();
   /* súťažné stránky — Dobyvateľ a rebríček */
-  const comp = state.mode === 'conquer' || state.mode === 'rank';
+  const comp = state.mode === 'conquer' || state.mode === 'rank' || state.mode === 'profile';
+  rkHeadBtn();
   document.body.classList.toggle('on-comp', comp);
   if (state.mode !== 'conquer') dqHideStage();
   if (comp) {
     document.querySelector('.controls').style.display = 'none';
-    document.getElementById('mode-label').textContent = state.mode === 'conquer' ? 'DOBYVATEĽ' : 'REBRÍČEK';
-    if (state.mode === 'conquer') { DQ.sig = ''; dqRender(card); } else { renderRank(card); rkLoad(); }
+    document.getElementById('mode-label').textContent = state.mode === 'conquer' ? 'DOBYVATEĽ' : state.mode === 'profile' ? 'PROFIL' : 'REBRÍČEK';
+    if (state.mode === 'conquer') { DQ.sig = ''; dqRender(card); } else if (state.mode === 'profile') { renderProfile(card); rkLoad(); } else { renderRank(card); rkLoad(); }
     return;
   }
   /* MOD 05 — hra na kurzy má vlastnú kartu a vlastnú slučku */
