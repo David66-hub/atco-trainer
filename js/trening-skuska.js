@@ -267,7 +267,8 @@ document.addEventListener('keydown', e => {
   const t = e.target, typing = t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA');
   if (typing) return;
   if (/^[1-6]$/.test(e.key)) {
-    const b = document.querySelectorAll('#qcard .choice-btn:not(:disabled), #qcard .cmp-card:not(.done), #dq-stage .choice-btn:not(:disabled)')[+e.key - 1];
+    const dqo = document.body.classList.contains('dq-live') ? document.querySelector('#dq-stage .dq-opts') : null;
+    const b = dqo ? dqo.querySelector('.choice-btn[data-c="' + (+e.key - 1) + '"]:not(:disabled)') : document.querySelectorAll('#qcard .choice-btn:not(:disabled), #qcard .cmp-card:not(.done), #dq-stage .choice-btn:not(:disabled)')[+e.key - 1];
     if (b) { e.preventDefault(); b.click(); }
   } else if (e.key === ' ') {
     const nb = document.getElementById('next-btn');
