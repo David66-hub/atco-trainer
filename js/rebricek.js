@@ -16,8 +16,10 @@ const RK_ERR = { NICK_TAKEN: 'Táto prezývka je už obsadená — skús inú.',
   BAD_TOKEN: 'Prihlásenie vypršalo — prihlás sa znova.', NO_PLAYER: 'Hráč s takou prezývkou neexistuje.', SELF: 'Seba si pridať nemôžeš.', NOT_FRIEND: 'Správy sa dajú posielať len potvrdeným priateľom.',
   LIMIT: 'Priveľa žiadostí alebo správ naraz — skús to neskôr.', BAD_EMAIL: 'E-mail nemá správny tvar.', BAD_AVATAR: 'Obrázok sa nedá použiť — skús iný.', BAD_CODE: 'Kód miestnosti má štyri písmená.', EMPTY: 'Správa je prázdna.' };
 /* ÚROVNE (v4.9): odomykajú sa celkovým počtom bodov; zatiaľ sú len na ozdobu, hru neovplyvňujú */
-const LV = [[0, 'Uchádzač'], [100, 'Študent ab-initio'], [300, 'Riadiaci v základnom výcviku'], [700, 'Študent na simulátore'], [1500, 'Stážista OJT TWR'], [3000, 'ATCO TWR'],
-  [5000, 'Stážista OJT APP'], [8000, 'ATCO APP'], [12000, 'Stážista OJT ACC'], [18000, 'ATCO ACC'], [26000, 'Inštruktor OJTI'], [40000, 'Supervízor']];
+/* úrovne (v4.13.1): 58 stupňov, veže a approach zoradené podľa počtu obyvateľov mesta — od uchádzača cez veže a approach po ACC a zahraničie; [body, názov, skupina] */
+const LV = [[0, 'Uchádzač', 'ZAČIATOK'], [100, 'Feasťák', 'ZAČIATOK'], [300, 'Študent ab-initio', 'ZAČIATOK'], [600, 'Riadiaci v základnom výcviku', 'ZAČIATOK'], [1000, 'Študent na simulátore', 'ZAČIATOK'], [1500, 'Stážista OJT TWR', 'VEŽA'], [2000, 'ATCO TWR Boleráz', 'VEŽA'], [2500, 'ATCO TWR Očová', 'VEŽA'], [3000, 'ATCO TWR Sliač', 'VEŽA'], [3600, 'ATCO TWR Svidník', 'VEŽA'], [4200, 'ATCO TWR Holíč', 'VEŽA'], [4900, 'ATCO TWR Senica', 'VEŽA'], [5600, 'ATCO TWR Partizánske', 'VEŽA'], [6400, 'ATCO TWR Lučenec', 'VEŽA'], [7200, 'ATCO TWR Ružomberok', 'VEŽA'], [8100, 'ATCO TWR Piešťany', 'VEŽA'], [9000, 'ATCO TWR Spišská Nová Ves', 'VEŽA'], [10000, 'ATCO TWR Nové Zámky', 'VEŽA'], [11000, 'ATCO TWR Prievidza', 'VEŽA'], [12000, 'ATCO TWR Poprad-Tatry', 'VEŽA'], [13000, 'ATCO TWR Martin', 'VEŽA'], [14000, 'ATCO TWR Trenčín', 'VEŽA'], [15000, 'ATCO TWR Nitra', 'VEŽA'], [16000, 'ATCO TWR Žilina', 'VEŽA'], [17000, 'ATCO TWR Prešov', 'VEŽA'], [18500, 'ATCO TWR Košice', 'VEŽA'], [20000, 'ATCO TWR Bratislava', 'VEŽA'], [22000, 'Stážista OJT APP', 'APPROACH'], [24000, 'ATCO APP Sliač', 'APPROACH'], [26000, 'ATCO APP Piešťany', 'APPROACH'], [28000, 'ATCO APP Poprad', 'APPROACH'], [30000, 'ATCO APP Žilina', 'APPROACH'], [32500, 'ATCO APP Košice', 'APPROACH'], [35000, 'ATCO APP Bratislava', 'APPROACH'], [38000, 'Stážista OJT ACC', 'ACC'], [41000, 'ATCO ACC Bratislava', 'ACC'], [44000, 'ATCO ACC Budapest', 'ZAHRANIČIE'], [47000, 'ATCO ACC Praha', 'ZAHRANIČIE'], [50000, 'ATCO ACC Warszawa', 'ZAHRANIČIE'], [53000, 'ATCO ACC Wien', 'ZAHRANIČIE'], [56000, 'ATCO ACC Zagreb', 'ZAHRANIČIE'], [59000, 'ATCO ACC München', 'ZAHRANIČIE'], [62000, 'ATCO ACC Zürich', 'ZAHRANIČIE'], [65000, 'ATCO ACC Milano', 'ZAHRANIČIE'], [68000, 'ATCO ACC Madrid', 'ZAHRANIČIE'], [71000, 'ATCO ACC Paris', 'ZAHRANIČIE'], [74000, 'ATCO UAC Karlsruhe', 'ZAHRANIČIE'], [77000, 'ATCO UAC Maastricht', 'ZAHRANIČIE'], [80000, 'ATCO ACC London', 'ZAHRANIČIE'], [83000, 'ATCO New York Center', 'ZAHRANIČIE'], [86000, 'ATCO Shanwick Oceanic', 'ZAHRANIČIE'], [88000, 'Inštruktor OJTI', 'VRCHOL'], [90000, 'Hodnotiteľ', 'VRCHOL'], [92000, 'Supervízor', 'VRCHOL'], [94000, 'Vedúci zmeny', 'VRCHOL'], [96000, 'Vedúci prevádzky', 'VRCHOL'], [98000, 'Legenda éteru', 'VRCHOL'], [100000, 'Kráľ neba', 'VRCHOL']];
+/* štítok úrovne (v4.15): „LVL 5“ vo farbe skupiny, v plnej podobe aj s názvom */
+function lvTag(n, full, lg) { const x = LV[Math.max(1, Math.min(LV.length, n)) - 1], g = LG[lg] ? lg : 1; return `<em class="lv-b l${g}${full ? ' full' : ''}" title="úroveň ${n} · ${x[1]} · liga ${LG[g]}"><b>LVL ${n}</b>${full ? `<i>${x[1]}</i>` : ''}</em>`; }
 function rkLevel(p) { let n = 0; while (n + 1 < LV.length && p >= LV[n + 1][0]) n++; const nx = LV[n + 1]; return { n: n + 1, name: LV[n][1], from: LV[n][0], next: nx ? nx[0] : null, nextName: nx ? nx[1] : '', pct: nx ? Math.round((p - LV[n][0]) / (nx[0] - LV[n][0]) * 100) : 100 }; }
 /* okno so všetkými úrovňami: kde som, čo mám odomknuté a koľko chýba k ďalším */
 function lvOpen(p) {
@@ -26,7 +28,7 @@ function lvOpen(p) {
   w.innerHTML = `<div class="hp lv" role="dialog" aria-label="Úrovne">
       <div class="hp-top"><span>ÚROVNE · MÁŠ ${p} BODOV</span><button data-lv="x" title="Zavrieť">✕</button></div>
       <div class="lv-list">${LV.map((x, i) => { const n = i + 1, done = n < L.n, cur = n === L.n, nx = LV[i + 1];
-        return `<div class="lv-row${done ? ' done' : cur ? ' cur' : ' lock'}" style="animation-delay:${(i * 0.035).toFixed(2)}s"><b>${n}</b><div><strong>${x[1]}</strong><span>${x[0] === 0 ? 'od začiatku' : 'od ' + x[0] + ' bodov'}${cur ? (nx ? ' · do ďalšej chýba ' + (nx[0] - p) : ' · najvyššia úroveň') : !done ? ' · chýba ' + (x[0] - p) : ''}</span>${cur && nx ? `<i><em style="width:${L.pct}%"></em></i>` : ''}</div><u>${done ? '✓' : cur ? 'TU SI' : '🔒'}</u></div>`; }).join('')}</div>
+        return `${i === 0 || LV[i - 1][2] !== x[2] ? `<div class="lv-grp">${x[2]}</div>` : ''}<div class="lv-row${done ? ' done' : cur ? ' cur' : ' lock'}" style="animation-delay:${(Math.min(i, 10) * 0.03).toFixed(2)}s"><b>${n}</b><div><strong>${x[1]}</strong><span>${x[0] === 0 ? 'od začiatku' : 'od ' + x[0] + ' bodov'}${cur ? (nx ? ' · do ďalšej chýba ' + (nx[0] - p) : ' · najvyššia úroveň') : !done ? ' · chýba ' + (x[0] - p) : ''}</span>${cur && nx ? `<i><em style="width:${L.pct}%"></em></i>` : ''}</div><u>${done ? '✓' : cur ? 'TU SI' : '🔒'}</u></div>`; }).join('')}</div>
       <div class="lv-note">Úrovne sa odomykajú všetkými bodmi, ktoré si kedy získal — z cvičenia, dennej výzvy aj Dobyvateľa. Neklesajú.</div>
       <div class="hp-act"><span></span><button class="btn" data-lv="x">ZAVRIEŤ</button></div>
     </div>`;
@@ -52,7 +54,7 @@ function rkLevelCheck() {
 }
 const LG = ['', 'BRONZ', 'STRIEBRO', 'ZLATO', 'PLATINA', 'DIAMANT'], LGC = ['', '#b0703c', '#9aa3ad', '#e0a800', '#3aa6a0', '#5b8def'];
 const AV = { m: {}, busy: false };   // profilovky a emoji hráčov podľa prezývky (v4.11)
-const RK = { acct: null, pend: {}, rows: null, view: 'league', err: '', busy: false, lastC: 0, lastW: 0, lastAct: Date.now(), n: 0, loading: false };
+const RK = { acct: null, pend: {}, rows: null, view: 'all', err: '', busy: false, lastC: 0, lastW: 0, lastAct: Date.now(), n: 0, loading: false };
 function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 /* ============================================================
@@ -200,7 +202,7 @@ function helpOpen(key) { if (HELP[key]) hpDraw(key, 0); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hp]'); if (b) { e.preventDefault(); if (b.dataset.hp === 'game') hpGameNow(); else helpOpen(b.dataset.hp === '*' ? hpKeyNow() : b.dataset.hp); } });
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '4.11.0';
+const APP_VERSION = '4.18.0';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -265,7 +267,8 @@ function rkMock(fn, a) {
     else if (fn === 'atco_social') {
       p.act = a.p_activity || ''; p.actAt = Date.now();
       out = { friends: F.filter(f => f.a === me || f.b === me).map(f => { const o = P[f.a === me ? f.b : f.a] || {}, on = f.st === 'ok' && Date.now() - (o.actAt || 0) < 75000; return { nick: o.nick, avatar: o.avatar || '', st: f.st === 'ok' ? 'ok' : f.a === me ? 'out' : 'in', online: on, activity: on ? o.act || '' : '', seen: o.actAt ? new Date(o.actAt).toISOString() : null }; }),
-        inbox: M.filter(m => m.to === me).sort((x, y) => y.t - x.t).slice(0, 60).map(m => ({ id: m.id, from: (P[m.from] || {}).nick || m.from, kind: m.kind, body: m.body, created: new Date(m.t).toISOString(), read: m.read })), unread: M.filter(m => m.to === me && !m.read).length };
+        inbox: M.filter(m => m.to === me).sort((x, y) => y.t - x.t).slice(0, 60).map(m => ({ id: m.id, from: (P[m.from] || {}).nick || m.from, kind: m.kind, body: m.body, created: new Date(m.t).toISOString(), read: m.read })), unread: M.filter(m => m.to === me && !m.read).length,
+        sent: M.filter(m => m.from === me && m.kind !== 'friend').sort((x, y) => y.t - x.t).slice(0, 80).map(m => ({ id: m.id, to: (P[m.to] || {}).nick || m.to, kind: m.kind, body: m.body, created: new Date(m.t).toISOString(), read: m.read })) };
     }
   } else if (fn === 'atco_avatars') {
     out = {}; (a.p_nicks || []).forEach(n => { const p = P[String(n).toLowerCase()]; if (p) out[p.nick] = { a: p.avatar || '', e: p.emoji || '' }; });
@@ -377,6 +380,7 @@ async function rkLoad() {
   if (state.mode === 'rank') renderRank(document.getElementById('qcard'));
   if (state.mode === 'profile') renderProfile(document.getElementById('qcard'));
   if (state.mode === 'home') homeHelloFill();
+  rkHeadBtn();
 }
 function rkTime(s) { s = s || 0; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? h + ' h ' + m + ' min' : m ? m + ' min' : s ? s + ' s' : '—'; }
 /* potvrdzovacie okno v štýle stránky */
@@ -534,7 +538,7 @@ async function socTick(force) {
   SOC.busy = true;
   try {
     const r = await rkRpc('atco_social', { p_token: RK.acct.token, p_activity: socActivity() });
-    SOC.ok = true; SOC.err = ''; SOC.friends = (r && r.friends) || []; SOC.inbox = (r && r.inbox) || []; SOC.unread = (r && r.unread) || 0;
+    SOC.ok = true; SOC.err = ''; SOC.friends = (r && r.friends) || []; SOC.inbox = (r && r.inbox) || []; SOC.unread = (r && r.unread) || 0; SOC.sent = r && Array.isArray(r.sent) ? r.sent : null;
     /* nové neprečítané správy od posledného načítania → oznam vpravo hore (pri prvom načítaní len čerstvé pozvánky) */
     const first = !SOC.known; if (first) SOC.known = {};
     SOC.inbox.forEach(m => {
@@ -547,7 +551,8 @@ async function socTick(force) {
   rkHeadBtn();
   /* otvorený profil sa prekreslí, len keď hráč práve nepíše */
   const ae = document.activeElement, typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT');
-  if (state.mode === 'profile' && !typing && (RK.pfTab === 'friends' || RK.pfTab === 'inbox')) renderProfile(document.getElementById('qcard'));
+  if (state.mode === 'profile' && RK.pfTab === 'inbox' && RK.pfChat && document.getElementById('pf-chat-log')) chatRefresh();   // otvorený chat sa len doplní, aby písanie neprerušil
+  else if (state.mode === 'profile' && !typing && (RK.pfTab === 'friends' || RK.pfTab === 'inbox')) renderProfile(document.getElementById('qcard'));
   if (state.mode === 'conquer' && DQ.S && DQ.S.phase === 'lobby' && !typing) dqShow();
 }
 setInterval(() => socTick(), 25000);
@@ -578,13 +583,59 @@ function socToast(m) {
     el.remove();
     if (b.dataset.st === 'join') { rkRpc('atco_msg_read', { p_token: RK.acct.token, p_id: m.id }).catch(() => {}); socJoin(m.body); }
     else if (b.dataset.st === 'yes') socCall('atco_friend_answer', { p_nick: m.from, p_ok: true }, m.from + ' je teraz tvoj priateľ.');
-    else if (b.dataset.st === 'open') { RK.pfTab = 'inbox'; startMode('profile'); }
+    else if (b.dataset.st === 'open') { RK.pfTab = 'inbox'; RK.pfChat = m.from; startMode('profile'); }
   });
   box.appendChild(el);
   setTimeout(() => el.remove(), m.kind === 'invite' ? 30000 : 14000);
 }
 const PF_EMO = ['✈️', '🛩️', '🚁', '🚀', '🛸', '🪂', '🎧', '📡', '🗼', '🛰️', '🧭', '🗺️', '☁️', '⛈️', '🌪️', '🌙', '⭐', '🔥', '🦅', '🦉', '🐺', '🦊', '🐻', '🐧', '😎', '🤓', '🫡', '🎯', '🏆', '⚡', '🍀', '👑'];
 function pfAvatar(av, nick, cls, emo) { return av ? `<span class="pf-av ${cls || ''}"><img src="${dqEsc(av)}" alt=""></span>` : emo ? `<span class="pf-av ${cls || ''}"><u>${dqEsc(emo)}</u></span>` : `<span class="pf-av ${cls || ''}"><b>${dqEsc(String(nick || '?').trim().charAt(0).toUpperCase())}</b></span>`; }
+/* ---------- SPRÁVY ako chat (v4.12): zoznam rozhovorov, po kliknutí celý rozhovor s bublinami ---------- */
+const CHAT_SENTK = 'atcoTrainerV2.chatSent', CHAT_HIDEK = 'atcoTrainerV2.chatHide';
+function chatKey() { return RK.acct ? RK.acct.nick.toLowerCase() : ''; }
+/* odoslané správy: zo servera (doplnok v52); kým ho databáza nemá, aspoň z tohto zariadenia */
+function chatSent() { return SOC.sent || (lsGet(CHAT_SENTK, {})[chatKey()] || []); }
+function chatSentAdd(to, kind, body) { const A = lsGet(CHAT_SENTK, {}), k = chatKey(); A[k] = (A[k] || []).concat([{ id: 'L' + Date.now(), to, kind, body, created: new Date().toISOString(), read: false }]).slice(-200); lsSet(CHAT_SENTK, A); }
+function chatThreads() {
+  const T = {}, hide = (lsGet(CHAT_HIDEK, {})[chatKey()] || {});
+  const add = (nick, o) => { if (new Date(o.t).getTime() <= (hide[nick] || 0)) return; (T[nick] = T[nick] || []).push(o); };
+  SOC.inbox.forEach(m => { if (m.kind !== 'friend') add(m.from, { id: m.id, mine: false, kind: m.kind, body: m.body, t: m.created, read: m.read }); });
+  chatSent().forEach(m => add(m.to, { id: m.id, mine: true, kind: m.kind, body: m.body, t: m.created, read: m.read }));
+  Object.keys(T).forEach(n => T[n].sort((a, b) => new Date(a.t) - new Date(b.t)));
+  return T;
+}
+function chatTime(t) { const d = new Date(t), p = n => String(n).padStart(2, '0'), today = new Date().toDateString() === d.toDateString(); return (today ? '' : d.getDate() + '. ' + (d.getMonth() + 1) + '. ') + p(d.getHours()) + ':' + p(d.getMinutes()); }
+function chatLogHTML(nick) {
+  const L = chatThreads()[nick] || [];
+  if (!L.length) return '<div class="ch-empty">Zatiaľ žiadne správy. Napíš prvú.</div>';
+  let day = '';
+  return L.map(m => { const d = new Date(m.t).toDateString(), sep = d !== day ? `<div class="ch-day">${d === new Date().toDateString() ? 'DNES' : new Date(m.t).getDate() + '. ' + (new Date(m.t).getMonth() + 1) + '. ' + new Date(m.t).getFullYear()}</div>` : ''; day = d;
+    const inner = m.kind === 'invite' ? `<small>POZVÁNKA DO DOBYVATEĽA</small><b>miestnosť ${dqEsc(m.body)}</b>${m.mine ? '' : `<button class="btn" data-join="${dqEsc(m.body)}">PRIPOJIŤ SA ▶</button>`}` : dqEsc(m.body);
+    return `${sep}<div class="ch-b${m.mine ? ' me' : ''}${m.kind === 'invite' ? ' inv' : ''}"><div>${inner}</div><i>${chatTime(m.t)}${m.mine && m.read ? ' · prečítané' : ''}</i></div>`; }).join('');
+}
+function chatMarkRead(nick) {
+  const U = SOC.inbox.filter(m => m.from === nick && m.kind !== 'friend' && !m.read); if (!U.length) return;
+  U.forEach(m => { m.read = true; rkRpc('atco_msg_read', { p_token: RK.acct.token, p_id: m.id }).catch(() => {}); });
+  SOC.unread = Math.max(0, SOC.unread - U.length); rkHeadBtn();
+  const bd = document.querySelector('[data-tab="inbox"] i'); if (bd) { if (SOC.unread) bd.textContent = SOC.unread; else bd.remove(); }
+}
+function chatRefresh() {
+  const e = document.getElementById('pf-chat-log'); if (!e || !RK.pfChat) return;
+  const h = chatLogHTML(RK.pfChat);
+  if (e.dataset.sig !== String(h.length) + h.slice(-80)) { const bottom = e.scrollHeight - e.scrollTop - e.clientHeight < 60; e.innerHTML = h; e.dataset.sig = String(h.length) + h.slice(-80); if (bottom) e.scrollTop = e.scrollHeight; chatBind(e); }
+  chatMarkRead(RK.pfChat);
+}
+function chatBind(root) { root.querySelectorAll('[data-join]').forEach(b => { b.onclick = () => socJoin(b.dataset.join); }); }
+async function chatSend() {
+  const i = document.getElementById('pf-chat-txt'), to = RK.pfChat, t = i ? i.value.trim() : ''; if (!t || !to) return;
+  i.value = ''; i.focus();
+  try { await rkRpc('atco_msg_send', { p_token: RK.acct.token, p_nick: to, p_kind: 'msg', p_body: t }); chatSentAdd(to, 'msg', t); RK.pfErr = ''; }
+  catch (e) { RK.pfErr = socErr(e); i.value = t; const er = document.getElementById('pf-chat-err'); if (er) { er.textContent = RK.pfErr; er.style.display = ''; } return; }
+  const er = document.getElementById('pf-chat-err'); if (er) er.style.display = 'none';
+  await socTick(true); chatRefresh(); const e = document.getElementById('pf-chat-log'); if (e) e.scrollTop = e.scrollHeight;
+}
+/* kým je rozhovor otvorený, pýta sa na nové správy častejšie */
+setInterval(() => { if (state.mode === 'profile' && RK.pfTab === 'inbox' && RK.pfChat && RK.acct && !document.hidden) socTick(true); }, 7000);
 function pfAgo(t) { const s = Math.max(0, (Date.now() - new Date(t).getTime()) / 1000); return s < 90 ? 'práve teraz' : s < 3600 ? 'pred ' + Math.round(s / 60) + ' min' : s < 86400 ? 'pred ' + Math.round(s / 3600) + ' h' : 'pred ' + Math.round(s / 86400) + ' d'; }
 async function pfLoadMe() {
   if (!RK.acct) { RK.me = null; return; }
@@ -596,7 +647,9 @@ async function pfLoadMe() {
 function rkHeadBtn() {
   const b = document.getElementById('acct-btn'); if (!b) return;
   const av = RK.acct && RK.me && RK.me.avatar;
-  b.innerHTML = RK.acct ? (av ? `<img src="${dqEsc(av)}" alt="">` : (RK.me && RK.me.emoji ? dqEsc(RK.me.emoji) : '👤') + ' ') + dqEsc(RK.acct.nick) : 'PRIHLÁSIŤ';
+  const meR = RK.acct ? (RK.rows || []).find(r => r.nick === RK.acct.nick) : null, lvN = RK.acct ? (meR ? rkLevel(rkTotal(meR)).n : dqMyLv()) : 0;
+  b.innerHTML = RK.acct ? (av ? `<img src="${dqEsc(av)}" alt="">` : `<u>${RK.me && RK.me.emoji ? dqEsc(RK.me.emoji) : dqEsc(RK.acct.nick.charAt(0).toUpperCase())}</u>`) + `<span>${dqEsc(RK.acct.nick)}</span><em>LVL ${lvN}</em>` : 'PRIHLÁSIŤ';
+  b.title = RK.acct ? 'Môj profil' : 'Prihlásiť sa alebo vytvoriť účet';
   b.classList.toggle('in', !!RK.acct); b.classList.toggle('on', state.mode === 'profile');
   const ab = document.getElementById('about-btn'); if (ab) ab.classList.toggle('on', state.mode === 'about');
   const ib = document.getElementById('inbox-btn');
@@ -636,11 +689,21 @@ function renderProfile(card) {
     const best = RK_MODS.map(x => [x[1], g(x[0])]).filter(x => x[1].c + x[1].w >= 10).sort((a, b) => b[1].c / (b[1].c + b[1].w) - a[1].c / (a[1].c + a[1].w))[0];
     const top = RK_MODS.map(x => [x[1], g(x[0]).p]).sort((a, b) => b[1] - a[1])[0];
     let due = 0, weak = Object.keys(state.mistakes || {}).filter(k => state.mistakes[k] > 0).length; ['aircraft', 'airport', 'callsign', 'waypoint', 'coord'].forEach(m => { due += modProgress(m).due; });
-    body = `<div class="pf-kpis">
-        <div><small>MIESTO</small><b>${pos >= 0 ? pos + 1 + '.' : '—'}</b><span>z ${rowsAll.length || '—'} hráčov</span></div>
-        <div><small>BODY</small><b>${T.p}</b><span>${ahead ? 'do ' + pos + '. miesta chýba ' + (ahead.p - T.p + 1) : pos === 0 ? 'si na čele' : 'spolu'}</span></div>
-        <div><small>ÚSPEŠNOSŤ</small><b>${pct(T.c, T.w)}</b><span>z ${T.c + T.w} odpovedí</span></div>
-        <div><small>ČAS TRÉNINGU</small><b>${rkTime(T.s)}</b><span>len keď odpovedáš</span></div>
+    const dayK = t => t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'), dby = {}; (RK.days || []).forEach(d => { dby[String(d.d).slice(0, 10)] = d.p || 0; });
+    let streak = 0; for (let i = dby[dayK(new Date())] ? 0 : 1; i < 28; i++) { if (dby[dayK(new Date(Date.now() - i * 86400000))]) streak++; else break; }
+    let week = 0; for (let i = 0; i < 7; i++) week += dby[dayK(new Date(Date.now() - i * 86400000))] || 0;
+    const meRow = (RK.rows || []).find(x => x.nick === RK.acct.nick), lgN = meRow && meRow.lg ? meRow.lg : 1, inLg = (RK.rows || []).filter(x => (x.lg || 1) === lgN).sort((x, y) => (y.mp || 0) - (x.mp || 0) || x.nick.localeCompare(y.nick)), lgPos = inLg.findIndex(x => x.nick === RK.acct.nick) + 1;
+    const terr = rkmOwners().map((o, i) => o.top && o.top.r.nick === RK.acct.nick ? RKM[i] : null).filter(Boolean), nfo = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const mods6 = ['aircraft', 'airport', 'callsign', 'waypoint', 'heading', 'coord'].filter(m => g(m).p > 0).length, ans = T.c + T.w, accN = ans ? Math.round(T.c / ans * 100) : 0;
+    const ACH = [['🎯', 'Prvá stovka', '100 bodov', T.p, 100], ['💯', 'Tisícka', '1 000 bodov', T.p, 1000], ['🚀', 'Desaťtisíc', '10 000 bodov', T.p, 10000], ['⚔', 'Prvý boj', 'zahraj Dobyvateľa', cq.g, 1], ['👑', 'Prvá výhra', 'vyhraj Dobyvateľa', cq.v, 1], ['🏅', 'Päť výhier', 'v Dobyvateľovi', cq.v, 5],
+      ['📅', 'Denná výzva', 'dokonči jednu', ex.c + ex.w > 0 ? 1 : 0, 1], ['🔥', 'Týždeň v kuse', '7 dní po sebe', streak, 7], ['🧠', 'Ostrostrelec', '90 % z 200 odpovedí', ans >= 200 ? accN : Math.min(89, Math.round(ans / 200 * 89)), 90], ['⏱', 'Hodina', '1 h tréningu', Math.floor(T.s / 60), 60], ['🕙', 'Desať hodín', '10 h tréningu', Math.floor(T.s / 3600), 10],
+      ['🧩', 'Všestranný', 'body v 6 moduloch', mods6, 6], ['🗺', 'Dobyvateľ územia', 'drž oblasť na mape', terr.length, 1], ['🤝', 'Parťák', 'pridaj si priateľa', frOk.length, 1], ['🥈', 'Striebro', 'postúp z Bronzu', lgN, 2], ['🛫', 'Na veži', 'LVL 6 · OJT TWR', rkLevel(T.p).n, 6]];
+    const got = ACH.filter(x => x[3] >= x[4]).length;
+    body = `<div class="pf-trio">
+        <div class="t-fire${streak ? ' on' : ''}"><i>🔥</i><b>${streak}</b><span>${streak === 1 ? 'deň v rade' : streak >= 2 && streak <= 4 ? 'dni v rade' : 'dní v rade'}</span></div>
+        <div><i>📈</i><b>${nfo(week)}</b><span>bodov za 7 dní</span></div>
+        <div style="--c:${LGC[lgN]}" data-go2="rank"><i>🏆</i><b>${lgPos ? lgPos + '.' : '—'}</b><span>v lige ${LG[lgN]} · ${nfo(meRow ? meRow.mp || 0 : 0)} b. tento mesiac</span></div>
+        <div data-go2="rank"><i>🗺</i><b>${terr.length}</b><span>${terr.length ? terr.map(x => x[1]).join(', ') : 'území na mape'}</span></div>
       </div>
       ${pend ? `<div class="rk-note">Na odoslanie čaká ešte ${pend} bodov z tohto zariadenia — pripíšu sa do pol minúty.</div>` : ''}
       ${(() => { if (!RK.days) return '';
@@ -651,6 +714,8 @@ function renderProfile(card) {
         return `<div class="pf-act"><div class="pf-act-t"><h3>AKTIVITA · 14 DNÍ</h3><span>${msg}</span></div>
           <div class="pf-bars">${D.map((d, i) => `<div class="${i >= 7 ? 'w1' : 'w0'}${i === 13 ? ' today' : ''}" title="${d.k}: ${d.p} bodov"><u>${d.p || ''}</u><i style="height:${Math.max(3, Math.round(d.p / mx * 100))}%"></i><small>${d.wd}<br>${d.dd}</small></div>`).join('')}</div>
           <div class="pf-act-f"><span>minulý týždeň <b>${w0}</b></span><span>tento týždeň <b>${w1}</b> · ${days1} z 7 dní</span></div></div>`; })()}
+      <div class="pf-ach"><div class="pf-ach-h"><h3>ÚSPECHY</h3><span><b>${got}</b> / ${ACH.length}</span><i><em style="width:${Math.round(got / ACH.length * 100)}%"></em></i></div>
+        <div class="pf-ach-g">${ACH.slice().sort((x, y) => (y[3] >= y[4]) - (x[3] >= x[4]) || y[3] / y[4] - x[3] / x[4]).map(x => { const ok = x[3] >= x[4]; return `<div class="${ok ? 'ok' : ''}" title="${x[1]} — ${x[2]}"><i>${x[0]}</i><b>${x[1]}</b><span>${x[2]}</span>${ok ? '<u>✓ ZÍSKANÉ</u>' : `<s><em style="width:${Math.min(100, Math.round(x[3] / x[4] * 100))}%"></em></s><small>${nfo(Math.min(x[3], x[4]))} / ${nfo(x[4])}</small>`}</div>`; }).join('')}</div></div>
       <div class="pf-cards">
         <div class="pf-card"><h3>DNES</h3><div class="pf-kv"><span>Na opakovanie</span><b>${due}</b><span>Moje chyby</span><b>${weak}</b></div><button class="btn" data-go2="daily">SPUSTIŤ TRÉNING ▶</button></div>
         <div class="pf-card"><h3>DOBYVATEĽ</h3><div class="pf-kv"><span>Hry</span><b>${cq.g}</b><span>Výhry</span><b>${cq.v}${cq.g ? ' · ' + Math.round(cq.v / cq.g * 100) + ' %' : ''}</b><span>Body</span><b>${cq.p}</b></div><button class="btn ghost" data-go2="conquer">HRAŤ ▶</button></div>
@@ -686,15 +751,28 @@ function renderProfile(card) {
     if (!RK.ins && !RK.insBusy && !RK.insErr) insLoad();
     body = insHTML();
   } else if (tab === 'inbox') {
-    const to = RK.pfTo && frOk.some(f => f.nick === RK.pfTo) ? RK.pfTo : (frOk[0] || {}).nick;
-    body = `${SOC.ok === false ? `<div class="rk-err">${dqEsc(SOC.err)}</div>` : ''}
-      ${frOk.length ? `<div class="pf-add msg"><select id="pf-mto">${frOk.map(f => `<option${f.nick === to ? ' selected' : ''}>${dqEsc(f.nick)}</option>`).join('')}</select><input type="text" id="pf-mtxt" maxlength="300" placeholder="napíš správu…" autocomplete="off"><button class="btn" id="pf-msend">POSLAŤ</button></div>` : '<div class="rk-note">Správy sa dajú posielať len priateľom — pridaj si niekoho v záložke PRIATELIA.</div>'}
-      <div class="pf-inbox">${SOC.inbox.length ? SOC.inbox.map(m => `<div class="pf-msg k-${m.kind}${m.read ? '' : ' new'}">
-          <div><small>${m.kind === 'invite' ? 'POZVÁNKA DO HRY' : m.kind === 'friend' ? 'ŽIADOSŤ O PRIATEĽSTVO' : 'SPRÁVA'} · ${pfAgo(m.created)}</small><b>${dqEsc(m.from)}</b>
-            <span>${m.kind === 'invite' ? 'pozýva ťa do Dobyvateľa — miestnosť <strong>' + dqEsc(m.body) + '</strong>' : m.kind === 'friend' ? 'si ťa chce pridať medzi priateľov' : dqEsc(m.body)}</span></div>
-          <div class="pf-fr-b">${m.kind === 'invite' ? `<button class="btn" data-join="${dqEsc(m.body)}">PRIPOJIŤ SA ▶</button>` : m.kind === 'friend' && frIn.some(f => f.nick === m.from) ? `<button class="btn" data-fryes="${dqEsc(m.from)}">PRIJAŤ</button>` : m.kind === 'msg' && frOk.some(f => f.nick === m.from) ? `<button class="btn ghost" data-msgto="${dqEsc(m.from)}">ODPOVEDAŤ</button>` : ''}<button class="pf-x" data-mdel="${m.id}" title="Vymazať">✕</button></div></div>`).join('')
-        : '<div class="rk-empty">Schránka je prázdna. Prídu sem pozvánky do hry, žiadosti o priateľstvo a správy od priateľov.</div>'}</div>
-      ${SOC.inbox.length ? '<div class="pf-acts"><button class="btn ghost" id="pf-mclear">VYMAZAŤ VŠETKY SPRÁVY</button></div>' : ''}`;
+    const T = chatThreads(), fr = n => SOC.friends.find(f => f.nick === n), notes = SOC.inbox.filter(m => m.kind === 'friend');
+    if (RK.pfChat && !T[RK.pfChat] && !frOk.some(f => f.nick === RK.pfChat)) RK.pfChat = null;
+    if (RK.pfChat) {
+      const n = RK.pfChat, f = fr(n), can = frOk.some(x => x.nick === n);
+      body = `<div class="ch">
+          <div class="ch-top"><button class="btn ghost" id="pf-chat-back">◀ SPRÁVY</button>${avFace(n, '', '')}<div><b>${dqEsc(n)}</b><span>${f && f.online ? '<i></i>' + dqEsc(f.activity || 'online') : f && f.seen ? 'naposledy ' + pfAgo(f.seen) : ''}</span></div>
+            ${can && DQ.room && DQ.host && DQ.S && DQ.S.phase === 'lobby' ? `<button class="btn ghost" data-inv="${dqEsc(n)}">POZVAŤ DO HRY</button>` : ''}<button class="pf-x" id="pf-chat-del" title="Vymazať rozhovor">🗑</button></div>
+          <div class="ch-log" id="pf-chat-log">${chatLogHTML(n)}</div>
+          <div class="rk-err" id="pf-chat-err" style="display:none"></div>
+          ${can ? `<div class="ch-in"><input type="text" id="pf-chat-txt" maxlength="300" placeholder="napíš správu…" autocomplete="off"><button class="btn" id="pf-chat-send">POSLAŤ ➤</button></div>` : '<div class="rk-note">Už nie ste priatelia — písať sa dá len priateľom.</div>'}
+        </div>`;
+    } else {
+      const names = Object.keys(T).sort((x, y) => new Date(T[y][T[y].length - 1].t) - new Date(T[x][T[x].length - 1].t)), rest = frOk.filter(f => !T[f.nick]);
+      const row = (n, L) => { const last = L && L[L.length - 1], un = L ? L.filter(m => !m.mine && !m.read).length : 0, f = fr(n);
+        return `<button class="ch-row${un ? ' new' : ''}" data-chat="${dqEsc(n)}">${avFace(n, '', '')}${f && f.online ? '<u title="online"></u>' : ''}<div><b>${dqEsc(n)}</b><span>${last ? (last.mine ? 'Ty: ' : '') + (last.kind === 'invite' ? '🎮 pozvánka do hry · ' + dqEsc(last.body) : dqEsc(String(last.body).slice(0, 80))) : 'napíš prvú správu'}</span></div><small>${last ? pfAgo(last.t) : ''}</small>${un ? `<em>${un}</em>` : '<i>›</i>'}</button>`; };
+      body = `${SOC.ok === false ? `<div class="rk-err">${dqEsc(SOC.err)}</div>` : ''}
+        ${notes.length ? `<h3 class="pf-h">OZNAMY</h3>${notes.map(m => `<div class="pf-msg k-friend${m.read ? '' : ' new'}"><div><small>ŽIADOSŤ O PRIATEĽSTVO · ${pfAgo(m.created)}</small><b>${dqEsc(m.from)}</b><span>si ťa chce pridať medzi priateľov</span></div><div class="pf-fr-b">${frIn.some(f => f.nick === m.from) ? `<button class="btn" data-fryes="${dqEsc(m.from)}">PRIJAŤ</button>` : ''}<button class="pf-x" data-mdel="${m.id}" title="Vymazať">✕</button></div></div>`).join('')}` : ''}
+        <h3 class="pf-h">ROZHOVORY <em>— klikni a otvorí sa chat</em></h3>
+        <div class="ch-list">${names.map(n => row(n, T[n])).join('')}${rest.map(f => row(f.nick, null)).join('')}</div>
+        ${!names.length && !rest.length ? '<div class="rk-empty">Zatiaľ tu nič nie je. Správy sa dajú posielať len priateľom — pridaj si niekoho v záložke PRIATELIA.</div>' : ''}
+        ${SOC.sent ? '' : '<div class="rk-note">Tvoje odoslané správy sa zatiaľ pamätajú len v tomto zariadení. Po spustení doplnku databázy v52 ich uvidíš všade.</div>'}`;
+    }
   } else {
     const me = RK.me || {};
     body = `${RK.meErr ? `<div class="rk-err">${dqEsc(RK.meErr)}</div>` : ''}
@@ -709,21 +787,46 @@ function renderProfile(card) {
         <section class="wide danger"><h3>ÚČET</h3><div class="pf-form"><button class="btn ghost" id="rk-out">ODHLÁSIŤ SA</button><button class="rk-reset" id="rk-reset">VYNULOVAŤ MOJE SKÓRE</button></div><small>Vynulovanie zmaže body, odpovede, čas aj hry a nedá sa vrátiť späť. Pred zmazaním sa ťa stránka ešte raz opýta.</small></section>
       </div>`;
   }
-  card.innerHTML = `<div class="rk pf">
-      <div class="pf-hero">${pfAvatar(RK.me && RK.me.avatar, RK.acct.nick, 'big', RK.me && RK.me.emoji)}
-        <div><h2>${dqEsc(RK.acct.nick)}</h2><p>${(() => { const r = (RK.rows || []).find(x => x.nick === RK.acct.nick); return r && r.lg ? `<i class="lg-dot" style="background:${LGC[r.lg]}"></i>liga ${LG[r.lg]} · ` : ''; })()}${pos >= 0 ? pos + 1 + '. miesto · ' : ''}${T.p} bodov${RK.me && RK.me.created ? ' · členom od ' + new Date(RK.me.created).toLocaleDateString('sk-SK') : ''}</p></div>
-        <button class="btn ghost" id="pf-refresh">${RK.loading ? 'NAČÍTAVAM…' : '↻ OBNOVIŤ'}</button></div>
-      ${(() => { const L = rkLevel(T.p); return `<div class="pf-lv" data-lvopen="${T.p}" title="Zobraziť všetky úrovne"><div class="pf-lv-n"><small>ÚROVEŇ</small><b>${L.n}</b></div><div class="pf-lv-m"><strong>${dqEsc(L.name)}</strong><i><em style="width:${L.pct}%"></em></i><span>${L.next ? 'do úrovne ' + (L.n + 1) + ' · ' + dqEsc(L.nextName) + ' chýba ' + (L.next - T.p) + ' bodov' : 'najvyššia úroveň'}</span></div><button class="pf-lv-all">VŠETKY ÚROVNE ▸</button></div>`; })()}
+  const html = `<div class="rk pf">
+      ${(() => { const L = rkLevel(T.p), r = (RK.rows || []).find(x => x.nick === RK.acct.nick), lg = r && r.lg ? r.lg : 1, np = DQ_PERK.find(x => x[0] > L.n), nf = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        return `<div class="pfx" style="--lg:${LGC[lg]}">
+          <div class="pfx-top">
+            <div class="pfx-av">${pfAvatar(RK.me && RK.me.avatar, RK.acct.nick, 'big', RK.me && RK.me.emoji)}<em>LVL ${L.n}</em></div>
+            <div class="pfx-id"><h2>${dqEsc(RK.acct.nick)}</h2>
+              <p><span class="pfx-lg">LIGA ${LG[lg]}</span>${RK.me && RK.me.created ? `<span>členom od ${new Date(RK.me.created).toLocaleDateString('sk-SK')}</span>` : ''}</p>
+              <div class="pfx-xp" data-lvopen="${T.p}" title="Zobraziť všetky úrovne"><div><b>${dqEsc(L.name)}</b><span>${L.next ? 'ďalšia: ' + dqEsc(L.nextName) + ' · chýba ' + nf(L.next - T.p) + ' b.' : 'najvyššia úroveň'}</span></div><i><em style="width:${L.next ? Math.max(2, Math.round(L.pct)) : 100}%"></em></i>${np ? `<small>🎁 ďalší boost v Dobyvateľovi: <b>${np[2]}</b> od LVL ${np[0]}</small>` : ''}</div></div>
+            <button class="pfx-ref" id="pf-refresh" title="Obnoviť údaje">${RK.loading ? '…' : '↻'}</button>
+          </div>
+          <div class="pfx-kpis">
+            <div><b>${nf(T.p)}</b><span>bodov</span></div>
+            <div><b>${pos >= 0 ? pos + 1 + '.' : '—'}</b><span>${ahead ? 'miesto · na ' + pos + '. chýba ' + nf(ahead.p - T.p + 1) : pos === 0 ? 'miesto · si na čele' : 'miesto z ' + (rowsAll.length || '—')}</span></div>
+            <div><b>${pct(T.c, T.w)}</b><span>úspešnosť z ${nf(T.c + T.w)}</span></div>
+            <div><b>${rkTime(T.s)}</b><span>čas tréningu</span></div>
+          </div></div>`; })()}
       <div class="pf-tabs">${tabs.map(t => `<button class="${tab === t[0] ? 'on' : ''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div>
       ${RK.loadErr ? `<div class="rk-err">${dqEsc(RK.loadErr)}</div>` : ''}${RK.err ? `<div class="rk-err">${dqEsc(RK.err)}</div>` : ''}
       ${RK.pfErr ? `<div class="rk-err">${dqEsc(RK.pfErr)}</div>` : ''}${RK.pfMsg ? `<div class="pf-ok">${dqEsc(RK.pfMsg)}</div>` : ''}
       <div class="pf-body" data-t="${tab}">${body}</div>
       <div class="pf-ver">ATCO Trainer v${APP_VERSION} · BETA</div>
     </div>`;
+  /* plynulé prepínanie (v4.16): rovnaký obsah sa neprekresľuje vôbec; pri zmene údajov na tej istej záložke sa obsah vymení bez animácie, animuje sa len prechod na inú záložku */
+  const key = tab + '|' + (RK.pfChat || '');
+  if (card._pfHtml === html && card.querySelector('.pf-body')) { RK.pfErr = ''; RK.pfMsg = ''; return; }
+  const keepY = window.scrollY, hOld = card.offsetHeight;
+  card.style.minHeight = hOld + 'px';
+  card.innerHTML = html; card._pfHtml = html;
+  if (RK.pfKey === key) { const b = card.querySelector('.pf-body'); if (b) b.classList.add('still'); }
+  RK.pfKey = key;
+  requestAnimationFrame(() => { card.style.minHeight = ''; });
+  if (Math.abs(window.scrollY - keepY) > 2) window.scrollTo(0, keepY);
   RK.pfErr = ''; RK.pfMsg = '';
   rkBindAccount(again); pfBind(card);
   document.getElementById('pf-refresh').onclick = again;
-  if (tab === 'inbox' && SOC.unread) { SOC.unread = 0; SOC.inbox.forEach(m => { m.read = true; }); rkHeadBtn(); rkRpc('atco_msg_read', { p_token: RK.acct.token, p_id: null }).catch(() => {}); }
+  if (tab === 'inbox') {
+    SOC.inbox.filter(m => m.kind === 'friend' && !m.read).forEach(m => { m.read = true; SOC.unread = Math.max(0, SOC.unread - 1); rkRpc('atco_msg_read', { p_token: RK.acct.token, p_id: m.id }).catch(() => {}); });
+    if (RK.pfChat) chatMarkRead(RK.pfChat);
+    rkHeadBtn();
+  }
 }
 function pfLookHTML() {
   const L = dqLook(), bg = lsGet(BG_KEY, '');
@@ -758,13 +861,21 @@ function pfBind(card) {
   card.querySelectorAll('[data-frno]').forEach(b => { b.onclick = () => socCall('atco_friend_answer', { p_nick: b.dataset.frno, p_ok: false }); });
   card.querySelectorAll('[data-frdel]').forEach(b => { b.onclick = () => rkConfirm('Odobrať z priateľov?', dqEsc(b.dataset.frdel) + ' zmizne z tvojho zoznamu a ty z jeho.', 'ÁNO, ODOBRAŤ', () => socCall('atco_friend_remove', { p_nick: b.dataset.frdel })); });
   card.querySelectorAll('[data-inv]').forEach(b => { b.onclick = () => socCall('atco_msg_send', { p_nick: b.dataset.inv, p_kind: 'invite', p_body: DQ.room }, 'Pozvánka pre ' + b.dataset.inv + ' je odoslaná.'); });
-  card.querySelectorAll('[data-msgto]').forEach(b => { b.onclick = () => { RK.pfTo = b.dataset.msgto; RK.pfTab = 'inbox'; re(); const t = $('pf-mtxt'); if (t) t.focus(); }; });
+  card.querySelectorAll('[data-msgto]').forEach(b => { b.onclick = () => { RK.pfChat = b.dataset.msgto; RK.pfTab = 'inbox'; re(); }; });
   card.querySelectorAll('[data-mdel]').forEach(b => { b.onclick = () => socCall('atco_msg_delete', { p_id: +b.dataset.mdel }); });
   if ($('pf-mclear')) $('pf-mclear').onclick = () => rkConfirm('Vymazať všetky správy?', 'Schránka sa vyprázdni. Nedá sa to vrátiť späť.', 'ÁNO, VYMAZAŤ', () => socCall('atco_msg_delete', { p_id: null }));
   const addF = () => { const v = ($('pf-fnick').value || '').trim(); if (v) socCall('atco_friend_add', { p_nick: v }, 'Žiadosť pre ' + v + ' je odoslaná.'); };
   if ($('pf-fadd')) { $('pf-fadd').onclick = addF; $('pf-fnick').addEventListener('keydown', e => { if (e.key === 'Enter') addF(); }); }
-  const sendM = () => { const t = ($('pf-mtxt').value || '').trim(); if (t) { RK.pfTo = $('pf-mto').value; socCall('atco_msg_send', { p_nick: $('pf-mto').value, p_kind: 'msg', p_body: t }, 'Správa je odoslaná.'); } };
-  if ($('pf-msend')) { $('pf-msend').onclick = sendM; $('pf-mtxt').addEventListener('keydown', e => { if (e.key === 'Enter') sendM(); }); }
+  card.querySelectorAll('[data-chat]').forEach(b => { b.onclick = () => { RK.pfChat = b.dataset.chat; RK.pfErr = ''; RK.pfMsg = ''; re(); }; });
+  if ($('pf-chat-back')) $('pf-chat-back').onclick = () => { RK.pfChat = null; re(); };
+  if ($('pf-chat-log')) { const e = $('pf-chat-log'); e.scrollTop = e.scrollHeight; chatBind(e); }
+  if ($('pf-chat-send')) { $('pf-chat-send').onclick = chatSend; $('pf-chat-txt').addEventListener('keydown', e => { if (e.key === 'Enter') chatSend(); }); if (window.matchMedia('(hover:hover)').matches) $('pf-chat-txt').focus(); }
+  if ($('pf-chat-del')) $('pf-chat-del').onclick = () => rkConfirm('Vymazať rozhovor?', 'Rozhovor s hráčom ' + dqEsc(RK.pfChat) + ' zmizne z tvojho zoznamu. Nedá sa to vrátiť späť.', 'ÁNO, VYMAZAŤ', async () => {
+    const n = RK.pfChat, H = lsGet(CHAT_HIDEK, {}), k = chatKey(); (H[k] = H[k] || {})[n] = Date.now(); lsSet(CHAT_HIDEK, H);
+    const A = lsGet(CHAT_SENTK, {}); if (A[k]) { A[k] = A[k].filter(m => m.to !== n); lsSet(CHAT_SENTK, A); }
+    for (const m of SOC.inbox.filter(x => x.from === n && x.kind !== 'friend')) { try { await rkRpc('atco_msg_delete', { p_token: RK.acct.token, p_id: m.id }); } catch (e) {} }
+    RK.pfChat = null; await socTick(true); re();
+  });
   /* nastavenia účtu */
   const call = async (fn, args, ok, after) => { try { const r = await rkRpc(fn, Object.assign({ p_token: RK.acct.token }, args)); RK.pfErr = ''; RK.pfMsg = ok; if (after) after(r); } catch (e) { RK.pfErr = socErr(e); RK.pfMsg = ''; } await pfLoadMe(); re(); };
   if ($('pf-avfile')) $('pf-avfile').onchange = async () => { const f = $('pf-avfile').files[0]; if (!f) return; try { const d = await pfReadAvatar(f); await call('atco_set_profile', { p_email: null, p_avatar: d, p_bg: null }, 'Fotka je uložená.'); } catch (e) { RK.pfErr = 'Obrázok sa nepodarilo načítať.'; re(); } };
@@ -797,7 +908,7 @@ function rkAvNicks() {
   return top;
 }
 function rkmOwners() {
-  return RKM.map(x => { const L = (RK.rows || []).map(r => ({ r, p: ((r.mods || {})[x[0]] || {}).p || 0 })).filter(o => o.p > 0).sort((a, b) => b.p - a.p || a.r.nick.localeCompare(b.r.nick)); return { top: L[0] || null, second: L[1] || null, n: L.length }; });
+  return RKM.map(x => { const L = (RK.rows || []).map(r => ({ r, p: ((r.mods || {})[x[0]] || {}).p || 0 })).filter(o => o.p > 0).sort((a, b) => b.p - a.p || a.r.nick.localeCompare(b.r.nick)); return { top: L[0] || null, second: L[1] || null, n: L.length, L }; });
 }
 function rkmCells() {
   if (RKM.cells) return RKM.cells;
@@ -830,7 +941,7 @@ function renderRankMap(card) {
   const nf = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   card.innerHTML = `<div class="rk">
       <div class="rk-head"><div><h2>REBRÍČEK</h2><p>Mapa území: kto má v module najviac bodov, drží jeho oblasť. <a href="#" data-hp="rank">Ako sa počítajú ❓</a></p></div><button class="btn ghost" id="rk-refresh">${RK.loading ? 'NAČÍTAVAM…' : '↻ OBNOVIŤ'}</button></div>
-      <div class="rk-chips main"><button class="rk-chip" data-v="league">🏆 LIGA · MESIAC</button><button class="rk-chip" data-v="dc">📅 DENNÁ VÝZVA</button><button class="rk-chip on" data-v="map">🗺 MAPA</button><button class="rk-chip" data-v="all">CELKOVÉ PORADIE</button></div>
+      <div class="rk-chips main">${rkTabsHTML('map')}</div>
       ${RK.loadErr ? `<div class="rk-err">${dqEsc(RK.loadErr)}</div>` : ''}
       ${kings.length ? `<div class="rkm-kings">${kings.slice(0, 5).map((n, i) => { const r = RK.rows.find(x => x.nick === n); return `<div style="--c:${colOf(n)}" class="${n === me ? 'me' : ''}">${i === 0 ? '<i>👑</i>' : ''}${avFace(n, r.emo, 'sm')}<b>${dqEsc(n)}</b><span>${cnt[n]} ${cnt[n] === 1 ? 'oblasť' : cnt[n] < 5 ? 'oblasti' : 'oblastí'}</span></div>`; }).join('')}</div>` : ''}
       <div class="rkm-wrap" id="rkm-wrap">
@@ -846,16 +957,44 @@ function renderRankMap(card) {
           ${RKM.map((x, i) => `<line class="rkm-ld" style="--c:${O[i].top ? colOf(O[i].top.r.nick) : '#7d9087'}" x1="${projX(x[2]).toFixed(1)}" y1="${projY(x[3]).toFixed(1)}" x2="${projX(x[5]).toFixed(1)}" y2="${projY(x[6]).toFixed(1)}"/><circle class="rkm-an" data-m="${x[0]}" cx="${projX(x[5]).toFixed(1)}" cy="${projY(x[6]).toFixed(1)}" r="2"/>`).join('')}
           ${RKM.map(x => `<circle class="rkm-pt" data-m="${x[0]}" cx="${projX(x[2]).toFixed(1)}" cy="${projY(x[3]).toFixed(1)}" r="6"/>`).join('')}
         </svg></div>
-        ${RKM.map((x, i) => { const o = O[i].top; return `<button class="rkm-lab ${x[4]}${o ? '' : ' free'}${o && o.r.nick === me ? ' me' : ''}" data-m="${x[0]}" style="--c:${o ? colOf(o.r.nick) : '#7d9087'}"><small>${name(x[0])}</small>${o ? `<span>${avFace(o.r.nick, o.r.emo, 'sm')}<b>${dqEsc(o.r.nick)}</b><em class="lv-b" title="úroveň ${lv(o.r).n} · ${lv(o.r).name}">${lv(o.r).n}</em></span><i>${nf(o.p)} b.</i>` : '<span><b>VOĽNÉ</b></span><i>získaj prvý bod</i>'}</button>`; }).join('')}
+        ${RKM.map((x, i) => { const o = O[i].top; return `<button class="rkm-lab ${x[4]}${o ? '' : ' free'}${o && o.r.nick === me ? ' me' : ''}" data-m="${x[0]}" style="--c:${o ? colOf(o.r.nick) : '#7d9087'}"><small>${name(x[0])}</small>${o ? `<span>${avFace(o.r.nick, o.r.emo, 'sm')}<b>${dqEsc(o.r.nick)}</b></span><i>LVL ${lv(o.r).n} · ${nf(o.p)} b.</i>` : '<span><b>VOĽNÉ</b></span><i>získaj prvý bod</i>'}</button>`; }).join('')}
       </div>
-      <div class="rk-note"><b>Ako to funguje:</b> každá oblasť patrí jednému modulu. Drží ju hráč, ktorý má v tom module <b>najviac bodov zo všetkých</b>. Klikni na oblasť a uvidíš celé poradie modulu.</div>
-      <div class="rk-tbl rkm-tbl"><table><thead><tr><th>OBLASŤ</th><th>MODUL</th><th>DRŽÍ</th><th>BODY</th><th>DRUHÝ V PORADÍ</th></tr></thead><tbody>${RKM.map((x, i) => { const o = O[i].top, z = O[i].second; return `<tr class="${o && o.r.nick === me ? 'me' : ''}" data-m="${x[0]}"><td><i class="lg-dot" style="background:${o ? colOf(o.r.nick) : '#7d9087'}"></i>${x[1]}</td><td>${name(x[0])}</td><td class="rk-nick">${o ? avFace(o.r.nick, o.r.emo, 'sm') + dqEsc(o.r.nick) + `<em class="lv-b" title="${lv(o.r).name}">${lv(o.r).n}</em>` : '— voľné —'}</td><td class="rk-pts">${o ? nf(o.p) : '—'}</td><td>${z ? dqEsc(z.r.nick) + ' · chýba mu ' + nf(o.p - z.p + 1) + ' b.' : '—'}</td></tr>`; }).join('')}</tbody></table></div>
+      <div class="rk-note"><b>Ako to funguje:</b> každá oblasť patrí jednému modulu. Drží ju hráč, ktorý má v tom module <b>najviac bodov zo všetkých</b>. Klikni na oblasť a rozbalí sa, kto je druhý, tretí, štvrtý a kde si ty.</div>
+      <div class="rk-tbl rkm-tbl"><table><thead><tr><th>OBLASŤ</th><th>MODUL</th><th>DRŽÍ</th><th>BODY</th><th>ÚROVEŇ</th></tr></thead><tbody>${RKM.map((x, i) => { const o = O[i].top, L = O[i].L, open = RK.mapOpen === x[0], myI = L.findIndex(q => q.r.nick === me);
+        const line = (q, k, cls) => `<div class="rkm-ln ${cls || ''}${q.r.nick === me ? ' me' : ''}"><b>${k + 1}.</b>${avFace(q.r.nick, q.r.emo, 'sm')}<span>${dqEsc(q.r.nick)}</span>${lvTag(lv(q.r).n, true, q.r.lg)}<strong>${nf(q.p)} b.</strong><small>${k ? 'na 1. miesto chýba ' + nf(L[0].p - q.p + 1) + ' b.' : 'drží oblasť'}</small></div>`;
+        const more = !open ? '' : `<tr class="rkm-more"><td colspan="5"><div class="rkm-exp" style="--c:${o ? colOf(o.r.nick) : '#7d9087'}">
+            ${L.length > 1 ? L.slice(1, 4).map((q, k) => line(q, k + 1)).join('') : `<div class="rkm-ln none">${o ? 'Nikto ďalší tu zatiaľ body nemá.' : 'Oblasť je voľná — kto získa prvý bod v tomto module, drží ju.'}</div>`}
+            ${!me ? '<div class="rkm-ln you none">Prihlás sa a uvidíš tu svoje miesto.</div>' : myI < 0 ? `<div class="rkm-ln you none"><b>TY</b>${avFace(me, '', 'sm')}<span>${dqEsc(me)}</span><small>v tomto module zatiaľ nemáš body${o ? ' · na 1. miesto treba ' + nf(o.p + 1) + ' b.' : ''}</small></div>` : myI > 3 ? `<div class="rkm-dots">⋮</div>${line(L[myI], myI, 'you')}` : ''}
+            <div class="rkm-go"><button class="btn ghost" data-full="${x[0]}">CELÉ PORADIE · ${name(x[0])} ▸</button></div></div></td></tr>`;
+        return `<tr class="${o && o.r.nick === me ? 'me' : ''}${open ? ' open' : ''}" data-m="${x[0]}"><td><i class="lg-dot" style="background:${o ? colOf(o.r.nick) : '#7d9087'}"></i>${x[1]}</td><td>${name(x[0])}</td><td class="rk-nick">${o ? avFace(o.r.nick, o.r.emo, 'sm') + dqEsc(o.r.nick) : '— voľné —'}</td><td class="rk-pts">${o ? nf(o.p) : '—'}</td><td class="rkm-lv">${o ? lvTag(lv(o.r).n, true, o.r.lg) : ''}<u>${open ? '▴' : '▾'}</u></td></tr>${more}`; }).join('')}</tbody></table></div>
     </div>`;
   document.getElementById('rk-refresh').onclick = () => { renderRankMap(card); rkLoad(); };
   card.querySelectorAll('.rk-chip').forEach(b => { b.onclick = () => { RK.view = b.dataset.v; renderRank(card); }; });
-  card.querySelectorAll('.rkm-lab, .rkm-c, .rkm-tbl tr[data-m]').forEach(b => { b.addEventListener('click', () => { RK.view = b.dataset.m; renderRank(card); window.scrollTo(0, 0); }); });
+  /* klik na oblasť (na mape, na popise aj v tabuľke) rozbalí poradie pod riadkom — nikam neodskočí */
+  card.querySelectorAll('.rkm-lab, .rkm-c, .rkm-tbl tr[data-m]').forEach(b => { b.addEventListener('click', () => { const tbl = b.matches('tr'); RK.mapOpen = RK.mapOpen === b.dataset.m && tbl ? null : b.dataset.m; const y = window.scrollY; renderRankMap(card); window.scrollTo(0, y); if (!tbl) { const r = card.querySelector('.rkm-tbl tr.open'); if (r) r.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }); });
+  card.querySelectorAll('[data-full]').forEach(b => { b.onclick = e => { e.stopPropagation(); RK.view = b.dataset.full; renderRank(card); window.scrollTo(0, 0); }; });
   card.querySelectorAll('.rkm-lab, .rkm-c').forEach(b => { const on = v => card.querySelectorAll('[data-m="' + b.dataset.m + '"]').forEach(e => e.classList.toggle('hov', v)); b.addEventListener('mouseenter', () => on(true)); b.addEventListener('mouseleave', () => on(false)); });
   rkmPlace(); requestAnimationFrame(rkmPlace); setTimeout(rkmPlace, 350);
+}
+function rkTabsHTML(on) { return [['all', '∑ CELKOVO'], ['map', '🗺 MAPA'], ['dc', '📅 DENNÁ VÝZVA'], ['league', '🏆 LIGA']].map(x => `<button class="rk-chip${on === x[0] ? ' on' : ''}" data-v="${x[0]}">${x[1]}</button>`).join(''); }
+/* úplné pravidlá bodovania — rozbaľovacia tabuľka na stránke O stránke */
+function rkRulesHTML(pts) {
+  return `<details class="rk-rules"><summary>PRAVIDLÁ BODOVANIA — všetko, z čoho sa body, úspešnosť a čas počítajú</summary>
+        <table><tbody>
+          <tr><th>Cvičenie v module (MOD 01 – 06)</th><td>správna odpoveď <b>+1</b>, v HARDCORE (písanie z hlavy) <b>+2</b>; nesprávna a preskočená 0</td></tr>
+          <tr><th>Denný tréning</th><td>rovnako ako cvičenie: <b>+1</b>, pri písaní <b>+2</b></td></tr>
+          <tr><th>Denná výzva</th><td>20 otázok, každý deň rovnaké pre všetkých; do rebríčka ide len prvý pokus dňa<br>správna <b>+3</b> (pri písaní <b>+6</b>), nesprávna alebo preskočená <b>−2</b>; bonus za 80 % = počet otázok, za 90 % dvojnásobok, za 100 % trojnásobok; menej než 0 sa nepripíše; body až po dokončení skúšky</td></tr>
+          <tr><th>Dobyvateľ</th><td><b>500 × miesto × výkon × hráči × dĺžka × okruhy</b>, najmenej 5<br>miesto: 1. = 1 · 2. = 0,5 · 3. = 0,25 · 4. = 0,12 · 5. = 0,06 · 6. = 0,03<br>výkon: 0,5 až 1 podľa bodov oproti víťazovi<br>hráči: len počítače 0,1 · 2 ľudia 0,6 · 3 = 0,8 · 4 = 1 · 5 = 1,15 · 6 = 1,3 (každý počítač +0,03)<br>dĺžka: (kolá obsadzovania + súbojov) / 10, od 0,4 do 1,6<br>okruhy: 0,6 pri jednej sade až 1 pri všetkých</td></tr>
+          <tr><th>Hry a výhry</th><td>počítajú sa len hry Dobyvateľa, v ktorých hrali aspoň dvaja ľudia</td></tr>
+          <tr><th>Úspešnosť</th><td>správne odpovede ÷ všetky odpovede; v Dobyvateľovi len z hier aspoň dvoch ľudí</td></tr>
+          <tr><th>Okruhy teórie</th><td>správne a všetky odpovede na otázky daného okruhu v Dobyvateľovi (aspoň dvaja ľudia); poradie podľa počtu správnych</td></tr>
+          <tr><th>Čas tréningu</th><td>sekunda sa pripíše, len keď je otvorené cvičenie alebo bežiaca hra, okno je viditeľné a posledná odpoveď bola pred menej než 45 sekundami; dve otvorené karty sa nepočítajú dvakrát</td></tr>
+          <tr><th>Úrovne</th><td><a href="#" data-lvopen="${pts || 0}">Zobraziť všetky úrovne ▸</a><br>58 úrovní podľa všetkých bodov, ktoré si kedy získal: začiatok (Uchádzač, Feasťák, výcvik), veže od Boleráza po Bratislavu podľa veľkosti mesta, approach, ACC Bratislava, zahraničné strediská a vrchol. Posledná je pri 100 000 bodoch. Číslo úrovne je pri mene v rebríčku. V Dobyvateľovi dávajú malé boosty (každý raz za hru, hostiteľ ich vie vypnúť): ${DQ_PERK.map(x => 'od úrovne ' + x[0] + ' ' + x[2]).join(' · ')}.</td></tr>
+          <tr><th>Mapa</th><td>Slovensko je rozdelené na deväť oblastí okolo miest; každá patrí jednému modulu. Oblasť drží hráč, ktorý má v danom module najviac bodov zo všetkých. Kto ho predbehne, oblasť mu vezme.</td></tr>
+          <tr><th>Ligy</th><td>päť líg: Bronz, Striebro, Zlato, Platina, Diamant; každý začína v Bronze. Počítajú sa body za kalendárny mesiac zo všetkých činností. Na konci mesiaca prví traja z každej ligy postupujú, poslední traja zostupujú (ak v lige hralo aspoň šesť ľudí) a kto za mesiac nezískal ani bod, klesne o ligu. Celkové body sa nenulujú.</td></tr>
+          <tr><th>Poradie</th><td>podľa bodov vo zvolenom pohľade; pri zhode viac správnych odpovedí, potom abeceda</td></tr>
+          <tr><th>Odosielanie</th><td>body sa posielajú každých 30 sekúnd a pri opustení stránky; bez internetu počkajú v zariadení</td></tr>
+        </tbody></table></details>`;
 }
 function renderRank(card) {
   document.getElementById('qnum').textContent = '•';
@@ -871,14 +1010,14 @@ function renderRank(card) {
     card.innerHTML = `<div class="rk">
         <div class="rk-head"><div><h2>REBRÍČEK</h2><p>Mesačné ligy, denná výzva a celkové poradie. <a href="#" data-hp="rank">Ako sa počítajú ❓</a></p></div><button class="btn ghost" id="rk-refresh">${RK.loading ? 'NAČÍTAVAM…' : '↻ OBNOVIŤ'}</button></div>
         ${RK.acct ? '' : '<div class="rk-acct in"><span>Nie si prihlásený — body sa ti nepočítajú a v lige ťa nevidno.</span><div class="rk-acct-b"><button class="btn" id="rk-toprof">PRIHLÁSIŤ SA ▶</button></div></div>'}
-        <div class="rk-chips main"><button class="rk-chip${RK.view === 'league' ? ' on' : ''}" data-v="league">🏆 LIGA · MESIAC</button><button class="rk-chip${RK.view === 'dc' ? ' on' : ''}" data-v="dc">📅 DENNÁ VÝZVA</button><button class="rk-chip" data-v="map">🗺 MAPA</button><button class="rk-chip" data-v="all">CELKOVÉ PORADIE</button></div>
+        <div class="rk-chips main">${rkTabsHTML(RK.view)}</div>
         ${RK.loadErr ? `<div class="rk-err">${dqEsc(RK.loadErr)}</div>` : ''}
         ${RK.view === 'dc' ? `<div class="rk-note">Dnešných 20 otázok je pre všetkých rovnakých. Poradie je podľa počtu správnych, pri zhode podľa času. Počíta sa prvý pokus dňa.</div>${hasLg || !RK.rows ? dcTopHTML() : '<div class="rk-empty">Denné poradie čaká na doplnok databázy (supabase-doplnok-v49.sql). Výzvu hrať môžeš, body sa počítajú.</div>'}<div class="pf-acts"><button class="btn" id="rk-godc">ÍSŤ NA DENNÚ VÝZVU ▶</button></div>`
         : !hasLg && RK.rows ? '<div class="rk-empty">Ligy čakajú na doplnok databázy (supabase-doplnok-v49.sql). Celkové poradie funguje ďalej.</div>'
         : `<div class="lg-head" style="--c:${LGC[sel]}"><div class="lg-badge"><b>${sel}</b></div><div><strong>LIGA ${LG[sel]}</strong><span>${meR && (meR.lg || 1) === sel ? 'Tvoja liga. ' : ''}Do konca mesiaca ${left === 0 ? 'ostáva dnešok' : left === 1 ? 'ostáva 1 deň' : 'ostáva ' + left + ' dní'}.</span></div></div>
           <div class="lg-steps">${[1, 2, 3, 4, 5].map(n => `<button class="${n === sel ? 'on' : ''}${meR && (meR.lg || 1) === n ? ' me' : ''}" data-lg="${n}" style="--c:${LGC[n]}">${LG[n]}<small>${(RK.rows || []).filter(r => (r.lg || 1) === n).length}</small></button>`).join('')}</div>
           <div class="rk-note"><b>Ako to funguje:</b> počítajú sa body získané <b>tento mesiac</b> zo všetkého — cvičenie, denná výzva aj Dobyvateľ. Na konci mesiaca <b class="lg-up">prví traja postupujú</b> o ligu vyššie${sel > 1 ? ', <b class="lg-dn">poslední traja zostupujú</b> (ak ich v lige hralo aspoň šesť) a kto nezískal ani bod, klesne tiež' : ''}. Každý mesiac sa začína od nuly.</div>
-          ${L.length ? `<div class="rk-tbl"><table><thead><tr><th>#</th><th>HRÁČ</th><th>BODY TENTO MESIAC</th><th></th></tr></thead><tbody>${L.map((o, i) => { const z = zone(o, i); return `<tr class="${RK.acct && o.n === RK.acct.nick ? 'me' : ''} ${z[0] ? 'z-' + z[0] : ''}"><td class="rk-pos">${i + 1}</td><td class="rk-nick">${avFace(o.n, o.emo, 'sm')}${dqEsc(o.n)}<em class="lv-b" title="úroveň ${o.lv} · ${LV[o.lv - 1][1]}">${o.lv}</em></td><td class="rk-pts">${o.p}</td><td class="lg-z">${z[1]}</td></tr>`; }).join('')}</tbody></table></div>` : `<div class="rk-empty">${RK.rows ? 'V tejto lige zatiaľ nikto nie je.' : 'Načítavam…'}</div>`}`}
+          ${L.length ? `<div class="rk-tbl"><table><thead><tr><th>#</th><th>HRÁČ</th><th>BODY TENTO MESIAC</th><th></th></tr></thead><tbody>${L.map((o, i) => { const z = zone(o, i); return `<tr class="${RK.acct && o.n === RK.acct.nick ? 'me' : ''} ${z[0] ? 'z-' + z[0] : ''}"><td class="rk-pos">${i + 1}</td><td class="rk-nick">${avFace(o.n, o.emo, 'sm')}${dqEsc(o.n)}${lvTag(o.lv, true, sel)}</td><td class="rk-pts">${o.p}</td><td class="lg-z">${z[1]}</td></tr>`; }).join('')}</tbody></table></div>` : `<div class="rk-empty">${RK.rows ? 'V tejto lige zatiaľ nikto nie je.' : 'Načítavam…'}</div>`}`}
       </div>`;
     const tp = document.getElementById('rk-toprof'); if (tp) tp.onclick = () => startMode('profile');
     const gd = document.getElementById('rk-godc'); if (gd) gd.onclick = () => startMode('exam');
@@ -900,7 +1039,7 @@ function renderRank(card) {
   const line = (o, i) => {
     const d = o.M.conquer || {};
     const cells = sj ? [o.c, o.c + o.w, acc(o)] : cq ? [o.p, o.g, o.v, o.c + o.w, acc(o), rkTime(o.s)] : v === 'all' ? [o.p, o.c + o.w, acc(o), rkTime(o.s), d.g || 0, d.v || 0] : [o.p, o.c + o.w, acc(o), rkTime(o.s)];
-    return `<tr class="${i === meI ? 'me' : ''}"><td class="rk-pos">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</td><td class="rk-nick">${o.lg ? `<i class="lg-dot" style="background:${LGC[o.lg]}" title="liga ${LG[o.lg]}"></i>` : ''}${avFace(o.nick, o.emo, 'sm')}${dqEsc(o.nick)}<em class="lv-b" title="úroveň ${o.lv} · ${LV[o.lv - 1][1]}">${o.lv}</em></td>${cells.map((c, k) => `<td${k === 0 ? ' class="rk-pts"' : ''}>${c}</td>`).join('')}</tr>`;
+    return `<tr class="${i === meI ? 'me' : ''}"><td class="rk-pos">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</td><td class="rk-nick">${o.lg ? `<i class="lg-dot" style="background:${LGC[o.lg]}" title="liga ${LG[o.lg]}"></i>` : ''}${avFace(o.nick, o.emo, 'sm')}${dqEsc(o.nick)}${lvTag(o.lv, true, o.lg)}</td>${cells.map((c, k) => `<td${k === 0 ? ' class="rk-pts"' : ''}>${c}</td>`).join('')}</tr>`;
   };
   let mine = '';
   if (me) {
@@ -908,7 +1047,6 @@ function renderRank(card) {
     const mx = Math.max(1, ...RK_MODS.map(x => (all[x[0]] || {}).s || 0));
     mine = `<div class="rk-me">
         <div class="rk-me-top"><div><b>${meI + 1}.</b><span>z ${rows.length} hráčov</span></div><div><b>${me.p}</b><span>bodov</span></div><div><b>${rkTime(me.s)}</b><span>čas tréningu</span></div><div><b>${acc(me)}</b><span>úspešnosť z ${me.c + me.w} odpovedí</span></div><div><b>${(all.conquer || {}).g || 0}</b><span>hier Dobyvateľa</span></div></div>
-        ${v === 'all' ? `<div class="rk-bars">${RK_MODS.map(x => { const s = (all[x[0]] || {}).s || 0, p = (all[x[0]] || {}).p || 0; return `<div><span>${x[1]}</span><i><em style="width:${Math.round(s / mx * 100)}%"></em></i><small>${rkTime(s)} · ${p} b.</small></div>`; }).join('')}</div>` : ''}
       </div>`;
   }
   card.innerHTML = `
@@ -917,31 +1055,15 @@ function renderRank(card) {
       ${SB_ON ? '' : '<div class="rk-warn"><strong>SKÚŠOBNÝ REŽIM</strong> — rebríček ešte nie je pripojený na databázu. Účty a body sú zatiaľ len v tomto prehliadači a kolegovia ich nevidia.</div>'}
       ${RK.acct ? '' : '<div class="rk-acct in"><span>Nie si prihlásený — body sa ti nepočítajú a v rebríčku ťa nevidno.</span><div class="rk-acct-b"><button class="btn" id="rk-toprof">PRIHLÁSIŤ SA ▶</button></div></div>'}
       ${mine}
-      <div class="rk-chips main"><button class="rk-chip" data-v="league">🏆 LIGA · MESIAC</button><button class="rk-chip" data-v="dc">📅 DENNÁ VÝZVA</button><button class="rk-chip" data-v="map">🗺 MAPA</button><button class="rk-chip on" data-v="${v}">CELKOVÉ PORADIE</button></div>
-      <div class="rk-chips">${[['all', 'CELKOVO']].concat(RK_MODS).map(x => `<button class="rk-chip${v === x[0] ? ' on' : ''}" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
-      <div class="rk-chips sub"><span>OKRUHY TEÓRIE</span>${RK_SUBJ.map(x => `<button class="rk-chip${v === x[0] ? ' on' : ''}" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
-      <details class="rk-rules"><summary>PRAVIDLÁ BODOVANIA — všetko, z čoho sa body, úspešnosť a čas počítajú</summary>
-        <table><tbody>
-          <tr><th>Cvičenie v module (MOD 01 – 06)</th><td>správna odpoveď <b>+1</b>, v HARDCORE (písanie z hlavy) <b>+2</b>; nesprávna a preskočená 0</td></tr>
-          <tr><th>Denný tréning</th><td>rovnako ako cvičenie: <b>+1</b>, pri písaní <b>+2</b></td></tr>
-          <tr><th>Denná výzva</th><td>20 otázok, každý deň rovnaké pre všetkých; do rebríčka ide len prvý pokus dňa<br>správna <b>+3</b> (pri písaní <b>+6</b>), nesprávna alebo preskočená <b>−2</b>; bonus za 80 % = počet otázok, za 90 % dvojnásobok, za 100 % trojnásobok; menej než 0 sa nepripíše; body až po dokončení skúšky</td></tr>
-          <tr><th>Dobyvateľ</th><td><b>500 × miesto × výkon × hráči × dĺžka × okruhy</b>, najmenej 5<br>miesto: 1. = 1 · 2. = 0,5 · 3. = 0,25 · 4. = 0,12 · 5. = 0,06 · 6. = 0,03<br>výkon: 0,5 až 1 podľa bodov oproti víťazovi<br>hráči: len počítače 0,1 · 2 ľudia 0,6 · 3 = 0,8 · 4 = 1 · 5 = 1,15 · 6 = 1,3 (každý počítač +0,03)<br>dĺžka: (kolá obsadzovania + súbojov) / 10, od 0,4 do 1,6<br>okruhy: 0,6 pri jednej sade až 1 pri všetkých</td></tr>
-          <tr><th>Hry a výhry</th><td>počítajú sa len hry Dobyvateľa, v ktorých hrali aspoň dvaja ľudia</td></tr>
-          <tr><th>Úspešnosť</th><td>správne odpovede ÷ všetky odpovede; v Dobyvateľovi len z hier aspoň dvoch ľudí</td></tr>
-          <tr><th>Okruhy teórie</th><td>správne a všetky odpovede na otázky daného okruhu v Dobyvateľovi (aspoň dvaja ľudia); poradie podľa počtu správnych</td></tr>
-          <tr><th>Čas tréningu</th><td>sekunda sa pripíše, len keď je otvorené cvičenie alebo bežiaca hra, okno je viditeľné a posledná odpoveď bola pred menej než 45 sekundami; dve otvorené karty sa nepočítajú dvakrát</td></tr>
-          <tr><th>Úrovne</th><td><a href="#" data-lvopen="${meI >= 0 ? rkTotal((RK.rows || []).find(r => r.nick === RK.acct.nick)) : 0}">Zobraziť všetky úrovne ▸</a><br>podľa všetkých bodov, ktoré si kedy získal: ${LV.map((x, i) => (i + 1) + ' · ' + x[1] + ' (' + x[0] + ')').join(' → ')}. Číslo úrovne je pri mene v rebríčku. V Dobyvateľovi dávajú malé boosty (každý raz za hru, hostiteľ ich vie vypnúť): ${DQ_PERK.map(x => 'od úrovne ' + x[0] + ' ' + x[2]).join(' · ')}.</td></tr>
-          <tr><th>Mapa</th><td>Slovensko je rozdelené na deväť oblastí okolo miest; každá patrí jednému modulu. Oblasť drží hráč, ktorý má v danom module najviac bodov zo všetkých. Kto ho predbehne, oblasť mu vezme.</td></tr>
-          <tr><th>Ligy</th><td>päť líg: Bronz, Striebro, Zlato, Platina, Diamant; každý začína v Bronze. Počítajú sa body za kalendárny mesiac zo všetkých činností. Na konci mesiaca prví traja z každej ligy postupujú, poslední traja zostupujú (ak v lige hralo aspoň šesť ľudí) a kto za mesiac nezískal ani bod, klesne o ligu. Celkové body sa nenulujú.</td></tr>
-          <tr><th>Poradie</th><td>podľa bodov vo zvolenom pohľade; pri zhode viac správnych odpovedí, potom abeceda</td></tr>
-          <tr><th>Odosielanie</th><td>body sa posielajú každých 30 sekúnd a pri opustení stránky; bez internetu počkajú v zariadení</td></tr>
-        </tbody></table></details>
+      <div class="rk-chips main">${rkTabsHTML('all')}</div>
+      <label class="rk-pick"><span>ZOBRAZIŤ PORADIE V</span><select id="rk-sel"><option value="all"${v === 'all' ? ' selected' : ''}>Celkovo — všetky body</option><optgroup label="Moduly a hry">${RK_MODS.map(x => `<option value="${x[0]}"${v === x[0] ? ' selected' : ''}>${x[1]}</option>`).join('')}</optgroup><optgroup label="Okruhy teórie v Dobyvateľovi">${RK_SUBJ.map(x => `<option value="${x[0]}"${v === x[0] ? ' selected' : ''}>${x[1]}</option>`).join('')}</optgroup></select></label>
       ${sj ? '<div class="rk-note">Počítajú sa odpovede na otázky z tohto okruhu v Dobyvateľovi, v hre aspoň dvoch ľudí. Poradie je podľa počtu správnych odpovedí.</div>' : ''}
       ${RK.loadErr ? `<div class="rk-err">${dqEsc(RK.loadErr)}</div>` : ''}
-      ${rows.length ? `<div class="rk-tbl"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(line).join('')}</tbody></table></div>`
+      ${rows.length ? `<div class="rk-tbl rk-main"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(line).join('')}</tbody></table></div>`
         : `<div class="rk-empty">${RK.rows ? 'Zatiaľ tu nikto nemá body. Buď prvý.' : 'Načítavam rebríček…'}</div>`}
     </div>`;
   const tp = document.getElementById('rk-toprof'); if (tp) tp.onclick = () => startMode('profile');
   document.getElementById('rk-refresh').onclick = () => { renderRank(card); rkLoad(); };
   card.querySelectorAll('.rk-chip').forEach(b => { b.onclick = () => { RK.view = b.dataset.v; renderRank(card); }; });
+  const sel = document.getElementById('rk-sel'); if (sel) sel.onchange = () => { RK.view = sel.value; renderRank(card); };
 }

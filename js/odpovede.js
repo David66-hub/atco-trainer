@@ -295,7 +295,7 @@ document.getElementById('nav-mods').onclick = () => modsOpen();
 document.getElementById('about-btn').onclick = () => { startMode('about'); window.scrollTo(0, 0); };
 document.getElementById('acct-btn').onclick = () => { if (state.mode === 'profile' && RK.pfTab !== 'over') RK.pfTab = 'over'; startMode('profile'); };
 document.getElementById('inbox-btn').onclick = () => { RK.pfTab = 'inbox'; startMode('profile'); socTick(true); };
-if (RK.acct) { pfLoadMe(); socTick(true); psPull(); }
+if (RK.acct) { pfLoadMe().then(() => { if (state.mode === 'home') homeHelloFill(); }); socTick(true); psPull(); if (!RK.rows) rkLoad(); }
 qfixApply(lsGet(QF_KEY, []));
 qfixLoad();
 rkHeadBtn();

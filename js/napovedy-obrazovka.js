@@ -179,8 +179,7 @@ function modeHasMap() { return true; }
 function fsActive() { return document.body.classList.contains('fs-on'); }
 function fsSync() {
   const b = document.getElementById('btn-fs');
-  b.style.display = '';
-  b.innerHTML = fsActive() ? '✕<span> ZAVRIEŤ</span>' : '⛶<span> CELÁ OBRAZOVKA</span>';
+  b.textContent = fsActive() ? '✕' : '⛶'; b.title = fsActive() ? 'Zavrieť celú obrazovku' : 'Celá obrazovka'; b.classList.toggle('on', !!fsActive());
 }
 /* Rozloženie na celé okno robí CSS trieda, takže funguje vždy. Skutočná
    celá obrazovka prehliadača sa k tomu len pridá, ak ju prehliadač dovolí

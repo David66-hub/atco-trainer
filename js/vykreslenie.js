@@ -23,7 +23,7 @@ function renderQuestion() {
   if (comp) {
     document.querySelector('.controls').style.display = 'none';
     document.getElementById('mode-label').textContent = state.mode === 'conquer' ? 'DOBYVATEĽ' : state.mode === 'profile' ? 'PROFIL' : state.mode === 'about' ? 'O STRÁNKE' : 'REBRÍČEK';
-    if (state.mode === 'conquer') { DQ.sig = ''; dqRender(card); } else if (state.mode === 'profile') { renderProfile(card); rkLoad(); } else if (state.mode === 'about') renderAbout(card); else { renderRank(card); rkLoad(); }
+    if (state.mode === 'conquer') { DQ.sig = ''; dqRender(card); } else if (state.mode === 'profile') { RK.pfKey = null; card._pfHtml = null; renderProfile(card); rkLoad(); } else if (state.mode === 'about') renderAbout(card); else { renderRank(card); rkLoad(); }
     return;
   }
   /* MOD 05 — hra na kurzy má vlastnú kartu a vlastnú slučku */
