@@ -167,7 +167,7 @@ function renderExamStart(card) {
     <div class="home-hero">
       <div class="home-kicker">SKÚŠKA</div>
       <h1>${F.exN} otázok, čas ${examClock(examSecs())}, žiadne nápovede.</h1>
-      <p>Otázky sú namiešané z typov lietadiel, letísk, volacích znakov a koordinácie. Počas skúšky <strong>nevidíš, či si odpovedal správne</strong> — výsledok a zoznam chýb sa ukážu až na konci. Na otázku je v priemere ${F.dAns === 'type' ? 20 : 12} sekúnd a na úspech treba <strong>${EXAM_PASS} %</strong>.</p>
+      <p>Namiešané otázky zo všetkých modulov. <strong>Výsledok uvidíš až na konci</strong>, na úspech treba ${EXAM_PASS} %. <a href="#" data-hp="exam">Ako to funguje ❓</a></p>
       <div class="exam-rules"><strong>BODY DO REBRÍČKA</strong>
         <span>správna odpoveď <b>+${F.dAns === 'type' ? 6 : 3}</b></span><span>nesprávna alebo preskočená <b>−2</b></span>
         <span>bonus za ${EXAM_PASS} % <b>+${F.exN}</b></span><span>za 90 % <b>+${F.exN * 2}</b></span><span>za 100 % <b>+${F.exN * 3}</b></span>

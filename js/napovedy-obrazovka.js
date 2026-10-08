@@ -48,9 +48,10 @@ function modeHelpKey() {
 function renderModeHelp() {
   const el = document.getElementById('filters');
   if (!el) return;
+  const k = modeHelpKey(), H = HELP[k];
   el.insertAdjacentHTML('afterbegin', `<div class="mode-help">
-      <div><strong>ČO TU ROBÍŠ</strong>${MODE_HELP[modeHelpKey()] || ''}</div>
-      <div class="mode-help-tip">💡 Podrž myš nad ktorýmkoľvek tlačidlom — ukáže sa, čo robí.</div>
+      <div><strong>ČO TU ROBÍŠ</strong>${H ? `<span class="mh-steps">${H[1].map((x, i) => `<i>${i + 1}</i>${x[1]}`).join('<u>›</u>')}</span>` : (MODE_HELP[k] || '')}</div>
+      ${H ? `<button class="hp-open" data-hp="${k}">❓ AKO NA TO</button>` : ''}
     </div>`);
 }
 
