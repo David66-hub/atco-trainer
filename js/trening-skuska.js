@@ -238,6 +238,81 @@ function renderExamResult(card) {
 }
 
 /* ---------- ÚVOD: prehľad pokroku a vyhľadávanie ---------- */
+/* privítanie na úvode (v4.11): neprihlásenému ponúkne registráciu, prihlásenému ukáže, kde je a čo ho dnes čaká */
+function homeHelloHTML() {
+  if (!RK.acct) return `<div class="home-hello out" id="home-hello"><div class="hh-wave">👋</div><div class="hh-main"><h2>Vitaj v ATCO Traineri</h2>
+      <p>Cvičiť môžeš hneď, aj bez účtu. Keď sa <b>zaregistruješ</b> — stačí prezývka a heslo — začnú sa ti počítať body, uvidíš sa v rebríčku, postupuješ v úrovniach a pokrok máš na každom zariadení.</p>
+      <div class="hh-acts"><button class="btn" data-go="profile">ZAREGISTROVAŤ SA ▶</button><button class="btn ghost" data-go="profile">MÁM ÚČET</button><button class="btn ghost" data-go="about">❓ O STRÁNKE</button></div></div></div>`;
+  const r = (RK.rows || []).find(x => x.nick === RK.acct.nick), tot = r ? rkTotal(r) : 0, L = rkLevel(tot);
+  const hr = new Date().getHours(), hi = hr < 5 ? 'Ešte hore' : hr < 10 ? 'Dobré ráno' : hr < 18 ? 'Ahoj' : 'Dobrý večer';
+  const lg = r ? (r.lg || 1) : 0, inLg = lg ? RK.rows.filter(x => (x.lg || 1) === lg).sort((a, b) => (b.mp || 0) - (a.mp || 0) || a.nick.localeCompare(b.nick)) : [], pos = lg ? inLg.findIndex(x => x.nick === RK.acct.nick) + 1 : 0;
+  const on = (SOC.friends || []).filter(f => f.online).length, fr = (SOC.friends || []).filter(f => f.st === 'ok').length, dc = dcDone();
+  const nf = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `<div class="home-hello" id="home-hello">
+      <div class="hh-top">${avFace(RK.acct.nick, RK.me && RK.me.emoji, 'big')}<div class="hh-main"><h2>${hi}, ${dqEsc(RK.acct.nick)} 👋</h2>
+        <p>${dc ? 'Dennú výzvu máš za sebou. ' : 'Dnešná denná výzva na teba ešte čaká. '}${!r ? 'Načítavam tvoje body…' : L.next ? `Do úrovne <b>${dqEsc(L.nextName)}</b> ti chýba <b>${nf(L.next - tot)} b.</b>` : 'Si na najvyššej úrovni.'}</p></div></div>
+      <div class="hh-tiles">
+        <button class="hh-t lv" data-lvopen="${tot}"><small>ÚROVEŇ ${L.n}</small><b>${dqEsc(L.name)}</b><i><em style="width:${L.pct == null ? 100 : Math.max(3, Math.round(L.pct))}%"></em></i><span>${nf(tot)} bodov spolu</span></button>
+        <button class="hh-t" data-go="rank" style="--c:${LGC[lg || 1]}"><small>LIGA · TENTO MESIAC</small><b>${lg ? LG[lg] : '—'}</b><span>${lg ? pos + '. z ' + inLg.length + ' · ' + nf(r.mp || 0) + ' b.' : 'načítavam…'}</span></button>
+        <button class="hh-t" data-go="exam"><small>DENNÁ VÝZVA</small><b>${dc ? '✓ HOTOVO' : 'ČAKÁ'}</b><span>${dc ? 'zajtra príde nová' : '20 otázok, prvý pokus sa počíta'}</span></button>
+        <button class="hh-t" data-pft="friends"><small>PRIATELIA</small><b>${on ? on + ' online' : fr ? fr : '—'}</b><span>${on ? 'pozvi ich do Dobyvateľa' : fr ? 'teraz nikto nie je online' : 'pridaj si kolegov'}</span></button>
+        ${SOC.unread ? `<button class="hh-t new" data-pft="inbox"><small>SPRÁVY</small><b>${SOC.unread} ${SOC.unread === 1 ? 'nová' : SOC.unread < 5 ? 'nové' : 'nových'}</b><span>otvoriť schránku</span></button>` : ''}
+      </div></div>`;
+}
+function homeHelloBind() {
+  const h = document.getElementById('home-hello'); if (!h) return;
+  h.querySelectorAll('[data-go]').forEach(b => { b.onclick = () => { startMode(b.dataset.go); window.scrollTo(0, 0); }; });
+  h.querySelectorAll('[data-pft]').forEach(b => { b.onclick = () => { RK.pfTab = b.dataset.pft; startMode('profile'); window.scrollTo(0, 0); }; });
+  if (RK.acct) avNeed([RK.acct.nick]);
+}
+function homeHelloFill() { const h = document.getElementById('home-hello'); if (h) { h.outerHTML = homeHelloHTML(); homeHelloBind(); } }
+
+/* ---------- O STRÁNKE (v4.11): všetko o trenažéri na jednom mieste ---------- */
+function renderAbout(card) {
+  const hk = m => Object.keys(HELP).find(k => k === m || k.indexOf(m + '.') === 0);
+  const mods = MODS_LIST.map(x => `<div class="ab-mod"><div class="ab-ill">${typeof modG === 'function' ? modG(x[0]) : ''}</div><div><small>${x[1]}</small><b>${x[2]}</b><span>${x[3]}</span><p>${hk(x[0]) ? `<button class="btn ghost" data-hp="${hk(x[0])}">❓ VZOR</button>` : ''}<button class="btn" data-go="${x[0]}">OTVORIŤ ▶</button></p></div></div>`).join('');
+  const n = Object.keys(DQ_BANK).reduce((a, k) => a + DQ_BANK[k].length, 0);
+  const sec = (ico, col, title, body) => `<section class="ab-sec" style="--c:${col}"><h3><i>${ico}</i>${title}</h3>${body}</section>`;
+  card.innerHTML = `<div class="ab">
+      <div class="ab-hero"><div><small>O STRÁNKE</small><h2>ATCO Trainer</h2><p>Trenažér na veci, ktoré musí riadiaci letovej prevádzky vedieť naspamäť. Tu je všetko o tom, čo tu nájdeš, ako to funguje a čo sa deje s tvojimi údajmi.</p></div><div class="ab-ver">v${APP_VERSION}<span>BETA</span></div></div>
+      <div class="ab-jump">${[['ab-co', 'Čo to je'], ['ab-mods', 'Moduly a vzory'], ['ab-ucenie', 'Ako sa učiť'], ['ab-sutaz', 'Body, úrovne, ligy'], ['ab-dq', 'Dobyvateľ'], ['ab-ucet', 'Účet a profil'], ['ab-udaje', 'Údaje'], ['ab-kontakt', 'Kontakt']].map(x => `<a href="#${x[0]}" data-jump="${x[0]}">${x[1]}</a>`).join('')}</div>
+      <div id="ab-co">${sec('✈', '#12c274', 'ČO TO JE A AKO TO VZNIKLO', `<p>Vo výcviku riadiaceho je veľa vecí, ktoré sa nedajú odvodiť — treba ich jednoducho vedieť: typy lietadiel a ich označenia, letiská, volačky dopravcov, body na mape, frekvencie, hladiny na koordinačných bodoch. ATCO Trainer vznikol ako pomôcka na presne toto. Spravil ho <b>Denzy</b> počas vlastného výcviku — najprv pre seba, potom pre kolegov z kurzu.</p>
+        <p>Skúša ťa počítač, hneď ukáže správnu odpoveď a to, čo pokazíš, ti vracia, kým to nesedí. K tomu pribudli okruhy teórie (${n} otázok), denná výzva, rebríček a hra Dobyvateľ, aby sa dalo učiť aj spolu.</p>
+        <p class="ab-warn">Je to <b>pomôcka na učenie</b>, nie oficiálny zdroj a nie nástroj na prevádzku. Keď sa niečo líši od dokumentácie, platí dokumentácia — a budem rád, keď mi chybu nahlásiš.</p>`)}</div>
+      <div id="ab-mods">${sec('🧩', '#3a86ff', 'ČO TU NÁJDEŠ — MODULY A VZORY', `<p>Každý modul má tlačidlo <b>❓ VZOR</b>: krátke okno s obrázkami, ktoré ukáže, čo sa v ňom robí. To isté tlačidlo nájdeš aj priamo v module.</p><div class="ab-mods">${mods}</div>
+        <div class="ab-row"><div><b>DENNÁ VÝZVA</b><span>20 otázok dňa, pre všetkých rovnaké. Do rebríčka sa počíta prvý pokus.</span><p><button class="btn ghost" data-hp="exam">❓ VZOR</button><button class="btn" data-go="exam">OTVORIŤ ▶</button></p></div>
+          <div><b>DOBYVATEĽ</b><span>Hra o slovenský vzdušný priestor pre 2 až 6 hráčov.</span><p><button class="btn ghost" data-hp="conquer">❓ VZOR</button><button class="btn" data-go="conquer">OTVORIŤ ▶</button></p></div>
+          <div><b>REBRÍČEK</b><span>Ligy, mapa území, denné aj celkové poradie.</span><p><button class="btn ghost" data-hp="rank">❓ VZOR</button><button class="btn" data-go="rank">OTVORIŤ ▶</button></p></div></div>`)}</div>
+      <div id="ab-ucenie">${sec('🧠', '#b45cff', 'AKO SA TU UČIŤ', `<div class="ab-steps"><div><b>1</b><span><strong>Vyber modul</strong> cez MODULY hore v lište a nastav si v tabuľke pod otázkou, čo sa má skúšať.</span></div><div><b>2</b><span><strong>Začni ľahkou obťažnosťou</strong> (výber z možností), potom prejdi na písanie z hlavy — to je to, čo budeš potrebovať.</span></div><div><b>3</b><span><strong>Chyby sa vracajú.</strong> Čo pokazíš, príde znova v tom istom cvičení a zapíše sa do MOJE CHYBY, kde si to pozrieš aj so správnou odpoveďou.</span></div><div><b>4</b><span><strong>Dnešný tréning</strong> ti každý deň namieša to, čo je čas zopakovať — krátko, ale pravidelne.</span></div></div>
+        <p>Na úvode je aj vyhľadávanie: napíš kód, volačku, bod alebo frekvenciu a trenažér ukáže, čo o tom vie.</p>`)}</div>
+      <div id="ab-sutaz">${sec('🏆', '#e0a800', 'BODY, ÚROVNE, LIGY A MAPA', `<div class="ab-grid"><div><b>Body</b><span>Správna odpoveď v cvičení +1, pri písaní z hlavy +2. Denná výzva a Dobyvateľ dávajú viac. Počítajú sa len prihláseným.</span></div>
+          <div><b>Úrovne</b><span>Dvanásť úrovní od Uchádzača po Supervízora podľa všetkých bodov, ktoré si kedy získal. <a href="#" data-lvopen="0">Zobraziť všetky ▸</a></span></div>
+          <div><b>Ligy</b><span>Päť líg od Bronzu po Diamant. Počítajú sa body za kalendárny mesiac; prví traja postupujú, poslední traja zostupujú.</span></div>
+          <div><b>Mapa území</b><span>Slovensko je rozdelené na deväť oblastí, každá patrí jednému modulu. Drží ju ten, kto má v module najviac bodov.</span></div></div>
+        <p><button class="btn ghost" data-hp="rank">❓ AKO SA POČÍTAJÚ BODY</button><button class="btn" data-go="rank">OTVORIŤ REBRÍČEK ▶</button></p>`)}</div>
+      <div id="ab-dq">${sec('⚔', '#e63946', 'DOBYVATEĽ', `<p>Vedomostná hra naživo na mape skutočných priestorov. Každý začína na svojom letisku; kto odpovie správne a najrýchlejšie, berie priestor. Potom prídu súboje o priestory susedov. Vyhráva ten, kto má na konci najviac bodov.</p>
+        <div class="ab-grid"><div><b>Ako začať</b><span>Jeden vytvorí miestnosť a pošle ostatným kód zo štyroch písmen. Dá sa hrať aj sám proti počítaču.</span></div><div><b>Žolíky</b><span>Raz za hru 50:50, +10 sekúnd a dvojité body za dobytý priestor.</span></div>
+          <div><b>Boosty za úrovne</b><span>${DQ_PERK.map(x => 'od úrovne ' + x[0] + ' ' + x[2]).join(' · ')}. Každý raz za hru; hostiteľ ich vie vypnúť.</span></div><div><b>Otázky</b><span>Z modulov a z deviatich okruhov teórie, niektoré s fotkou. Hostiteľ vie nahrať aj vlastné.</span></div></div>
+        <p><button class="btn ghost" id="ab-demo">▶ UKÁZAŤ VZOR HRY</button><button class="btn" data-go="conquer">OTVORIŤ DOBYVATEĽA ▶</button></p>`)}</div>
+      <div id="ab-ucet">${sec('👤', '#1fd6d6', 'ÚČET, REGISTRÁCIA A PROFIL', `<div class="ab-grid"><div><b>Registrácia</b><span>Stačí <b>prezývka a heslo</b> (aspoň 8 znakov, písmeno aj číslica). E-mail netreba. Prezývka musí byť jedinečná.</span></div>
+          <div><b>Čo ti účet dá</b><span>Body a miesto v rebríčku, úrovne a ligy, priateľov a pozvánky do hry, pokrok v učení na každom zariadení.</span></div>
+          <div><b>Profil</b><span>Prehľad, štatistiky po moduloch, graf aktivity, priatelia a správy. V nastaveniach fotka, emoji, pozadie, zmena mena a hesla.</span></div>
+          <div><b>Bez účtu</b><span>Všetko cvičenie funguje aj tak. Pokrok ostáva len v tomto prehliadači a body sa nepočítajú.</span></div></div>
+        <p><button class="btn ghost" data-hp="profile">❓ VZOR PROFILU</button><button class="btn" data-go="profile">${RK.acct ? 'OTVORIŤ PROFIL ▶' : 'ZAREGISTROVAŤ SA ▶'}</button></p>`)}</div>
+      <div id="ab-udaje">${sec('🔒', '#2dc653', 'ČO SA DEJE S ÚDAJMI', `<ul class="ab-list"><li><b>Čo sa ukladá pri účte:</b> prezývka, heslo (len ako zašifrovaný odtlačok — prečítať sa nedá), body a štatistiky, pokrok v učení, priatelia a správy. Dobrovoľne e-mail, fotka a emoji.</li>
+          <li><b>Čo vidia ostatní:</b> prezývku, body, úroveň, ligu, fotku alebo emoji. Priatelia navyše to, či si online a čo práve hráš. E-mail nevidí nikto.</li>
+          <li><b>Kde to je:</b> v databáze služby Supabase. Bez účtu ostáva všetko len v tvojom prehliadači.</li>
+          <li><b>Čo stránka nerobí:</b> žiadne reklamy a žiadne sledovacie nástroje. Fotky lietadiel a obrázky v otázkach sa načítavajú z Wikipédie.</li>
+          <li><b>Zmazanie:</b> štatistiky si vynuluješ sám v nastaveniach profilu. Ak chceš zmazať celý účet, napíš mi.</li></ul>`)}</div>
+      <div id="ab-kontakt">${sec('✉', '#ff8c2b', 'KONTAKT A CHYBY', `<p>Našiel si chybu v otázke, niečo nefunguje alebo máš nápad? Napíš — každá oprava pomôže aj ostatným.</p>
+        <p><a class="btn" href="mailto:davidsvec24.76@gmail.com?subject=ATCO%20Trainer">✉ davidsvec24.76@gmail.com</a><button class="btn ghost" id="ab-bug">⚑ NAHLÁSIŤ CHYBU</button></p>
+        <p class="ab-src">Hranice priestorov a údaje o letiskách vychádzajú z verejne dostupných leteckých publikácií. Fotky: Wikipedia / Wikimedia Commons, podľa licencií uvedených pri jednotlivých obrázkoch.</p>`)}</div>
+    </div>`;
+  card.querySelectorAll('[data-go]').forEach(b => { b.onclick = () => { startMode(b.dataset.go); window.scrollTo(0, 0); }; });
+  card.querySelectorAll('[data-jump]').forEach(a => { a.onclick = e => { e.preventDefault(); const t = document.getElementById(a.dataset.jump); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }; });
+  const d = document.getElementById('ab-demo'); if (d) d.onclick = () => { startMode('conquer'); dqDemo(); };
+  const g = document.getElementById('ab-bug'); if (g) g.onclick = reportBug;
+}
 function homeDashHTML() {
   const by = poolById(), today = dayNow();
   const due = Object.keys(state.sr).filter(id => by[id] && state.sr[id].due <= today).length;
@@ -249,17 +324,17 @@ function homeDashHTML() {
         <button class="btn" data-go="daily">SPUSTIŤ ▶</button>
       </div>
       <div class="home-cta alt">
-        <div><strong>DENNÁ VÝZVA</strong><span>20 otázok dňa, rovnaké pre všetkých. Výsledok na konci.</span></div>
-        <button class="btn ghost" data-go="exam">OTVORIŤ ▶</button>
+        <div><strong>DENNÁ VÝZVA</strong><span>${dcDone() ? '✓ Dnešná je hotová' + (dcDone().good != null ? ' — ' + dcDone().good + ' z ' + (dcDone().total || DC_N) + ' správne' : '') + '. Zajtra príde nová.' : '20 otázok dňa, rovnaké pre všetkých. Do rebríčka ide prvý pokus.'}</span></div>
+        <button class="btn ghost" data-go="exam">${dcDone() ? 'POZRIEŤ ▶' : 'OTVORIŤ ▶'}</button>
       </div>
     </div>
     <div class="home-dash comp">
       <div class="home-cta gold">
-        <div><strong>DOBYVATEĽ</strong><span>Vedomostný súboj o Slovensko naživo — 2 až 3 hráči.</span></div>
+        <div><strong>DOBYVATEĽ</strong><span>Vedomostný súboj o Slovensko naživo — 2 až 6 hráčov alebo sám proti počítaču.</span></div>
         <button class="btn ghost" data-go="conquer">HRAŤ ▶</button>
       </div>
       <div class="home-cta gold">
-        <div><strong>REBRÍČEK</strong><span>Body, úspešnosť a čas tréningu všetkých kolegov.</span></div>
+        <div><strong>REBRÍČEK</strong><span>Mesačné ligy, mapa území, denná výzva a celkové poradie.</span></div>
         <button class="btn ghost" data-go="rank">POZRIEŤ ▶</button>
       </div>
     </div>

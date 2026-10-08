@@ -413,6 +413,7 @@ function apSaveProgress() {
     const m = {};
     Object.keys(state.mistakes).filter(apIsMine).forEach(k => { m[k] = state.mistakes[k]; });
     localStorage.setItem(AP_STORE, JSON.stringify({ mistakes: m, ok: state.apOk, sr: state.sr, last: state.last, dailyDone: state.dailyDone }));
+    if (typeof PS !== 'undefined') PS.dirty = Date.now();
   } catch (e) { /* súkromné okno alebo plné úložisko — trenažér beží ďalej bez ukladania */ }
 }
 function apLoadProgress() {

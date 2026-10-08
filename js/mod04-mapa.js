@@ -662,7 +662,7 @@ function labelForId(id) {
 
 function renderFilters() {
   const el = document.getElementById('filters');
-  if (state.mode === 'home' || state.mode === 'conquer' || state.mode === 'rank' || state.mode === 'profile') { el.innerHTML = ''; return; }
+  if (state.mode === 'home' || state.mode === 'conquer' || state.mode === 'rank' || state.mode === 'profile' || state.mode === 'about') { el.innerHTML = ''; return; }
   if (state.mode === 'aircraft') {
     const cmp = state.filters.acMode === 'cmp';
     el.innerHTML = `

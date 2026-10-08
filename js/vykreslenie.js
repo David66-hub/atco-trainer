@@ -14,7 +14,7 @@ function renderQuestion() {
   document.querySelector('.app').classList.toggle('wide', split);
   fsSync();
   /* súťažné stránky — Dobyvateľ a rebríček */
-  const comp = state.mode === 'conquer' || state.mode === 'rank' || state.mode === 'profile';
+  const comp = state.mode === 'conquer' || state.mode === 'rank' || state.mode === 'profile' || state.mode === 'about';
   rkHeadBtn(); navSync();
   document.getElementById('qcount').style.display = comp || state.mode === 'home' ? 'none' : '';
   document.getElementById('weak-sec').style.display = comp || state.mode === 'home' ? 'none' : '';
@@ -22,8 +22,8 @@ function renderQuestion() {
   if (state.mode !== 'conquer') dqHideStage();
   if (comp) {
     document.querySelector('.controls').style.display = 'none';
-    document.getElementById('mode-label').textContent = state.mode === 'conquer' ? 'DOBYVATEĽ' : state.mode === 'profile' ? 'PROFIL' : 'REBRÍČEK';
-    if (state.mode === 'conquer') { DQ.sig = ''; dqRender(card); } else if (state.mode === 'profile') { renderProfile(card); rkLoad(); } else { renderRank(card); rkLoad(); }
+    document.getElementById('mode-label').textContent = state.mode === 'conquer' ? 'DOBYVATEĽ' : state.mode === 'profile' ? 'PROFIL' : state.mode === 'about' ? 'O STRÁNKE' : 'REBRÍČEK';
+    if (state.mode === 'conquer') { DQ.sig = ''; dqRender(card); } else if (state.mode === 'profile') { renderProfile(card); rkLoad(); } else if (state.mode === 'about') renderAbout(card); else { renderRank(card); rkLoad(); }
     return;
   }
   /* MOD 05 — hra na kurzy má vlastnú kartu a vlastnú slučku */

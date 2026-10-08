@@ -43,8 +43,9 @@ function renderHome(card) {
     <div class="home-hero">
       <div class="home-kicker">ATCO TRAINER</div>
       <h1>Všetko, čo treba vedieť naspamäť, na jednom mieste.</h1>
-      <p>Trenažér pre kolegov z výcviku: typy lietadiel, letiská, volačky, body, kurzy a koordinácia. Skúša ťa počítač a to, čo nevieš, ti vracia, kým to nesedí. Spravil <strong>Denzy</strong>. <a href="#" data-hp="home">Ako na to ❓</a></p>
+      <p>Trenažér pre kolegov z výcviku: typy lietadiel, letiská, volačky, body, kurzy a koordinácia. Skúša ťa počítač a to, čo nevieš, ti vracia, kým to nesedí. Spravil <strong>Denzy</strong>. <a href="#" data-hp="home">Ako na to ❓</a> · <a href="#" data-about="1">O stránke ▸</a></p>
     </div>
+    ${homeHelloHTML()}
     ${homeDashHTML()}
     <div class="home-steps">
       <div><b>1</b><span><strong>Vyber modul</strong> hore v lište (MOD 01 až MOD 06).</span></div>
@@ -97,7 +98,7 @@ function renderHome(card) {
     <div class="home-tips">
       <div><strong>ĽAHKÁ a HARDCORE</strong>Každý modul má dve obtiažnosti. Začni ľahkou (výber z možností), potom prejdi na hardcore (písanie z hlavy).</div>
       <div><strong>Opakovanie chýb</strong>Pokazená otázka sa vráti neskôr. Prepínač LEN SLABÉ MIESTA pustí iba to, čo ti nejde.</div>
-      <div><strong>Pokrok sa ukladá</strong>V prehliadači na tomto zariadení. Na inom počítači alebo telefóne začínaš od nuly.</div>
+      <div><strong>Pokrok sa ukladá</strong>Prihláseným do účtu — na inom počítači alebo telefóne pokračuješ tam, kde si skončil. Bez prihlásenia len v tomto zariadení.</div>
       <div><strong>Nápovede</strong>Tlačidlo HINT napovedá po krokoch. Keď podržíš myš nad ktorýmkoľvek tlačidlom, ukáže sa, čo robí.</div>
       <div><strong>Celá obrazovka</strong>Zelené tlačidlo vpravo hore v paneli. Hodí sa pri mapách; späť klávesom Esc.</div>
       <div><strong>Klávesnica</strong>Enter odošle odpoveď a ďalším Enterom (alebo medzerníkom) ideš ďalej. Pri výbere z možností stačí stlačiť číslo 1 až 6. SKIP otázku preskočí, RESET začne cvičenie odznova.</div>
@@ -111,6 +112,9 @@ function renderHome(card) {
       Dole na každej stránke je päta s tlačidlami <b>Napísať návrh</b>, <b>Nahlásiť chybu</b> a <b>Kontaktovať tvorcu</b>. Otvoria e-mail na <b>davidsvec24.76@gmail.com</b>; pri chybe je v ňom už vyplnené, v ktorom module a pri ktorej otázke si.
     </div>`;
   card.querySelectorAll('[data-go]').forEach(b => { b.onclick = () => { startMode(b.dataset.go); window.scrollTo(0, 0); }; });
+  card.querySelectorAll('[data-about]').forEach(b => { b.onclick = e => { e.preventDefault(); startMode('about'); window.scrollTo(0, 0); }; });
+  homeHelloBind();
+  if (RK.acct && !RK.rows && !RK.loading) rkLoad();
   const sq = document.getElementById('home-q');
   sq.oninput = () => { document.getElementById('home-res').innerHTML = searchAll(sq.value); };
 }

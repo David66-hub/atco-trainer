@@ -349,7 +349,7 @@ const AIRCRAFT = [
   {
     icao: 'C56X', name: 'Cessna Citation Excel/XLS', mfr: 'Cessna (Textron)',
     wiki: 'Cessna_Citation_Excel',
-    wake: 'L', engines: '2× PW545 turbofan (rear-mounted)', enginesCount: 2,
+    wake: 'M', engines: '2× PW545 turbofan (rear-mounted)', enginesCount: 2,
     cruise: '430 kt (M0.75)', mmo: 'M0.78', vne: '305 kt IAS',
     stall: '~92 kt (clean)', ceiling: 'FL450',
     mtow: '9.2 t', length: '15.9 m', wingspan: '17.2 m',
@@ -361,7 +361,7 @@ const AIRCRAFT = [
       'Mid-size BIZJET, T-tail, rear-mounted engines.',
       'Common executive transport — NetJets has many.',
       'Cessna. Citation Excel/XLS family.',
-      'Light WTC — small jet.',
+      'Medium WTC (MTOW above 7 t) — mid-size business jet.',
     ],
   },
   {
@@ -750,7 +750,7 @@ const AIRCRAFT = [
   {
     icao: 'C68A', name: 'Cessna Citation Latitude', mfr: 'Cessna',
     wiki: 'Cessna_Citation_Latitude',
-    wake: 'L', engines: '2× PW306D1 turbofan', enginesCount: 2,
+    wake: 'M', engines: '2× PW306D1 turbofan', enginesCount: 2,
     cruise: '446 kt (M0.80)', mmo: 'M0.80', vne: '305 kt',
     stall: '~95 kt', ceiling: 'FL450',
     mtow: '13.4 t', length: '18.0 m', wingspan: '22.6 m',
@@ -763,7 +763,7 @@ const AIRCRAFT = [
   {
     icao: 'CL35', name: 'Bombardier Challenger 350', mfr: 'Bombardier',
     wiki: 'Bombardier_Challenger_300',
-    wake: 'L', engines: '2× Honeywell HTF7350 turbofan', enginesCount: 2,
+    wake: 'M', engines: '2× Honeywell HTF7350 turbofan', enginesCount: 2,
     cruise: '470 kt (M0.83)', mmo: 'M0.83', vne: '320 kt',
     stall: '~105 kt', ceiling: 'FL450',
     mtow: '18.4 t', length: '20.9 m', wingspan: '21.0 m',
@@ -776,7 +776,7 @@ const AIRCRAFT = [
   {
     icao: 'GLEX', name: 'Bombardier Global Express', mfr: 'Bombardier',
     wiki: 'Bombardier_Global_Express',
-    wake: 'L', engines: '2× RR BR710 turbofan', enginesCount: 2,
+    wake: 'M', engines: '2× RR BR710 turbofan', enginesCount: 2,
     cruise: '488 kt (M0.85)', mmo: 'M0.89', vne: '340 kt',
     stall: '~108 kt', ceiling: 'FL510',
     mtow: '42.4 t', length: '30.3 m', wingspan: '28.7 m',
@@ -789,7 +789,7 @@ const AIRCRAFT = [
   {
     icao: 'F2TH', name: 'Dassault Falcon 2000', mfr: 'Dassault',
     wiki: 'Dassault_Falcon_2000',
-    wake: 'L', engines: '2× PW308C turbofan', enginesCount: 2,
+    wake: 'M', engines: '2× PW308C turbofan', enginesCount: 2,
     cruise: '440 kt (M0.80)', mmo: 'M0.862', vne: '325 kt',
     stall: '~95 kt', ceiling: 'FL470',
     mtow: '19.4 t', length: '20.2 m', wingspan: '21.4 m',
@@ -802,7 +802,7 @@ const AIRCRAFT = [
   {
     icao: 'FA7X', name: 'Dassault Falcon 7X', mfr: 'Dassault',
     wiki: 'Dassault_Falcon_7X',
-    wake: 'L', engines: '3× PW307A turbofan', enginesCount: 3,
+    wake: 'M', engines: '3× PW307A turbofan', enginesCount: 3,
     cruise: '488 kt (M0.85)', mmo: 'M0.90', vne: '340 kt',
     stall: '~108 kt', ceiling: 'FL510',
     mtow: '32.6 t', length: '23.4 m', wingspan: '26.2 m',
@@ -815,7 +815,7 @@ const AIRCRAFT = [
   {
     icao: 'LJ45', name: 'Bombardier Learjet 45', mfr: 'Bombardier (Learjet)',
     wiki: 'Bombardier_Learjet_45',
-    wake: 'L', engines: '2× Honeywell TFE731 turbofan', enginesCount: 2,
+    wake: 'M', engines: '2× Honeywell TFE731 turbofan', enginesCount: 2,
     cruise: '457 kt (M0.81)', mmo: 'M0.81', vne: '330 kt',
     stall: '~95 kt', ceiling: 'FL510',
     mtow: '9.5 t', length: '17.7 m', wingspan: '14.6 m',
@@ -908,7 +908,7 @@ const AIRCRAFT = [
   {
     icao: 'PC24', name: 'Pilatus PC-24', mfr: 'Pilatus',
     wiki: 'Pilatus_PC-24',
-    wake: 'L', engines: '2× Williams FJ44-4A turbofan', enginesCount: 2,
+    wake: 'M', engines: '2× Williams FJ44-4A turbofan', enginesCount: 2,
     cruise: '440 kt (M0.74)', mmo: 'M0.78', vne: '290 kt',
     stall: '~85 kt', ceiling: 'FL450',
     mtow: '8.3 t', length: '16.85 m', wingspan: '17.0 m',
@@ -1003,7 +1003,7 @@ const AIRCRAFT = [
   {
     icao: 'C130', name: 'Lockheed C-130 Hercules', mfr: 'Lockheed Martin',
     wiki: 'Lockheed_C-130_Hercules',
-    wake: 'H', engines: '4× Allison T56 / RR AE 2100 turboprop', enginesCount: 4,
+    wake: 'M', engines: '4× Allison T56 / RR AE 2100 turboprop', enginesCount: 4,
     cruise: '292 kt', mmo: 'N/A', vne: '348 kt',
     stall: '~95 kt', ceiling: '33,000 ft',
     mtow: '70 t', length: '29.79 m', wingspan: '40.4 m',
