@@ -40,7 +40,7 @@ function renderQuestion() {
   document.getElementById('qnum').textContent = state.index + 1;
   document.getElementById('qtotal').textContent = state.total;
   document.getElementById('mode-label').textContent =
-    state.mode === 'home' ? 'ÚVOD' : state.mode === 'daily' ? 'DNEŠNÝ TRÉNING' : state.mode === 'exam' ? 'DENNÁ VÝZVA' :
+    state.mode === 'home' ? 'ÚVOD' : state.mode === 'daily' ? (state.drill ? 'PRECVIČENIE CHÝB' : 'DNEŠNÝ TRÉNING') : state.mode === 'exam' ? 'DENNÁ VÝZVA' :
     state.mode === 'aircraft' ? 'AIRCRAFT TYPE' :
     state.mode === 'airport' ? 'AIRPORTS / ICAO' :
     state.mode === 'callsign' ? 'CALLSIGNS' : state.mode === 'coord' ? 'KOORDINÁCIA / FREKVENCIE' : 'FRA BODY / MAPA';
@@ -68,7 +68,7 @@ function renderQuestion() {
   }
 
   if (!q) {
-    if (state.mode === 'daily' && state.total) { state.dailyDone = dayNow(); apSaveProgress(); }
+    if (state.mode === 'daily' && state.total && !state.drill) { state.dailyDone = dayNow(); apSaveProgress(); }
     const pct = Math.round((state.correct / Math.max(1,state.total)) * 100);
     card.innerHTML = `
       <div class="session-done">

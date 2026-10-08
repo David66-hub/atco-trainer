@@ -613,12 +613,33 @@ function wkOpen(id) {
 }
 function wkClose() { const w = document.getElementById('wk-wrap'); if (w) w.remove(); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') wkClose(); });
+function wkItems() { return Object.entries(state.mistakes).filter(([_, n]) => n >= 1).sort((a, b) => b[1] - a[1]); }
+/* dole pod cvičením už nie je zoznam všetkých chýb — len jeden pás s počtom a dvoma tlačidlami (v4.20) */
 function renderWeak() {
-  const el = document.getElementById('weak-list');
-  const items = Object.entries(state.mistakes).filter(([_, n]) => n >= 1).sort((a, b) => b[1] - a[1]);
-  if (!items.length) { el.innerHTML = '<span class="weak-empty">— zatiaľ žiadne chyby —</span>'; return; }
-  el.innerHTML = items.slice(0, 150).map(([id, n]) => `<button class="weak-item" data-wkid="${dqEsc(id)}">${labelForId(id)} · ×${n}</button>`).join('') + (items.length > 150 ? `<span class="weak-empty">a ďalších ${items.length - 150}</span>` : '');
-  el.onclick = e => { const b = e.target.closest && e.target.closest('[data-wkid]'); if (b) wkOpen(b.dataset.wkid); };
+  const el = document.getElementById('weak-list'), sec = document.getElementById('weak-sec'), items = wkItems(), by = poolById(), can = items.filter(x => by[x[0]]).length;
+  if (sec) sec.classList.toggle('none', !items.length);
+  if (!items.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="wk-bar"><i>${items.length}</i><div><b>${items.length === 1 ? 'chyba čaká' : items.length < 5 ? 'chyby čakajú' : 'chýb čaká'} na zopakovanie</b><span>Čo si pokazil, sa tu zbiera. Po správnej odpovedi zo zoznamu vypadne.</span></div>
+      ${can ? '<button class="btn" id="wk-drill">PRECVIČIŤ CHYBY ▶</button>' : ''}<button class="btn ghost" id="wk-show">ZOBRAZIŤ</button></div>`;
+  const d = document.getElementById('wk-drill'); if (d) d.onclick = wkDrill;
+  document.getElementById('wk-show').onclick = wkListOpen;
+}
+/* precvičenie chýb: denný tréning zložený len z vecí, ktoré mám zle */
+function wkDrill() { const w = document.getElementById('wkl-wrap'); if (w) w.remove(); state.drill = true; startMode('daily'); window.scrollTo(0, 0); }
+function wkListOpen() {
+  const old = document.getElementById('wkl-wrap'); if (old) old.remove();
+  const items = wkItems(), by = poolById(), G = {}, NAME = { aircraft: 'MOD 01 · LIETADLÁ', airport: 'MOD 02 · LETISKÁ', callsign: 'MOD 03 · VOLAČKY', waypoint: 'MOD 04 · BODY', coord: 'MOD 06 · KOORDINÁCIA', other: 'OSTATNÉ' };
+  const PA = poolAll(), modOf = {}; Object.keys(PA).forEach(m => PA[m].forEach(q => { if (!modOf[q.id]) modOf[q.id] = m; }));
+  items.forEach(x => { const m = NAME[modOf[x[0]]] ? modOf[x[0]] : 'other'; (G[m] = G[m] || []).push(x); });
+  const w = document.createElement('div'); w.id = 'wkl-wrap';
+  w.innerHTML = `<div class="hp wkl" role="dialog" aria-label="Moje chyby">
+      <div class="hp-top"><span>MOJE CHYBY · ${items.length}</span><button data-wkl="x" title="Zavrieť">✕</button></div>
+      <p class="wkl-n">Klikni na chybu a uvidíš, čo si odpovedal a čo je správne. Číslo je, koľkokrát si ju pokazil.</p>
+      <div class="wkl-list">${Object.keys(NAME).filter(m => G[m]).map(m => `<h4>${NAME[m]} <em>${G[m].length}</em></h4><div>${G[m].slice(0, 80).map(([id, n]) => `<button class="weak-item" data-wkid="${dqEsc(id)}">${labelForId(id)}${n > 1 ? ` <b>×${n}</b>` : ''}</button>`).join('')}${G[m].length > 80 ? `<span class="weak-empty">a ďalších ${G[m].length - 80}</span>` : ''}</div>`).join('')}</div>
+      <div class="hp-act"><button class="btn ghost" data-wkl="x">ZAVRIEŤ</button>${items.some(x => by[x[0]]) ? '<button class="btn" data-wkl="go">PRECVIČIŤ CHYBY ▶</button>' : ''}</div>
+    </div>`;
+  w.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-wkl],[data-wkid]'); if (e.target === w || (t && t.dataset.wkl === 'x')) return w.remove(); if (!t) return; if (t.dataset.wkl === 'go') return wkDrill(); if (t.dataset.wkid) wkOpen(t.dataset.wkid); });
+  document.body.appendChild(w);
 }
 
 function labelForId(id) {

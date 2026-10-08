@@ -21,8 +21,8 @@
     return b;
   }
   function size() {
-    W = c.width = Math.max(320, Math.ceil(window.innerWidth / 2));
-    H = c.height = Math.max(240, Math.ceil(window.innerHeight / 2));
+    W = c.width = Math.max(240, Math.ceil(window.innerWidth / 3));
+    H = c.height = Math.max(180, Math.ceil(window.innerHeight / 3));
     cx = W * 0.5; cy = H * 0.52; R = Math.hypot(W, H) * 0.58;
     if (!blips.length) for (let i = 0; i < 16; i++) blips.push(spawn({}));
   }
@@ -69,12 +69,15 @@
       g.beginPath(); g.moveTo(b.x, b.y); g.lineTo(b.x + Math.cos(b.h) * 9, b.y + Math.sin(b.h) * 9); g.stroke();
     });
   }
+  /* pozadie je len kulisa: 20 obrázkov za sekundu stačí a nechá výkon na samotnú stránku; počas hry a keď kartu nevidno, stojí */
   function frame(ts) {
-    const dt = last ? Math.min(0.06, (ts - last) / 1000) : 0;
+    if (!still) requestAnimationFrame(frame);
+    if (document.hidden || document.body.classList.contains('dq-live') || document.body.classList.contains('fs-on')) { last = 0; return; }
+    if (last && ts - last < 48) return;
+    const dt = last ? Math.min(0.12, (ts - last) / 1000) : 0;
     last = ts;
     ang = (ang + dt * 0.75) % TAU;
     draw(dt);
-    if (!still) requestAnimationFrame(frame);
   }
   size();
   window.addEventListener('resize', () => { size(); if (still) draw(0); });

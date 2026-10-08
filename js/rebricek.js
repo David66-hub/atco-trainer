@@ -9,7 +9,7 @@ const SB_KEY = 'sb_publishable_zCtKfNAduJIc6kr4N1YK2w_CRQT8fQz';   // verejný k
 const SB_ON = !!(SB_URL && SB_KEY);
 const RK_ACCT = 'atcoTrainerV2.acct', RK_PEND = 'atcoTrainerV2.rkPend', RK_MOCK = 'atcoTrainerV2.rkMock';
 const RK_MODS = [['aircraft', 'MOD 01 · LIETADLÁ'], ['airport', 'MOD 02 · LETISKÁ'], ['callsign', 'MOD 03 · VOLAČKY'], ['waypoint', 'MOD 04 · BODY FRA'], ['heading', 'MOD 05 · KURZY'],
-  ['coord', 'MOD 06 · KOORDINÁCIA'], ['daily', 'DENNÝ TRÉNING'], ['exam', 'DENNÁ VÝZVA'], ['conquer', 'DOBYVATEĽ']];
+  ['coord', 'MOD 06 · KOORDINÁCIA'], ['daily', 'DENNÝ TRÉNING'], ['exam', 'DENNÁ VÝZVA'], ['conquer', 'DOBYVATEĽ'], ['bonus', 'BONUSY · ÚLOHY TÝŽDŇA']];
 const RK_SUBJ = [['q_atm', 'ATM'], ['q_nav', 'NAVIGÁCIA'], ['q_met', 'METEOROLÓGIA'], ['q_eqps', 'ZARIADENIA'], ['q_hum', 'ĽUDSKÉ FAKTORY'], ['q_acft', 'LIETADLÁ'], ['q_pen', 'PRAC. PROSTREDIE'], ['q_hist', 'HISTÓRIA'], ['q_gen', 'VŠEOBECNÝ PREHĽAD']];
 const RK_ERR = { NICK_TAKEN: 'Táto prezývka je už obsadená — skús inú.', BAD_LOGIN: 'Nesprávna prezývka alebo heslo.',
   BAD_NICK: 'Prezývka musí mať 3 až 16 znakov (písmená, čísla, medzera, bodka, pomlčka).', BAD_PASS: 'Heslo musí mať aspoň 6 znakov.', WEAK_PASS: 'Nové heslo musí mať aspoň 8 znakov a obsahovať písmeno aj číslicu.',
@@ -202,7 +202,7 @@ function helpOpen(key) { if (HELP[key]) hpDraw(key, 0); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hp]'); if (b) { e.preventDefault(); if (b.dataset.hp === 'game') hpGameNow(); else helpOpen(b.dataset.hp === '*' ? hpKeyNow() : b.dataset.hp); } });
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '4.19.0';
+const APP_VERSION = '5.1.0';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -270,6 +270,14 @@ function rkMock(fn, a) {
         inbox: M.filter(m => m.to === me).sort((x, y) => y.t - x.t).slice(0, 60).map(m => ({ id: m.id, from: (P[m.from] || {}).nick || m.from, kind: m.kind, body: m.body, created: new Date(m.t).toISOString(), read: m.read })), unread: M.filter(m => m.to === me && !m.read).length,
         sent: M.filter(m => m.from === me && m.kind !== 'friend').sort((x, y) => y.t - x.t).slice(0, 80).map(m => ({ id: m.id, to: (P[m.to] || {}).nick || m.to, kind: m.kind, body: m.body, created: new Date(m.t).toISOString(), read: m.read })) };
     }
+  } else if (fn === 'atco_weekly' || fn === 'atco_weekly_claim') {
+    const p = byTok(a.p_token); if (!p) throw new Error('BAD_TOKEN');
+    const W = wkWeek(), D = p.days || {}, sum = f => W.days.reduce((x, k) => x + ((D[k] || {})[f] || 0), 0), st = () => ({ week: W.id, left: W.left, pts: sum('p'), days: W.days.filter(k => (D[k] || {}).p > 0).length, ok: sum('c'), mins: Math.floor(sum('s') / 60), done: ((p.wk || {})[W.id] || []).slice() });
+    if (fn === 'atco_weekly') out = st();
+    else { const S = st(), need = { pts: [S.pts, 500], days: [S.days, 4], ok: [S.ok, 150], time: [S.mins, 45] }[a.p_task]; if (!need) throw new Error('BAD_TASK'); if (need[0] < need[1]) throw new Error('NOT_DONE');
+      p.wk = p.wk || {}; const L = p.wk[W.id] = p.wk[W.id] || [], nw = L.indexOf(a.p_task) < 0;
+      if (nw) { L.push(a.p_task); const m = p.mods.bonus = p.mods.bonus || { p: 0, c: 0, w: 0, s: 0, g: 0, v: 0 }; m.p += 50; const k = dcDay(), d = D[k] = D[k] || { p: 0, c: 0, w: 0, s: 0 }; d.p += 50; p.days = D; }
+      out = { new: nw, state: st() }; }
   } else if (fn === 'atco_avatars') {
     out = {}; (a.p_nicks || []).forEach(n => { const p = P[String(n).toLowerCase()]; if (p) out[p.nick] = { a: p.avatar || '', e: p.emoji || '' }; });
   } else if (fn === 'atco_ranking') {
@@ -380,7 +388,7 @@ async function rkLoad() {
   if (state.mode === 'rank') renderRank(document.getElementById('qcard'));
   if (state.mode === 'profile') renderProfile(document.getElementById('qcard'));
   if (state.mode === 'home') homeHelloFill();
-  rkHeadBtn();
+  rkHeadBtn(); achCheck(); wkLoad();
 }
 function rkTime(s) { s = s || 0; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? h + ' h ' + m + ' min' : m ? m + ' min' : s ? s + ' s' : '—'; }
 /* potvrdzovacie okno v štýle stránky */
@@ -393,16 +401,19 @@ function rkConfirm(title, text, yes, fn) {
 }
 function rkAccountHTML() {
   if (RK.acct) return `<div class="rk-acct in"><span>Prihlásený ako <strong>${dqEsc(RK.acct.nick)}</strong></span><div class="rk-acct-b"><button class="rk-reset" id="rk-reset">VYNULOVAŤ MOJE SKÓRE</button><button class="btn ghost" id="rk-out">ODHLÁSIŤ</button></div></div>${RK.err ? `<div class="rk-err">${dqEsc(RK.err)}</div>` : ''}`;
-  return `<div class="rk-acct">
-      <div class="rk-acct-t"><strong>Prihlás sa, aby sa ti počítali body</strong><span>Stačí prezývka a heslo. Bez prihlásenia trenažér funguje ďalej, len ťa nebude vidno v rebríčku.</span></div>
-      <div class="rk-form">
-        <input type="text" id="rk-nick" placeholder="prezývka" maxlength="16" autocomplete="username" spellcheck="false">
-        <input type="password" id="rk-pass" placeholder="heslo" autocomplete="current-password">
-        <button class="btn" id="rk-in">PRIHLÁSIŤ</button>
-        <button class="btn ghost" id="rk-new">VYTVORIŤ ÚČET</button>
+  const nw = RK.authTab === 'new';
+  return `<div class="au">
+      <div class="au-side"><small>ÚČET ZADARMO</small><h3>Hraj o body, nie len pre seba.</h3>
+        <ul><li><i>🏆</i><span><b>Rebríček a ligy</b>každá správna odpoveď sa počíta</span></li><li><i>📈</i><span><b>58 úrovní</b>od Uchádzača po Kráľa neba</span></li><li><i>⚔</i><span><b>Priatelia a Dobyvateľ</b>pozvánky, chat, boosty</span></li><li><i>☁</i><span><b>Pokrok všade</b>telefón aj počítač</span></li></ul></div>
+      <div class="au-form" data-tab="${nw ? 'new' : 'in'}">
+        <div class="au-tabs"><button data-au="in" class="${nw ? '' : 'on'}">PRIHLÁSIŤ SA</button><button data-au="new" class="${nw ? 'on' : ''}">NOVÝ ÚČET</button></div>
+        <label>PREZÝVKA<input type="text" id="rk-nick" placeholder="tvoja prezývka" maxlength="16" autocomplete="username" spellcheck="false"></label>
+        <label>HESLO<span class="au-pw"><input type="password" id="rk-pass" placeholder="heslo" autocomplete="${nw ? 'new-password' : 'current-password'}"><button type="button" id="rk-eye" title="Ukázať heslo">👁</button></span></label>
+        <div class="rk-pw au-meter" id="rk-pw"><i></i><span>Aspoň 8 znakov, písmeno aj číslica. Prezývka 3 – 16 znakov, musí byť jedinečná. E-mail netreba.</span></div>
+        ${RK.err ? `<div class="rk-err">${dqEsc(RK.err)}</div>` : ''}
+        <button class="btn au-go" id="rk-go"><span class="t-in">PRIHLÁSIŤ SA ▶</span><span class="t-new">VYTVORIŤ ÚČET ▶</span></button>
+        <p class="au-sw"><span class="t-in">Ešte nemáš účet? <a href="#" data-au="new">Vytvor si ho</a> — trvá to desať sekúnd.</span><span class="t-new">Už účet máš? <a href="#" data-au="in">Prihlás sa</a>.</span></p>
       </div>
-      <div class="rk-pw" id="rk-pw"><i></i><span>Nový účet: prezývka musí byť jedinečná (3 – 16 znakov), heslo aspoň 8 znakov s písmenom a číslicou. E-mail netreba.</span></div>
-      ${RK.err ? `<div class="rk-err">${dqEsc(RK.err)}</div>` : ''}
     </div>`;
 }
 function rkBindAccount(after) {
@@ -420,10 +431,17 @@ function rkBindAccount(after) {
   });
   if (bi) bi.onclick = () => go('in');
   if (bn) bn.onclick = () => go('new');
+  /* nový formulár: záložky PRIHLÁSIŤ SA / NOVÝ ÚČET; sila hesla sa ukazuje len pri novom účte */
+  const fm = document.querySelector('.au-form'), bg = document.getElementById('rk-go'), eye = document.getElementById('rk-eye');
+  const kindNow = () => fm && fm.dataset.tab === 'new' ? 'new' : 'in';
+  if (fm) fm.parentNode.querySelectorAll('[data-au]').forEach(x => { x.onclick = e => { e.preventDefault(); RK.authTab = x.dataset.au; fm.dataset.tab = RK.authTab; fm.querySelectorAll('.au-tabs button').forEach(t => t.classList.toggle('on', t.dataset.au === RK.authTab)); const er = fm.querySelector('.rk-err'); if (er) er.remove(); document.getElementById('rk-nick').focus(); }; });
+  if (bg) bg.onclick = () => go(kindNow());
+  if (eye) eye.onclick = () => { const p = document.getElementById('rk-pass'); p.type = p.type === 'password' ? 'text' : 'password'; eye.classList.toggle('on', p.type === 'text'); };
+  const nk = document.getElementById('rk-nick'); if (nk && fm) nk.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('rk-pass').focus(); });
   if (bo) bo.onclick = () => { rkLogout(); after(); };
   const pw = document.getElementById('rk-pass');
-  if (pw) pw.addEventListener('keydown', e => { if (e.key === 'Enter') go('in'); });
-  if (pw) pw.addEventListener('input', () => { const m = document.getElementById('rk-pw'), sc = rkPassScore(pw.value); if (m) { m.dataset.s = pw.value ? sc : ''; m.querySelector('span').textContent = !pw.value ? 'Nový účet: prezývka musí byť jedinečná (3 – 16 znakov), heslo aspoň 8 znakov s písmenom a číslicou. E-mail netreba.' : ['Heslo je krátke.', 'Slabé heslo — na nový účet treba 8 znakov, písmeno aj číslicu.', 'Dobré heslo.', 'Silné heslo.'][sc]; } });
+  if (pw) pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(fm ? kindNow() : 'in'); });
+  if (pw) pw.addEventListener('input', () => { const m = document.getElementById('rk-pw'), sc = rkPassScore(pw.value); if (m) { m.dataset.s = pw.value ? sc : ''; m.querySelector('span').textContent = !pw.value ? 'Aspoň 8 znakov, písmeno aj číslica. Prezývka 3 – 16 znakov, musí byť jedinečná. E-mail netreba.' : ['Heslo je krátke.', 'Slabé heslo — treba 8 znakov, písmeno aj číslicu.', 'Dobré heslo.', 'Silné heslo.'][sc]; } });
 }
 /* ============================================================
    PROFIL, NASTAVENIA, PRIATELIA A SPRÁVY (v4.8)
@@ -649,9 +667,11 @@ function rkHeadBtn() {
   const av = RK.acct && RK.me && RK.me.avatar;
   const meR = RK.acct ? (RK.rows || []).find(r => r.nick === RK.acct.nick) : null, lvN = RK.acct ? (meR ? rkLevel(rkTotal(meR)).n : dqMyLv()) : 0;
   b.innerHTML = RK.acct ? (av ? `<img src="${dqEsc(av)}" alt="">` : `<u>${RK.me && RK.me.emoji ? dqEsc(RK.me.emoji) : dqEsc(RK.acct.nick.charAt(0).toUpperCase())}</u>`) + `<span>${dqEsc(RK.acct.nick)}</span><em>LVL ${lvN}</em>` : 'PRIHLÁSIŤ';
-  b.title = RK.acct ? 'Môj profil' : 'Prihlásiť sa alebo vytvoriť účet';
+  b.title = RK.acct ? 'Môj profil' : 'Prihlásiť sa alebo vytvoriť účet'; b.style.setProperty('--lg', LGC[(meR && meR.lg) || 1]);
   b.classList.toggle('in', !!RK.acct); b.classList.toggle('on', state.mode === 'profile');
   const ab = document.getElementById('about-btn'); if (ab) ab.classList.toggle('on', state.mode === 'about');
+  /* úvod musí vždy ukazovať to isté čo hlavička: prihlásený vidí seba, neprihlásený ponuku registrácie */
+  if (state.mode === 'home') { const hh = document.getElementById('home-hello'); if (hh && hh.classList.contains('out') === !!RK.acct) homeHelloFill(); }
   const ib = document.getElementById('inbox-btn');
   if (ib) { ib.style.display = RK.acct ? '' : 'none'; ib.innerHTML = '✉' + (SOC.unread ? `<i>${SOC.unread > 9 ? '9+' : SOC.unread}</i>` : ''); ib.classList.toggle('has', SOC.unread > 0); }
 }
@@ -663,7 +683,6 @@ function renderProfile(card) {
   const again = () => { RK.me = undefined; SOC.known = null; renderProfile(card); rkLoad(); pfLoadMe().then(() => socTick(true)).then(() => { if (state.mode === 'profile') renderProfile(card); }); };
   if (!RK.acct) {
     card.innerHTML = `<div class="rk pf">
-        <div class="pf-hero out"><div><h2>PROFIL</h2><p>Prihlás sa alebo si vytvor účet — stačí prezývka a heslo. Potom sa ti počítajú body, uvidíš sa v rebríčku, môžeš si pridať priateľov a pozývať ich do hry.</p></div></div>
         ${SB_ON ? '' : '<div class="rk-warn"><strong>SKÚŠOBNÝ REŽIM</strong> — účty sú zatiaľ len v tomto prehliadači.</div>'}
         ${rkAccountHTML()}
         <h3 class="pf-h">VZHĽAD <em>— uložený v tomto zariadení</em></h3>${pfLookHTML()}
@@ -689,22 +708,7 @@ function renderProfile(card) {
     const best = RK_MODS.map(x => [x[1], g(x[0])]).filter(x => x[1].c + x[1].w >= 10).sort((a, b) => b[1].c / (b[1].c + b[1].w) - a[1].c / (a[1].c + a[1].w))[0];
     const top = RK_MODS.map(x => [x[1], g(x[0]).p]).sort((a, b) => b[1] - a[1])[0];
     let due = 0, weak = Object.keys(state.mistakes || {}).filter(k => state.mistakes[k] > 0).length; ['aircraft', 'airport', 'callsign', 'waypoint', 'coord'].forEach(m => { due += modProgress(m).due; });
-    const dayK = t => t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'), dby = {}; (RK.days || []).forEach(d => { dby[String(d.d).slice(0, 10)] = d.p || 0; });
-    let streak = 0; for (let i = dby[dayK(new Date())] ? 0 : 1; i < 28; i++) { if (dby[dayK(new Date(Date.now() - i * 86400000))]) streak++; else break; }
-    let week = 0; for (let i = 0; i < 7; i++) week += dby[dayK(new Date(Date.now() - i * 86400000))] || 0;
-    const meRow = (RK.rows || []).find(x => x.nick === RK.acct.nick), lgN = meRow && meRow.lg ? meRow.lg : 1, inLg = (RK.rows || []).filter(x => (x.lg || 1) === lgN).sort((x, y) => (y.mp || 0) - (x.mp || 0) || x.nick.localeCompare(y.nick)), lgPos = inLg.findIndex(x => x.nick === RK.acct.nick) + 1;
-    const terr = rkmOwners().map((o, i) => o.top && o.top.r.nick === RK.acct.nick ? RKM[i] : null).filter(Boolean), terrBig = rkmOwners().filter(o => o.top && o.top.r.nick === RK.acct.nick && o.top.p >= 100).length, myBest = Math.max(0, ...RK_MODS.map(x => g(x[0]).p)), nfo = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    const mods6 = ['aircraft', 'airport', 'callsign', 'waypoint', 'heading', 'coord'].filter(m => g(m).p > 0).length, ans = T.c + T.w, accN = ans ? Math.round(T.c / ans * 100) : 0;
-    /* úspechy: [ikona, názov, čo treba spraviť, koľko mám, koľko treba, vlastný text stavu] — počítajú sa z bodov, hier, času a ligy, ktoré už účet má */
-    const ACH = [['🎯', 'Prvá stovka', 'Získaj spolu 100 bodov', T.p, 100], ['💯', 'Tisícka', 'Získaj spolu 1 000 bodov', T.p, 1000], ['🚀', 'Desaťtisíc', 'Získaj spolu 10 000 bodov', T.p, 10000],
-      ['⚔', 'Prvý boj', 'Dohraj jednu hru Dobyvateľa s iným človekom', cq.g, 1, cq.g ? '' : 'zatiaľ žiadna hra'], ['👑', 'Prvá výhra', 'Vyhraj hru Dobyvateľa', cq.v, 1, cq.v ? '' : 'zatiaľ žiadna výhra'], ['🏅', 'Päť výhier', 'Vyhraj päť hier Dobyvateľa', cq.v, 5],
-      ['📅', 'Denná výzva', 'Dokonči jednu dennú výzvu (všetkých 20 otázok)', ex.c + ex.w >= 20 ? 1 : 0, 1, 'ešte si žiadnu nedokončil'], ['🔥', 'Týždeň v kuse', 'Získaj body 7 dní po sebe', streak, 7],
-      ['🧠', 'Ostrostrelec', 'Maj úspešnosť aspoň 90 % pri najmenej 200 odpovediach', ans >= 200 ? accN : 0, 90, ans < 200 ? 'máš ' + ans + ' z 200 odpovedí' : 'máš ' + accN + ' %, treba 90 %'],
-      ['⏱', 'Hodina', 'Trénuj spolu 1 hodinu', Math.floor(T.s / 60), 60, Math.floor(T.s / 60) + ' z 60 minút'], ['🕙', 'Desať hodín', 'Trénuj spolu 10 hodín', Math.floor(T.s / 3600), 10, Math.floor(T.s / 3600) + ' z 10 hodín'],
-      ['🧩', 'Všestranný', 'Získaj body vo všetkých šiestich moduloch MOD 01 – 06', mods6, 6, mods6 + ' zo 6 modulov'], ['🗺', 'Dobyvateľ územia', 'Drž oblasť na mape: maj v module najviac bodov zo všetkých a aspoň 100', terrBig, 1, terr.length ? 'oblasť držíš, ale treba v nej aspoň 100 bodov' : 'zatiaľ nedržíš žiadnu oblasť'],
-      ['🤝', 'Parťák', 'Pridaj si priateľa a nech ťa potvrdí', frOk.length, 1, 'zatiaľ žiadny priateľ'], ['🥈', 'Striebro', 'Postúp z ligy Bronz do ligy Striebro (prví traja na konci mesiaca)', lgN >= 2 ? 1 : 0, 1, 'si v lige ' + LG[lgN]],
-      ['🛫', 'Na veži', 'Dosiahni LVL 6 — Stážista OJT TWR (1 500 bodov)', rkLevel(T.p).n >= 6 ? 1 : 0, 1, 'si LVL ' + rkLevel(T.p).n + ', treba LVL 6']];
-    const got = ACH.filter(x => x[3] >= x[4]).length;
+    const { ACH, got, streak, week, lgN, lgPos, meRow, terr, nfo } = achCompute();
     body = `<div class="pf-trio">
         <div class="t-fire${streak ? ' on' : ''}"><i>🔥</i><b>${streak}</b><span>${streak === 1 ? 'deň v rade' : streak >= 2 && streak <= 4 ? 'dni v rade' : 'dní v rade'}</span></div>
         <div><i>📈</i><b>${nfo(week)}</b><span>bodov za 7 dní</span></div>
@@ -720,6 +724,7 @@ function renderProfile(card) {
         return `<div class="pf-act"><div class="pf-act-t"><h3>AKTIVITA · 14 DNÍ</h3><span>${msg}</span></div>
           <div class="pf-bars">${D.map((d, i) => `<div class="${i >= 7 ? 'w1' : 'w0'}${i === 13 ? ' today' : ''}" title="${d.k}: ${d.p} bodov"><u>${d.p || ''}</u><i style="height:${Math.max(3, Math.round(d.p / mx * 100))}%"></i><small>${d.wd}<br>${d.dd}</small></div>`).join('')}</div>
           <div class="pf-act-f"><span>minulý týždeň <b>${w0}</b></span><span>tento týždeň <b>${w1}</b> · ${days1} z 7 dní</span></div></div>`; })()}
+      ${wkTasksHTML()}
       <div class="pf-ach"><div class="pf-ach-h"><h3>ÚSPECHY</h3><span><b>${got}</b> / ${ACH.length}</span><i><em style="width:${Math.round(got / ACH.length * 100)}%"></em></i></div>
         <p class="pf-ach-n">Odznaky za míľniky. <b>Farebné</b> už máš, <b>sivé so zámkom</b> ešte nie — pri každom je napísané, čo treba spraviť a ako ďaleko si. Počítajú sa z tvojich bodov, odpovedí, času a hier uložených v účte; body, ktoré ešte čakajú na odoslanie, pribudnú do pol minúty.</p>
         <div class="pf-ach-g">${ACH.slice().sort((x, y) => (y[3] >= y[4]) - (x[3] >= x[4]) || y[3] / y[4] - x[3] / x[4]).map(x => { const ok = x[3] >= x[4]; return `<div class="${ok ? 'ok' : 'lock'}"><i>${x[0]}</i><b>${x[1]}</b><span>${x[2]}</span>${ok ? '<u>✓ ZÍSKANÉ</u>' : `<s><em style="width:${Math.min(100, Math.round(x[3] / x[4] * 100))}%"></em></s><small>🔒 ${x[5] != null && x[5] !== '' ? x[5] : nfo(Math.min(x[3], x[4])) + ' z ' + nfo(x[4])}</small>`}</div>`; }).join('')}</div></div>
@@ -731,28 +736,33 @@ function renderProfile(card) {
       </div>`;
   } else if (tab === 'stats') {
     const mxP = Math.max(1, ...RK_MODS.map(x => g(x[0]).p)), sub = RK_SUBJ.map(x => [x[1], g(x[0])]), anySub = sub.some(x => x[1].c + x[1].w > 0), mods = ['aircraft', 'airport', 'callsign', 'waypoint', 'coord'];
-    body = `<h3 class="pf-h">MODULY</h3>
-      <div class="rk-tbl"><table><thead><tr><th>MODUL</th><th>BODY</th><th class="pf-bar"></th><th>SPRÁVNE</th><th>ZLE</th><th>ÚSPEŠNOSŤ</th><th>ČAS</th></tr></thead><tbody>
-        ${RK_MODS.map(x => { const a = g(x[0]); return `<tr><td class="rk-nick">${x[1]}</td><td class="rk-pts">${a.p}</td><td class="pf-bar"><i><em style="width:${Math.round(a.p / mxP * 100)}%"></em></i></td><td>${a.c}</td><td>${a.w}</td><td>${pct(a.c, a.w)}</td><td>${rkTime(a.s)}</td></tr>`; }).join('')}
-      </tbody></table></div>
-      <h3 class="pf-h">OKRUHY TEÓRIE</h3>
-      ${anySub ? `<div class="rk-tbl"><table><thead><tr><th>OKRUH</th><th>SPRÁVNE</th><th>ODPOVEDE</th><th>ÚSPEŠNOSŤ</th><th class="pf-bar"></th></tr></thead><tbody>${sub.map(x => { const n = x[1].c + x[1].w; return `<tr><td class="rk-nick">${x[0]}</td><td class="rk-pts">${x[1].c}</td><td>${n}</td><td>${pct(x[1].c, x[1].w)}</td><td class="pf-bar"><i><em style="width:${n ? Math.round(x[1].c / n * 100) : 0}%"></em></i></td></tr>`; }).join('')}</tbody></table></div>`
+    const nfs = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '), acc = a => (a.c + a.w) ? Math.round(a.c / (a.c + a.w) * 100) : null;
+    const played = RK_MODS.map(x => [x[1], g(x[0]), x[0]]).filter(x => x[1].c + x[1].w >= 10), bestM = played.slice().sort((x, y) => acc(y[1]) - acc(x[1]))[0], worstM = played.length > 1 ? played.slice().sort((x, y) => acc(x[1]) - acc(y[1]))[0] : null;
+    const ring = (p, col) => `<i class="sx-ring" style="--p:${p == null ? 0 : p};--c:${col}"><b>${p == null ? '—' : p + '<small>%</small>'}</b></i>`;
+    body = `${bestM ? `<div class="sx-top"><div class="good"><small>NAJSILNEJŠÍ MODUL</small><b>${bestM[0]}</b><span>${acc(bestM[1])} % správne</span></div>${worstM && worstM !== bestM ? `<div class="bad"><small>NAJVIAC TREBA TRÉNOVAŤ</small><b>${worstM[0]}</b><span>${acc(worstM[1])} % správne</span>${['aircraft', 'airport', 'callsign', 'waypoint', 'heading', 'coord'].indexOf(worstM[2]) >= 0 ? `<button class="btn" data-go2="${worstM[2]}">TRÉNOVAŤ ▶</button>` : ''}</div>` : ''}</div>` : ''}
+      <h3 class="pf-h">MODULY A HRY</h3>
+      <div class="sx-grid">${RK_MODS.map(x => { const a = g(x[0]), p = acc(a), none = !a.p && !a.c && !a.w; return `<div class="sx-card${none ? ' none' : ''}">${ring(p, p == null ? '#c9d3ce' : p >= 85 ? '#12c274' : p >= 65 ? '#ffbe0b' : '#e5584a')}<div><b>${x[1]}</b><strong>${nfs(a.p)} <small>b.</small></strong><span>${none ? 'zatiaľ nič' : x[0] === 'bonus' ? 'odmeny za úlohy' : `${nfs(a.c)} ✓ · ${nfs(a.w)} ✗ · ${rkTime(a.s)}`}</span><s><em style="width:${Math.round(a.p / mxP * 100)}%"></em></s></div></div>`; }).join('')}</div>
+      <h3 class="pf-h">OKRUHY TEÓRIE <em>— z otázok v Dobyvateľovi</em></h3>
+      ${anySub ? `<div class="sx-bars">${sub.map(x => { const n = x[1].c + x[1].w, p = n ? Math.round(x[1].c / n * 100) : 0; return `<div class="${n ? '' : 'none'}"><b>${x[0]}</b><s><em style="width:${p}%;background:${p >= 85 ? '#12c274' : p >= 65 ? '#ffbe0b' : '#e5584a'}"></em></s><span>${n ? p + ' % · ' + x[1].c + ' z ' + n : '—'}</span></div>`; }).join('')}</div>`
         : '<div class="rk-empty">Zatiaľ nič — okruhy sa počítajú z otázok v Dobyvateľovi, v hre aspoň dvoch ľudí.</div>'}
-      <h3 class="pf-h">POKROK V UČENÍ <em>— ${PS.ok === false ? 'uložený len v tomto zariadení (čaká na doplnok databázy v50)' : 'uložený v účte, na každom zariadení rovnaký'}</em></h3>
-      <div class="rk-tbl"><table><thead><tr><th>MODUL</th><th>NAUČENÉ</th><th class="pf-bar"></th><th>NA OPAKOVANIE DNES</th><th>CHYBY</th></tr></thead><tbody>
-        ${mods.map(m => { const p = modProgress(m); return `<tr><td class="rk-nick">${MOD_NAME[m]}</td><td class="rk-pts">${p.done} / ${p.total}</td><td class="pf-bar"><i><em style="width:${p.total ? Math.round(p.done / p.total * 100) : 0}%"></em></i></td><td>${p.due}</td><td>${p.weak}</td></tr>`; }).join('')}
-      </tbody></table></div>`;
+      <h3 class="pf-h">POKROK V UČENÍ <em>— ${PS.ok === false ? 'uložený len v tomto zariadení' : 'uložený v účte, na každom zariadení rovnaký'}</em></h3>
+      <div class="sx-grid">${mods.map(m => { const p = modProgress(m), pc = p.total ? Math.round(p.done / p.total * 100) : 0; return `<div class="sx-card">${ring(pc, '#3a86ff')}<div><b>${MOD_NAME[m]}</b><strong>${p.done} <small>z ${p.total} naučených</small></strong><span>${p.due} na opakovanie · ${p.weak} chýb</span><p><button class="btn ghost" data-go2="${m}">OTVORIŤ ▶</button></p></div></div>`; }).join('')}</div>`;
   } else if (tab === 'friends') {
     const inRoom = DQ.room && DQ.host && !DQ.demo && DQ.S && DQ.S.phase === 'lobby';
-    const row = f => { const rm = /miestnosť ([A-Z]{4})/.exec(f.activity || '');
-      return `<div class="pf-fr${f.online ? ' on' : ''}">${pfAvatar(f.avatar, f.nick)}<div><b>${dqEsc(f.nick)}</b><span>${f.online ? '<i></i>' + dqEsc(f.activity || 'online') : 'naposledy ' + (f.seen ? pfAgo(f.seen) : '—')}</span></div>
-        <div class="pf-fr-b">${rm ? `<button class="btn" data-join="${rm[1]}">PRIPOJIŤ SA ▶</button>` : ''}${inRoom ? `<button class="btn ghost" data-inv="${dqEsc(f.nick)}">POZVAŤ</button>` : ''}<button class="btn ghost" data-msgto="${dqEsc(f.nick)}">SPRÁVA</button><button class="pf-x" data-frdel="${dqEsc(f.nick)}" title="Odobrať z priateľov">✕</button></div></div>`; };
+    const lvOf = n => { const r = (RK.rows || []).find(x => x.nick === n); return r ? lvTag(rkLevel(rkTotal(r)).n, false, r.lg) : ''; }, ptsOf = n => { const r = (RK.rows || []).find(x => x.nick === n); return r ? rkTotal(r) : null; };
+    const row = f => { const rm = /miestnosť ([A-Z]{4})/.exec(f.activity || ''), pts = ptsOf(f.nick);
+      return `<div class="fx-card${f.online ? ' on' : ''}"><div class="fx-top">${avFace(f.nick, '', 'big')}${f.online ? '<u title="online"></u>' : ''}</div><b>${dqEsc(f.nick)}${lvOf(f.nick)}</b>
+        <span>${f.online ? dqEsc(f.activity || 'online') : 'naposledy ' + (f.seen ? pfAgo(f.seen) : '—')}${pts != null ? ' · ' + String(pts).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' b.' : ''}</span>
+        <div class="fx-b">${rm ? `<button class="btn" data-join="${rm[1]}">PRIPOJIŤ SA ▶</button>` : ''}${inRoom ? `<button class="btn" data-inv="${dqEsc(f.nick)}">POZVAŤ</button>` : ''}<button class="btn ghost" data-msgto="${dqEsc(f.nick)}">💬 SPRÁVA</button><button class="pf-x" data-frdel="${dqEsc(f.nick)}" title="Odobrať z priateľov">✕</button></div></div>`; };
+    avNeed(SOC.friends.map(f => f.nick));
+    const on = frOk.filter(f => f.online), off = frOk.filter(f => !f.online);
     body = `${SOC.ok === false ? `<div class="rk-err">${dqEsc(SOC.err)}</div>` : ''}
-      <div class="pf-add"><input type="text" id="pf-fnick" maxlength="16" placeholder="prezývka kolegu" autocomplete="off" spellcheck="false"><button class="btn" id="pf-fadd">PRIDAŤ PRIATEĽA</button></div>
-      ${frIn.length ? `<h3 class="pf-h">ŽIADOSTI <em>— chcú si ťa pridať</em></h3>${frIn.map(f => `<div class="pf-fr req">${pfAvatar(f.avatar, f.nick)}<div><b>${dqEsc(f.nick)}</b><span>žiada o priateľstvo</span></div><div class="pf-fr-b"><button class="btn" data-fryes="${dqEsc(f.nick)}">PRIJAŤ</button><button class="btn ghost" data-frno="${dqEsc(f.nick)}">ODMIETNUŤ</button></div></div>`).join('')}` : ''}
-      <h3 class="pf-h">PRIATELIA <em>— ${onl} online z ${frOk.length}</em></h3>
-      ${frOk.length ? frOk.map(row).join('') : '<div class="rk-empty">Zatiaľ nemáš priateľov. Napíš hore prezývku kolegu — keď žiadosť prijme, uvidíš, či je online a čo práve hrá, a môžeš ho jedným klikom pozvať do hry.</div>'}
-      ${frOut.length ? `<h3 class="pf-h">ODOSLANÉ ŽIADOSTI</h3>${frOut.map(f => `<div class="pf-fr dim">${pfAvatar(f.avatar, f.nick)}<div><b>${dqEsc(f.nick)}</b><span>čaká na potvrdenie</span></div><div class="pf-fr-b"><button class="pf-x" data-frdel="${dqEsc(f.nick)}" title="Zrušiť žiadosť">✕</button></div></div>`).join('')}` : ''}
+      <div class="fx-add"><i>🤝</i><div><b>Pridaj si kolegu</b><span>Napíš jeho prezývku. Keď žiadosť prijme, uvidíte sa online a môžete sa pozývať do hry.</span></div><div class="pf-add"><input type="text" id="pf-fnick" maxlength="16" placeholder="prezývka kolegu" autocomplete="off" spellcheck="false"><button class="btn" id="pf-fadd">PRIDAŤ ▶</button></div></div>
+      ${frIn.length ? `<h3 class="pf-h">ŽIADOSTI <em>— chcú si ťa pridať</em></h3><div class="fx-grid">${frIn.map(f => `<div class="fx-card req"><div class="fx-top">${avFace(f.nick, '', 'big')}</div><b>${dqEsc(f.nick)}${lvOf(f.nick)}</b><span>žiada o priateľstvo</span><div class="fx-b"><button class="btn" data-fryes="${dqEsc(f.nick)}">PRIJAŤ</button><button class="btn ghost" data-frno="${dqEsc(f.nick)}">ODMIETNUŤ</button></div></div>`).join('')}</div>` : ''}
+      ${on.length ? `<h3 class="pf-h">ONLINE <em>— ${on.length}</em></h3><div class="fx-grid">${on.map(row).join('')}</div>` : ''}
+      <h3 class="pf-h">${on.length ? 'OSTATNÍ' : 'PRIATELIA'} <em>— ${on.length ? off.length : frOk.length}</em></h3>
+      ${frOk.length ? (off.length ? `<div class="fx-grid">${off.map(row).join('')}</div>` : '') : '<div class="rk-empty">Zatiaľ nemáš priateľov. Keď si niekoho pridáš a on žiadosť prijme, uvidíš tu, či je online a čo práve hrá.</div>'}
+      ${frOut.length ? `<h3 class="pf-h">ODOSLANÉ ŽIADOSTI</h3><div class="fx-grid">${frOut.map(f => `<div class="fx-card dim"><div class="fx-top">${avFace(f.nick, '', 'big')}</div><b>${dqEsc(f.nick)}</b><span>čaká na potvrdenie</span><div class="fx-b"><button class="btn ghost" data-frdel="${dqEsc(f.nick)}">ZRUŠIŤ</button></div></div>`).join('')}</div>` : ''}
       <div class="rk-note">Čo práve robíš, vidia len potvrdení priatelia. Zoznam sa obnovuje každých 25 sekúnd.</div>`;
   } else if (tab === 'ins') {
     if (!RK.ins && !RK.insBusy && !RK.insErr) insLoad();
@@ -846,7 +856,7 @@ function pfLookHTML() {
       <strong style="margin-top:14px">FARBA A LIETADLO V DOBYVATEĽOVI</strong>
       <div class="dq-look-row">${DQ_PAL.map((c, ci) => `<button class="dq-sw${L.col === ci ? ' on' : ''}" data-pfcol="${ci}" style="background:${c}"></button>`).join('')}</div>
       <div class="dq-look-row">${DQ_ICO.map((ic, ii) => `<button class="dq-ic${L.ico === ii ? ' on' : ''}" data-pfico="${ii}">${ic}</button>`).join('')}</div>
-      <div class="dq-look-row"><button class="rk-chip${dqLow() ? '' : ' on'}" id="pf-low">ANIMÁCIE: ${dqLow() ? 'MENEJ' : 'PLNÉ'}</button><small>Farbu v hre dostaneš, ak ju v miestnosti nemá nikto pred tebou.</small></div>
+      <div class="dq-look-row"><button class="rk-chip${dqLow() ? '' : ' on'}" id="pf-low">ANIMÁCIE: ${dqLow() ? 'MENEJ' : 'PLNÉ'}</button><button class="rk-chip${SND.on ? ' on' : ''}" id="pf-snd">ZVUKY: ${SND.on ? 'ZAPNUTÉ' : 'VYPNUTÉ'}</button><small>Farbu v hre dostaneš, ak ju v miestnosti nemá nikto pred tebou.</small></div>
     </div>`;
 }
 /* fotka sa zmenší v prehliadači na štvorec 96 × 96 px a uloží ako krátky text */

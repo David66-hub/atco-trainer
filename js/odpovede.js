@@ -260,6 +260,7 @@ function mzAttach() {
 }
 new MutationObserver(() => mzAttach()).observe(document.getElementById('qcard'), { childList: true, subtree: true });
 function startMode(mode) {
+  if (mode !== 'daily') state.drill = false;
   rkSample();
   examStop();
   if (typeof hgStop === 'function') hgStop();   // hra z MOD 05 nesmie bežať na pozadí

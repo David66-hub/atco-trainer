@@ -46,67 +46,9 @@ function renderHome(card) {
       <p>Trenažér pre kolegov z výcviku: typy lietadiel, letiská, volačky, body, kurzy a koordinácia. Skúša ťa počítač a to, čo nevieš, ti vracia, kým to nesedí. Spravil <strong>Denzy</strong>. <a href="#" data-hp="home">Ako na to ❓</a> · <a href="#" data-about="1">O stránke ▸</a></p>
     </div>
     ${homeHelloHTML()}
+    <div id="home-wkt">${wkTasksHTML()}</div>
     ${homeDashHTML()}
-    <div class="home-steps">
-      <div><b>1</b><span><strong>Vyber modul</strong> hore v lište (MOD 01 až MOD 06).</span></div>
-      <div><b>2</b><span><strong>Nastav si ho</strong> v tabuľke pod otázkou — režim, obtiažnosť a čo sa má skúšať.</span></div>
-      <div><b>3</b><span><strong>Odpovedaj.</strong> Čo pokazíš, vráti sa ti neskôr v tom istom cvičení.</span></div>
-    </div>
-    <details class="home-more"><summary>PODROBNÝ NÁVOD — obrazovka, nastavenia, ako sa učiť</summary>
-    <div class="home-h">KDE ČO NA OBRAZOVKE JE</div>
-    <div class="home-tips">
-      <div><strong>Lišta hore</strong>MODULY otvorí okno so všetkými cvičeniami, vedľa sú DENNÁ VÝZVA, DOBYVATEĽ a REBRÍČEK. Na úvod sa vrátiš kliknutím na ATCO TRAINER.</div>
-      <div><strong>Hlavička panelu</strong>Vľavo názov modulu a číslo otázky (napr. 12 / 200). Vpravo CORRECT, WRONG a STREAK — koľko máš správne, zle a koľko správnych za sebou.</div>
-      <div><strong>Otázka (stred)</strong>Fotka, kód alebo mapa a pod tým políčko na odpoveď alebo tlačidlá s možnosťami. Po odpovedi sa hneď ukáže, či to bolo správne, a všetko podstatné k danej veci.</div>
-      <div><strong>ČO TU ROBÍŠ</strong>Zelený rámček pod otázkou. Jednou-dvoma vetami povie, čo sa v práve zvolenom režime robí. Zmení sa vždy, keď prepneš režim.</div>
-      <div><strong>Tabuľka nastavení</strong>Hneď pod tým. Vľavo názov riadku (REŽIM, OBTIAŽNOSŤ, REGION…), vpravo voľby. Zelená voľba je zapnutá. Kliknutím na inú sa cvičenie spustí odznova s novým nastavením.</div>
-      <div><strong>SKIP a RESET</strong>Vpravo dole pod tabuľkou. SKIP preskočí otázku (ráta sa ako chyba), RESET spustí cvičenie od začiatku a vynuluje počítadlá.</div>
-      <div><strong>WEAK SPOTS (slabé miesta)</strong>Úplne dole. Zbierajú sa tu veci, ktoré si pokazil trikrát a viac — presne tie si treba zopakovať.</div>
-      <div><strong>ZVLÁDNUTÉ</strong>V riadku OPAKOVANIE. Počíta otázky, ktoré si zodpovedal správne dvakrát po sebe, z celkového počtu v danom výbere.</div>
-    </div>
-    <div class="home-h">AKO SI ČO NASTAVIŤ</div>
-    <div class="home-tips">
-      <div><strong>1. Najprv REŽIM</strong>Prvý riadok tabuľky. Určuje, čo budeš robiť: kvíz, mapu, kartičky, doplňovačku alebo len študijné prezeranie. Ostatné riadky sa podľa neho menia.</div>
-      <div><strong>2. Potom OBTIAŽNOSŤ</strong>ĽAHKÁ = vyberáš z možností alebo máš nápovede. HARDCORE = píšeš z hlavy a nič ti nepomáha. Odporúčanie: ľahká, kým nemáš aspoň 80 % správne.</div>
-      <div><strong>3. Zmenši si výber</strong>Riadky ako REGION, SEKTOR, SUSED, PÍSMENO alebo BALÍČEK obmedzia, z čoho sa skúša. Malý výber sa naučíš rýchlo; veľký ťa len zahltí.</div>
-      <div><strong>4. Sleduj OPAKOVANIE</strong>Keď máš pár chýb, zapni LEN SLABÉ MIESTA. Pôjdu len otázky, ktoré si pokazil, a po správnej odpovedi zo zoznamu vypadnú.</div>
-      <div><strong>Nevieš, čo tlačidlo robí?</strong>Podrž nad ním myš. Ukáže sa krátke vysvetlenie — funguje to na každom tlačidle na stránke.</div>
-      <div><strong>Chceš začať úplne odznova?</strong>V riadku OPAKOVANIE je VYMAZAŤ POKROK. Zmaže slabé miesta a počítadlo ZVLÁDNUTÉ pre daný modul.</div>
-    </div>
-    <div class="home-h">AKO SA S TÝM UČIŤ</div>
-    <div class="home-tips">
-      <div><strong>Radšej 10 minút denne</strong>než dve hodiny raz za týždeň. Krátke opakovanie každý deň drží v hlave oveľa dlhšie.</div>
-      <div><strong>Po malých kúskoch</strong>Jeden sektor, jeden sused, jeden balíček 20 volačiek. Až keď ho vieš, pridaj ďalší.</div>
-      <div><strong>Najprv pozeraj, potom sa skúšaj</strong>Skoro každý modul má ŠTÚDIUM alebo ZOZNAM. Prejdi si ho pred kvízom, nech nehádaš naslepo.</div>
-      <div><strong>Hovor si to nahlas</strong>Hlavne volačky a kurzy. Na frekvencii ich budeš hovoriť, nie písať.</div>
-    </div>
-    </details>
-    <div class="home-h">MODULY</div>
-    <div class="home-mods">${mods.map(x => `
-      <div class="home-mod">
-        <div class="home-mod-top"><span>${x.n}</span><strong>${x.t}</strong></div>
-        ${homeProgHTML(x.m)}
-        <p>${x.what}</p>
-        <div class="home-row"><em>OBSAHUJE</em>${x.has}</div>
-        <div class="home-row"><em>DÁ SA NASTAVIŤ</em><ul>${x.set.map(s => `<li>${s}</li>`).join('')}</ul></div>
-        <div class="home-row"><em>NA ČO JE TO DOBRÉ</em>${x.good}</div>
-        <div class="home-row home-how"><em>AKO ZAČAŤ — KROK ZA KROKOM</em><ol>${x.how.map(s => `<li>${s}</li>`).join('')}</ol></div>
-        <button class="btn" data-go="${x.m}">OTVORIŤ ${x.n} ▶</button>
-      </div>`).join('')}</div>
-    <details class="home-more"><summary>ČO PLATÍ VŠADE — obtiažnosť, opakovanie, klávesnica</summary>
-    <div class="home-h">ČO PLATÍ VŠADE</div>
-    <div class="home-tips">
-      <div><strong>ĽAHKÁ a HARDCORE</strong>Každý modul má dve obtiažnosti. Začni ľahkou (výber z možností), potom prejdi na hardcore (písanie z hlavy).</div>
-      <div><strong>Opakovanie chýb</strong>Pokazená otázka sa vráti neskôr. Prepínač LEN SLABÉ MIESTA pustí iba to, čo ti nejde.</div>
-      <div><strong>Pokrok sa ukladá</strong>Prihláseným do účtu — na inom počítači alebo telefóne pokračuješ tam, kde si skončil. Bez prihlásenia len v tomto zariadení.</div>
-      <div><strong>Nápovede</strong>Tlačidlo HINT napovedá po krokoch. Keď podržíš myš nad ktorýmkoľvek tlačidlom, ukáže sa, čo robí.</div>
-      <div><strong>Celá obrazovka</strong>Zelené tlačidlo vpravo hore v paneli. Hodí sa pri mapách; späť klávesom Esc.</div>
-      <div><strong>Klávesnica</strong>Enter odošle odpoveď a ďalším Enterom (alebo medzerníkom) ideš ďalej. Pri výbere z možností stačí stlačiť číslo 1 až 6. SKIP otázku preskočí, RESET začne cvičenie odznova.</div>
-      <div><strong>Opakovanie cez dni</strong>Čo zodpovieš správne, príde znova o 1, 3, 7, 14 a 30 dní. Čo pokazíš, príde hneď zajtra. Stará sa o to DNEŠNÝ TRÉNING.</div>
-      <div><strong>Telefón aj notebook</strong>Funguje na oboch. Fotky lietadiel a prevádzkovateľov sa sťahujú z Wikipédie, takže potrebujú internet.</div>
-      <div><strong>Je to pomôcka, nie predpis</strong>Údaje sú prepísané z výcvikových podkladov a máp. Ak sa niečo líši od platnej dokumentácie, platí dokumentácia.</div>
-    </div>
-    </details>
+
     <div class="home-contact">
       <strong>Našiel si chybu alebo ti niečo chýba?</strong>
       Dole na každej stránke je päta s tlačidlami <b>Napísať návrh</b>, <b>Nahlásiť chybu</b> a <b>Kontaktovať tvorcu</b>. Otvoria e-mail na <b>davidsvec24.76@gmail.com</b>; pri chybe je v ňom už vyplnené, v ktorom module a pri ktorej otázke si.

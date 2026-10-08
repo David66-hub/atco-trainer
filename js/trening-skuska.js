@@ -71,6 +71,12 @@ function wantsChoice(q) {
 /* ---------- DNEŠNÝ TRÉNING ---------- */
 function buildDaily() {
   const P = poolAll(), by = poolById(), today = dayNow(), N = state.filters.dCount;
+  if (state.drill) {   // precvičenie chýb: len to, čo mám zle, najčastejšie chyby prvé
+    const L = Object.keys(state.mistakes).filter(id => by[id] && state.mistakes[id] > 0).sort((a, b) => state.mistakes[b] - state.mistakes[a]).slice(0, 40).map(id => by[id]);
+    state.dailyInfo = { due: 0, weak: L.length, fresh: 0 };
+    if (L.length) return shuffle(L);
+    state.drill = false;
+  }
   const due = Object.keys(state.sr).filter(id => by[id] && state.sr[id].due <= today).sort((a, b) => state.sr[a].due - state.sr[b].due).map(id => by[id]);
   const weak = Object.keys(state.mistakes).filter(id => by[id] && state.mistakes[id] > 0 && due.indexOf(by[id]) < 0).map(id => by[id]);
   /* najviac 70 % tvorí opakovanie, zvyšok je nová látka — inak by si sa nikdy nepohol ďalej */
@@ -238,6 +244,112 @@ function renderExamResult(card) {
 }
 
 /* ---------- ÚVOD: prehľad pokroku a vyhľadávanie ---------- */
+/* ============================================================
+   v5.0 — úspechy (jeden výpočet), oznam o novom úspechu, týždenné úlohy, zvuky a oslavy
+   ============================================================ */
+function achCompute() {
+  const mine = ((RK.rows || []).find(r => r.nick === RK.acct.nick) || {}).mods || {}, g = m => Object.assign({ p: 0, c: 0, w: 0, s: 0, g: 0, v: 0 }, mine[m] || {}), T = { p: 0, c: 0, w: 0, s: 0 };
+  RK_MODS.forEach(x => { const a = g(x[0]); 'pcws'.split('').forEach(f => { T[f] += a[f]; }); });
+  const cq = g('conquer'), ex = g('exam'), frOk = SOC.friends.filter(f => f.st === 'ok');
+    const dayK = t => t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'), dby = {}; (RK.days || []).forEach(d => { dby[String(d.d).slice(0, 10)] = d.p || 0; });
+    let streak = 0; for (let i = dby[dayK(new Date())] ? 0 : 1; i < 28; i++) { if (dby[dayK(new Date(Date.now() - i * 86400000))]) streak++; else break; }
+    let week = 0; for (let i = 0; i < 7; i++) week += dby[dayK(new Date(Date.now() - i * 86400000))] || 0;
+    const meRow = (RK.rows || []).find(x => x.nick === RK.acct.nick), lgN = meRow && meRow.lg ? meRow.lg : 1, inLg = (RK.rows || []).filter(x => (x.lg || 1) === lgN).sort((x, y) => (y.mp || 0) - (x.mp || 0) || x.nick.localeCompare(y.nick)), lgPos = inLg.findIndex(x => x.nick === RK.acct.nick) + 1;
+    const terr = rkmOwners().map((o, i) => o.top && o.top.r.nick === RK.acct.nick ? RKM[i] : null).filter(Boolean), terrBig = rkmOwners().filter(o => o.top && o.top.r.nick === RK.acct.nick && o.top.p >= 100).length, myBest = Math.max(0, ...RK_MODS.map(x => g(x[0]).p)), nfo = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const mods6 = ['aircraft', 'airport', 'callsign', 'waypoint', 'heading', 'coord'].filter(m => g(m).p > 0).length, ans = T.c + T.w, accN = ans ? Math.round(T.c / ans * 100) : 0;
+    /* úspechy: [ikona, názov, čo treba spraviť, koľko mám, koľko treba, vlastný text stavu] — počítajú sa z bodov, hier, času a ligy, ktoré už účet má */
+    const ACH = [['🎯', 'Prvá stovka', 'Získaj spolu 100 bodov', T.p, 100], ['💯', 'Tisícka', 'Získaj spolu 1 000 bodov', T.p, 1000], ['🚀', 'Desaťtisíc', 'Získaj spolu 10 000 bodov', T.p, 10000],
+      ['⚔', 'Prvý boj', 'Dohraj jednu hru Dobyvateľa s iným človekom', cq.g, 1, cq.g ? '' : 'zatiaľ žiadna hra'], ['👑', 'Prvá výhra', 'Vyhraj hru Dobyvateľa', cq.v, 1, cq.v ? '' : 'zatiaľ žiadna výhra'], ['🏅', 'Päť výhier', 'Vyhraj päť hier Dobyvateľa', cq.v, 5],
+      ['📅', 'Denná výzva', 'Dokonči jednu dennú výzvu (všetkých 20 otázok)', ex.c + ex.w >= 20 ? 1 : 0, 1, 'ešte si žiadnu nedokončil'], ['🔥', 'Týždeň v kuse', 'Získaj body 7 dní po sebe', streak, 7],
+      ['🧠', 'Ostrostrelec', 'Maj úspešnosť aspoň 90 % pri najmenej 200 odpovediach', ans >= 200 ? accN : 0, 90, ans < 200 ? 'máš ' + ans + ' z 200 odpovedí' : 'máš ' + accN + ' %, treba 90 %'],
+      ['⏱', 'Hodina', 'Trénuj spolu 1 hodinu', Math.floor(T.s / 60), 60, Math.floor(T.s / 60) + ' z 60 minút'], ['🕙', 'Desať hodín', 'Trénuj spolu 10 hodín', Math.floor(T.s / 3600), 10, Math.floor(T.s / 3600) + ' z 10 hodín'],
+      ['🧩', 'Všestranný', 'Získaj body vo všetkých šiestich moduloch MOD 01 – 06', mods6, 6, mods6 + ' zo 6 modulov'], ['🗺', 'Dobyvateľ územia', 'Drž oblasť na mape: maj v module najviac bodov zo všetkých a aspoň 100', terrBig, 1, terr.length ? 'oblasť držíš, ale treba v nej aspoň 100 bodov' : 'zatiaľ nedržíš žiadnu oblasť'],
+      ['🤝', 'Parťák', 'Pridaj si priateľa a nech ťa potvrdí', frOk.length, 1, 'zatiaľ žiadny priateľ'], ['🥈', 'Striebro', 'Postúp z ligy Bronz do ligy Striebro (prví traja na konci mesiaca)', lgN >= 2 ? 1 : 0, 1, 'si v lige ' + LG[lgN]],
+      ['🛫', 'Na veži', 'Dosiahni LVL 6 — Stážista OJT TWR (1 500 bodov)', rkLevel(T.p).n >= 6 ? 1 : 0, 1, 'si LVL ' + rkLevel(T.p).n + ', treba LVL 6']];
+    const got = ACH.filter(x => x[3] >= x[4]).length;
+  return { ACH, got, streak, week, lgN, lgPos, meRow, terr, nfo: nfo };
+}
+/* nový úspech → oznam vpravo hore, konfety a zvuk; pri prvom načítaní sa len zapamätá, čo už hráč má */
+function achCheck() {
+  if (!RK.acct || !RK.rows || !RK.rows.some(r => r.nick === RK.acct.nick) || SOC.ok !== true || !RK.days) return;   // až keď sú načítaní priatelia aj aktivita — inak by sa „nový“ úspech hlásil omylom
+  const k = 'atcoTrainerV2.ach:' + RK.acct.nick.toLowerCase(), had = lsGet(k, null), A = achCompute().ACH.filter(x => x[3] >= x[4]), names = A.map(x => x[1]);
+  if (had) A.filter(x => had.indexOf(x[1]) < 0).slice(0, 3).forEach((x, i) => setTimeout(() => fxToast('NOVÝ ÚSPECH', x[0] + ' ' + x[1], x[2]), i * 900));
+  if (!had || names.some(n => had.indexOf(n) < 0)) lsSet(k, names.concat((had || []).filter(n => names.indexOf(n) < 0)));
+}
+function fxToast(small, title, text) {
+  let box = document.getElementById('soc-toasts'); if (!box) { box = document.createElement('div'); box.id = 'soc-toasts'; document.body.appendChild(box); }
+  const el = document.createElement('div'); el.className = 'soc-toast k-level k-ach';
+  el.innerHTML = `<small>${dqEsc(small)}</small><b>${dqEsc(title)}</b><span>${dqEsc(text)}</span>`;
+  el.onclick = () => el.remove(); box.appendChild(el); setTimeout(() => el.remove(), 9000);
+  fxConfetti(26); sndPlay('win');
+}
+function fxConfetti(n) {
+  if (typeof dqLow === 'function' && dqLow()) return;
+  const w = document.createElement('div'); w.className = 'fx-conf';
+  w.innerHTML = Array.from({ length: n || 20 }, (x, i) => `<i style="left:${Math.round(Math.random() * 100)}%;background:${['#19d488', '#3a86ff', '#ffbe0b', '#e63946', '#b45cff'][i % 5]};animation-delay:${(Math.random() * 0.35).toFixed(2)}s;--r:${Math.round(Math.random() * 360)}deg;--x:${Math.round(Math.random() * 120 - 60)}px"></i>`).join('');
+  document.body.appendChild(w); setTimeout(() => w.remove(), 2300);
+}
+/* zvuky: krátke tóny cez WebAudio, dajú sa vypnúť v profile (VZHĽAD) */
+const SND = { on: (() => { try { return localStorage.getItem('atcoTrainerV2.snd') !== '0'; } catch (e) { return true; } })(), ctx: null };   // lsGet tu ešte neexistuje (je v neskoršom súbore)
+function sndPlay(kind) {
+  if (!SND.on) return;
+  try {
+    const C = SND.ctx || (SND.ctx = new (window.AudioContext || window.webkitAudioContext)()); if (C.state === 'suspended') C.resume();
+    const N = kind === 'ok' ? [[660, 0, 0.09], [990, 0.08, 0.14]] : kind === 'no' ? [[196, 0, 0.2]] : [[523, 0, 0.1], [659, 0.09, 0.1], [784, 0.18, 0.1], [1047, 0.27, 0.22]];
+    N.forEach(x => { const o = C.createOscillator(), g = C.createGain(), t = C.currentTime + x[1]; o.type = kind === 'no' ? 'triangle' : 'sine'; o.frequency.value = x[0]; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(kind === 'no' ? 0.09 : 0.07, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + x[2]); o.connect(g); g.connect(C.destination); o.start(t); o.stop(t + x[2] + 0.02); });
+  } catch (e) {}
+}
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('#pf-snd'); if (!b) return; SND.on = !SND.on; lsSet('atcoTrainerV2.snd', SND.on ? 1 : 0); b.classList.toggle('on', SND.on); b.textContent = 'ZVUKY: ' + (SND.on ? 'ZAPNUTÉ' : 'VYPNUTÉ'); if (SND.on) sndPlay('ok'); });
+/* počítadlá v paneli: správna → tón, zlá → tón, každá piata v sérii → malá oslava; pás postupu sa riadi číslom otázky */
+(function () {
+  const num = id => { const e = document.getElementById(id); return e ? parseInt(e.textContent, 10) : NaN; }, last = { c: 0, w: 0, s: 0 };
+  const watch = (id, fn) => { const e = document.getElementById(id); if (e) new MutationObserver(fn).observe(e, { childList: true, characterData: true, subtree: true }); };
+  watch('stat-correct', () => { const v = num('stat-correct'); if (v === last.c + 1) sndPlay('ok'); last.c = isNaN(v) ? 0 : v; });
+  watch('stat-wrong', () => { const v = num('stat-wrong'); if (v === last.w + 1) sndPlay('no'); last.w = isNaN(v) ? 0 : v; });
+  watch('stat-streak', () => { const v = num('stat-streak'); if (v > last.s && v > 0 && v % 5 === 0) { fxConfetti(14); setTimeout(() => sndPlay('win'), 160); } last.s = isNaN(v) ? 0 : v; });
+  const pg = () => { const p = document.getElementById('pg'); if (!p) return; const n = num('qnum'), t = num('qtotal'), ok = isFinite(n) && isFinite(t) && t > 0 && getComputedStyle(document.getElementById('qcount')).display !== 'none'; p.classList.toggle('on', !!ok); if (ok) p.firstElementChild.style.width = Math.max(0, Math.min(100, (n - 1) / t * 100)).toFixed(1) + '%'; };
+  watch('qnum', pg); watch('qtotal', pg); watch('mode-label', pg);
+})();
+/* ---------- týždenné úlohy: počítajú sa z aktivity od pondelka; za každú splnenú +50 bodov ---------- */
+function wkWeek() { const d = new Date(), wd = (d.getDay() + 6) % 7, m = new Date(d.getFullYear(), d.getMonth(), d.getDate() - wd), k = t => t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); return { id: k(m), days: Array.from({ length: wd + 1 }, (x, i) => k(new Date(m.getFullYear(), m.getMonth(), m.getDate() + i))), left: 6 - wd }; }
+const WKS = { data: null, t: 0, off: false };
+/* stav úloh zo servera (doplnok v53); kým ho databáza nemá, počíta sa z aktivity v tomto zariadení */
+function wkLoad(force) {
+  if (!RK.acct || WKS.off || (!force && Date.now() - WKS.t < 60000)) return Promise.resolve();
+  WKS.t = Date.now();
+  return rkRpc('atco_weekly', { p_token: RK.acct.token }).then(d => { WKS.data = d; wkPaint(); }).catch(e => { if (/atco_weekly|PGRST202|schema cache/i.test(String(e && e.message))) WKS.off = true; });
+}
+function wkPaint() { const w = document.getElementById('wkt'), slot = document.getElementById('home-wkt'); if (w) w.outerHTML = wkTasksHTML(); else if (slot && state.mode === 'home') slot.innerHTML = wkTasksHTML(); }
+function wkTasks() {
+  if (!RK.acct) return null;
+  const mk = (W, v, done) => ({ W, done, srv: !!WKS.data, list: [['pts', '⭐', 'Získaj 500 bodov', v.pts, 500], ['days', '📆', 'Buď aktívny 4 dni', v.days, 4], ['ok', '✅', 'Odpovedz správne 150-krát', v.ok, 150], ['time', '⏱', 'Trénuj 45 minút', v.mins, 45]] });
+  if (WKS.data) { const d = WKS.data, done = {}; (d.done || []).forEach(t => { done[t] = 1; }); return mk({ id: d.week, left: d.left }, d, done); }
+  if (!RK.days) return null;
+  const W = wkWeek(), by = {}; RK.days.forEach(d => { by[String(d.d).slice(0, 10)] = d; });
+  const sum = f => W.days.reduce((a, k) => a + ((by[k] || {})[f] || 0), 0);
+  const st = lsGet('atcoTrainerV2.wk:' + RK.acct.nick.toLowerCase(), {});
+  return mk(W, { pts: sum('p'), days: W.days.filter(k => (by[k] || {}).p > 0).length, ok: sum('c'), mins: Math.floor(sum('s') / 60) }, st.week === W.id ? st.done || {} : {});
+}
+function wkTasksHTML() {
+  const X = wkTasks(); if (!X) return '';
+  const nf = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `<div class="wkt" id="wkt"><div class="wkt-h"><h3>ÚLOHY TÝŽDŇA</h3><span>${X.W.left === 0 ? 'končia dnes' : X.W.left === 1 ? 'ešte 1 deň' : 'ešte ' + X.W.left + ' ' + (X.W.left < 5 ? 'dni' : 'dní')} · za každú <b>+50 bodov</b></span></div>
+      <div class="wkt-g">${X.list.map(t => { const ok = t[3] >= t[4], got = X.done[t[0]]; return `<div class="${got ? 'got' : ok ? 'ok' : ''}"><i>${t[1]}</i><div><b>${t[2]}</b><s><em style="width:${Math.min(100, Math.round(t[3] / t[4] * 100))}%"></em></s><small>${nf(Math.min(t[3], t[4]))} z ${nf(t[4])}</small></div>${got ? '<u>✓ +50</u>' : ok ? `<button class="btn" data-wkclaim="${t[0]}">VZIAŤ +50</button>` : ''}</div>`; }).join('')}</div></div>`;
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest && e.target.closest('[data-wkclaim]'); if (!b || !RK.acct || b.disabled) return;
+  const X = wkTasks(), t = X && X.list.find(x => x[0] === b.dataset.wkclaim); if (!t || t[3] < t[4] || X.done[t[0]]) return;
+  b.disabled = true;
+  if (X.srv) {
+    try { const r = await rkRpc('atco_weekly_claim', { p_token: RK.acct.token, p_task: t[0] }); WKS.data = r.state; if (r.new) fxToast('ÚLOHA TÝŽDŇA SPLNENÁ', '+50 bodov', t[2]); rkLoad(); }
+    catch (er) { b.disabled = false; return; }
+  } else {
+    X.done[t[0]] = 1; lsSet('atcoTrainerV2.wk:' + RK.acct.nick.toLowerCase(), { week: X.W.id, done: X.done });
+    rkAdd('daily', { p: 50 }); rkPendSave(); rkFlush().then(() => rkLoad());
+    fxToast('ÚLOHA TÝŽDŇA SPLNENÁ', '+50 bodov', t[2]);
+  }
+  wkPaint();
+});
 /* privítanie na úvode (v4.11): neprihlásenému ponúkne registráciu, prihlásenému ukáže, kde je a čo ho dnes čaká */
 function homeHelloHTML() {
   if (!RK.acct) return `<div class="home-hello out" id="home-hello"><div class="hh-wave">👋</div><div class="hh-main"><h2>Vitaj v ATCO Traineri</h2>
@@ -264,10 +376,63 @@ function homeHelloBind() {
   h.querySelectorAll('[data-go]').forEach(b => { b.onclick = () => { startMode(b.dataset.go); window.scrollTo(0, 0); }; });
   h.querySelectorAll('[data-pft]').forEach(b => { b.onclick = () => { RK.pfTab = b.dataset.pft; startMode('profile'); window.scrollTo(0, 0); }; });
   if (RK.acct) avNeed([RK.acct.nick]);
+  if (RK.acct && Date.now() - (RK.daysT || 0) > 60000) { RK.daysT = Date.now(); rkRpc('atco_my_days', { p_token: RK.acct.token }).then(d => { RK.days = d || []; wkPaint(); }).catch(() => {}); }
+  wkLoad();
 }
 function homeHelloFill() { const h = document.getElementById('home-hello'); if (h) { h.outerHTML = homeHelloHTML(); homeHelloBind(); } }
 
 /* ---------- O STRÁNKE (v4.11): všetko o trenažéri na jednom mieste ---------- */
+/* podrobný návod — pôvodne na úvode, od v5.0 na stránke O stránke */
+function homeGuideHTML() {
+  return `    <div class="home-steps">
+      <div><b>1</b><span><strong>Vyber modul</strong> hore v lište (MOD 01 až MOD 06).</span></div>
+      <div><b>2</b><span><strong>Nastav si ho</strong> v tabuľke pod otázkou — režim, obtiažnosť a čo sa má skúšať.</span></div>
+      <div><b>3</b><span><strong>Odpovedaj.</strong> Čo pokazíš, vráti sa ti neskôr v tom istom cvičení.</span></div>
+    </div>
+    <details class="home-more"><summary>PODROBNÝ NÁVOD — obrazovka, nastavenia, ako sa učiť</summary>
+    <div class="home-h">KDE ČO NA OBRAZOVKE JE</div>
+    <div class="home-tips">
+      <div><strong>Lišta hore</strong>MODULY otvorí okno so všetkými cvičeniami, vedľa sú DENNÁ VÝZVA, DOBYVATEĽ a REBRÍČEK. Na úvod sa vrátiš kliknutím na ATCO TRAINER.</div>
+      <div><strong>Hlavička panelu</strong>Vľavo názov modulu a číslo otázky (napr. 12 / 200). Vpravo CORRECT, WRONG a STREAK — koľko máš správne, zle a koľko správnych za sebou.</div>
+      <div><strong>Otázka (stred)</strong>Fotka, kód alebo mapa a pod tým políčko na odpoveď alebo tlačidlá s možnosťami. Po odpovedi sa hneď ukáže, či to bolo správne, a všetko podstatné k danej veci.</div>
+      <div><strong>ČO TU ROBÍŠ</strong>Zelený rámček pod otázkou. Jednou-dvoma vetami povie, čo sa v práve zvolenom režime robí. Zmení sa vždy, keď prepneš režim.</div>
+      <div><strong>Tabuľka nastavení</strong>Hneď pod tým. Vľavo názov riadku (REŽIM, OBTIAŽNOSŤ, REGION…), vpravo voľby. Zelená voľba je zapnutá. Kliknutím na inú sa cvičenie spustí odznova s novým nastavením.</div>
+      <div><strong>SKIP a RESET</strong>Vpravo dole pod tabuľkou. SKIP preskočí otázku (ráta sa ako chyba), RESET spustí cvičenie od začiatku a vynuluje počítadlá.</div>
+      <div><strong>WEAK SPOTS (slabé miesta)</strong>Úplne dole. Zbierajú sa tu veci, ktoré si pokazil trikrát a viac — presne tie si treba zopakovať.</div>
+      <div><strong>ZVLÁDNUTÉ</strong>V riadku OPAKOVANIE. Počíta otázky, ktoré si zodpovedal správne dvakrát po sebe, z celkového počtu v danom výbere.</div>
+    </div>
+    <div class="home-h">AKO SI ČO NASTAVIŤ</div>
+    <div class="home-tips">
+      <div><strong>1. Najprv REŽIM</strong>Prvý riadok tabuľky. Určuje, čo budeš robiť: kvíz, mapu, kartičky, doplňovačku alebo len študijné prezeranie. Ostatné riadky sa podľa neho menia.</div>
+      <div><strong>2. Potom OBTIAŽNOSŤ</strong>ĽAHKÁ = vyberáš z možností alebo máš nápovede. HARDCORE = píšeš z hlavy a nič ti nepomáha. Odporúčanie: ľahká, kým nemáš aspoň 80 % správne.</div>
+      <div><strong>3. Zmenši si výber</strong>Riadky ako REGION, SEKTOR, SUSED, PÍSMENO alebo BALÍČEK obmedzia, z čoho sa skúša. Malý výber sa naučíš rýchlo; veľký ťa len zahltí.</div>
+      <div><strong>4. Sleduj OPAKOVANIE</strong>Keď máš pár chýb, zapni LEN SLABÉ MIESTA. Pôjdu len otázky, ktoré si pokazil, a po správnej odpovedi zo zoznamu vypadnú.</div>
+      <div><strong>Nevieš, čo tlačidlo robí?</strong>Podrž nad ním myš. Ukáže sa krátke vysvetlenie — funguje to na každom tlačidle na stránke.</div>
+      <div><strong>Chceš začať úplne odznova?</strong>V riadku OPAKOVANIE je VYMAZAŤ POKROK. Zmaže slabé miesta a počítadlo ZVLÁDNUTÉ pre daný modul.</div>
+    </div>
+    <div class="home-h">AKO SA S TÝM UČIŤ</div>
+    <div class="home-tips">
+      <div><strong>Radšej 10 minút denne</strong>než dve hodiny raz za týždeň. Krátke opakovanie každý deň drží v hlave oveľa dlhšie.</div>
+      <div><strong>Po malých kúskoch</strong>Jeden sektor, jeden sused, jeden balíček 20 volačiek. Až keď ho vieš, pridaj ďalší.</div>
+      <div><strong>Najprv pozeraj, potom sa skúšaj</strong>Skoro každý modul má ŠTÚDIUM alebo ZOZNAM. Prejdi si ho pred kvízom, nech nehádaš naslepo.</div>
+      <div><strong>Hovor si to nahlas</strong>Hlavne volačky a kurzy. Na frekvencii ich budeš hovoriť, nie písať.</div>
+    </div>
+    </details>
+    <details class="home-more"><summary>ČO PLATÍ VŠADE — obtiažnosť, opakovanie, klávesnica</summary>
+    <div class="home-h">ČO PLATÍ VŠADE</div>
+    <div class="home-tips">
+      <div><strong>ĽAHKÁ a HARDCORE</strong>Každý modul má dve obtiažnosti. Začni ľahkou (výber z možností), potom prejdi na hardcore (písanie z hlavy).</div>
+      <div><strong>Opakovanie chýb</strong>Pokazená otázka sa vráti neskôr. Prepínač LEN SLABÉ MIESTA pustí iba to, čo ti nejde.</div>
+      <div><strong>Pokrok sa ukladá</strong>Prihláseným do účtu — na inom počítači alebo telefóne pokračuješ tam, kde si skončil. Bez prihlásenia len v tomto zariadení.</div>
+      <div><strong>Nápovede</strong>Tlačidlo HINT napovedá po krokoch. Keď podržíš myš nad ktorýmkoľvek tlačidlom, ukáže sa, čo robí.</div>
+      <div><strong>Celá obrazovka</strong>Zelené tlačidlo vpravo hore v paneli. Hodí sa pri mapách; späť klávesom Esc.</div>
+      <div><strong>Klávesnica</strong>Enter odošle odpoveď a ďalším Enterom (alebo medzerníkom) ideš ďalej. Pri výbere z možností stačí stlačiť číslo 1 až 6. SKIP otázku preskočí, RESET začne cvičenie odznova.</div>
+      <div><strong>Opakovanie cez dni</strong>Čo zodpovieš správne, príde znova o 1, 3, 7, 14 a 30 dní. Čo pokazíš, príde hneď zajtra. Stará sa o to DNEŠNÝ TRÉNING.</div>
+      <div><strong>Telefón aj notebook</strong>Funguje na oboch. Fotky lietadiel a prevádzkovateľov sa sťahujú z Wikipédie, takže potrebujú internet.</div>
+      <div><strong>Je to pomôcka, nie predpis</strong>Údaje sú prepísané z výcvikových podkladov a máp. Ak sa niečo líši od platnej dokumentácie, platí dokumentácia.</div>
+    </div>
+    </details>`;
+}
 function renderAbout(card) {
   const hk = m => Object.keys(HELP).find(k => k === m || k.indexOf(m + '.') === 0);
   const mods = MODS_LIST.map(x => `<div class="ab-mod"><div class="ab-ill">${typeof modG === 'function' ? modG(x[0]) : ''}</div><div><small>${x[1]}</small><b>${x[2]}</b><span>${x[3]}</span><p>${hk(x[0]) ? `<button class="btn ghost" data-hp="${hk(x[0])}">❓ VZOR</button>` : ''}<button class="btn" data-go="${x[0]}">OTVORIŤ ▶</button></p></div></div>`).join('');
@@ -284,7 +449,8 @@ function renderAbout(card) {
           <div><b>DOBYVATEĽ</b><span>Hra o slovenský vzdušný priestor pre 2 až 6 hráčov.</span><p><button class="btn ghost" data-hp="conquer">❓ VZOR</button><button class="btn" data-go="conquer">OTVORIŤ ▶</button></p></div>
           <div><b>REBRÍČEK</b><span>Ligy, mapa území, denné aj celkové poradie.</span><p><button class="btn ghost" data-hp="rank">❓ VZOR</button><button class="btn" data-go="rank">OTVORIŤ ▶</button></p></div></div>`)}</div>
       <div id="ab-ucenie">${sec('🧠', '#b45cff', 'AKO SA TU UČIŤ', `<div class="ab-steps"><div><b>1</b><span><strong>Vyber modul</strong> cez MODULY hore v lište a nastav si v tabuľke pod otázkou, čo sa má skúšať.</span></div><div><b>2</b><span><strong>Začni ľahkou obťažnosťou</strong> (výber z možností), potom prejdi na písanie z hlavy — to je to, čo budeš potrebovať.</span></div><div><b>3</b><span><strong>Chyby sa vracajú.</strong> Čo pokazíš, príde znova v tom istom cvičení a zapíše sa do MOJE CHYBY, kde si to pozrieš aj so správnou odpoveďou.</span></div><div><b>4</b><span><strong>Dnešný tréning</strong> ti každý deň namieša to, čo je čas zopakovať — krátko, ale pravidelne.</span></div></div>
-        <p>Na úvode je aj vyhľadávanie: napíš kód, volačku, bod alebo frekvenciu a trenažér ukáže, čo o tom vie.</p>`)}</div>
+        <p>Na úvode je aj vyhľadávanie: napíš kód, volačku, bod alebo frekvenciu a trenažér ukáže, čo o tom vie.</p>
+        <div class="ab-guide">${homeGuideHTML()}</div>`)}</div>
       <div id="ab-sutaz">${sec('🏆', '#e0a800', 'BODY, ÚROVNE, LIGY A MAPA', `<div class="ab-grid"><div><b>Body</b><span>Správna odpoveď v cvičení +1, pri písaní z hlavy +2. Denná výzva a Dobyvateľ dávajú viac. Počítajú sa len prihláseným.</span></div>
           <div><b>Úrovne</b><span>58 úrovní — od Uchádzača cez veže a approach po ACC a zahraničné strediská — podľa všetkých bodov, ktoré si kedy získal. <a href="#" data-lvopen="0">Zobraziť všetky ▸</a></span></div>
           <div><b>Ligy</b><span>Päť líg od Bronzu po Diamant. Počítajú sa body za kalendárny mesiac; prví traja postupujú, poslední traja zostupujú.</span></div>
