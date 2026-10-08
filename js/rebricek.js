@@ -202,7 +202,7 @@ function helpOpen(key) { if (HELP[key]) hpDraw(key, 0); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hp]'); if (b) { e.preventDefault(); if (b.dataset.hp === 'game') hpGameNow(); else helpOpen(b.dataset.hp === '*' ? hpKeyNow() : b.dataset.hp); } });
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '4.18.0';
+const APP_VERSION = '4.19.0';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -693,11 +693,17 @@ function renderProfile(card) {
     let streak = 0; for (let i = dby[dayK(new Date())] ? 0 : 1; i < 28; i++) { if (dby[dayK(new Date(Date.now() - i * 86400000))]) streak++; else break; }
     let week = 0; for (let i = 0; i < 7; i++) week += dby[dayK(new Date(Date.now() - i * 86400000))] || 0;
     const meRow = (RK.rows || []).find(x => x.nick === RK.acct.nick), lgN = meRow && meRow.lg ? meRow.lg : 1, inLg = (RK.rows || []).filter(x => (x.lg || 1) === lgN).sort((x, y) => (y.mp || 0) - (x.mp || 0) || x.nick.localeCompare(y.nick)), lgPos = inLg.findIndex(x => x.nick === RK.acct.nick) + 1;
-    const terr = rkmOwners().map((o, i) => o.top && o.top.r.nick === RK.acct.nick ? RKM[i] : null).filter(Boolean), nfo = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const terr = rkmOwners().map((o, i) => o.top && o.top.r.nick === RK.acct.nick ? RKM[i] : null).filter(Boolean), terrBig = rkmOwners().filter(o => o.top && o.top.r.nick === RK.acct.nick && o.top.p >= 100).length, myBest = Math.max(0, ...RK_MODS.map(x => g(x[0]).p)), nfo = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     const mods6 = ['aircraft', 'airport', 'callsign', 'waypoint', 'heading', 'coord'].filter(m => g(m).p > 0).length, ans = T.c + T.w, accN = ans ? Math.round(T.c / ans * 100) : 0;
-    const ACH = [['🎯', 'Prvá stovka', '100 bodov', T.p, 100], ['💯', 'Tisícka', '1 000 bodov', T.p, 1000], ['🚀', 'Desaťtisíc', '10 000 bodov', T.p, 10000], ['⚔', 'Prvý boj', 'zahraj Dobyvateľa', cq.g, 1], ['👑', 'Prvá výhra', 'vyhraj Dobyvateľa', cq.v, 1], ['🏅', 'Päť výhier', 'v Dobyvateľovi', cq.v, 5],
-      ['📅', 'Denná výzva', 'dokonči jednu', ex.c + ex.w > 0 ? 1 : 0, 1], ['🔥', 'Týždeň v kuse', '7 dní po sebe', streak, 7], ['🧠', 'Ostrostrelec', '90 % z 200 odpovedí', ans >= 200 ? accN : Math.min(89, Math.round(ans / 200 * 89)), 90], ['⏱', 'Hodina', '1 h tréningu', Math.floor(T.s / 60), 60], ['🕙', 'Desať hodín', '10 h tréningu', Math.floor(T.s / 3600), 10],
-      ['🧩', 'Všestranný', 'body v 6 moduloch', mods6, 6], ['🗺', 'Dobyvateľ územia', 'drž oblasť na mape', terr.length, 1], ['🤝', 'Parťák', 'pridaj si priateľa', frOk.length, 1], ['🥈', 'Striebro', 'postúp z Bronzu', lgN, 2], ['🛫', 'Na veži', 'LVL 6 · OJT TWR', rkLevel(T.p).n, 6]];
+    /* úspechy: [ikona, názov, čo treba spraviť, koľko mám, koľko treba, vlastný text stavu] — počítajú sa z bodov, hier, času a ligy, ktoré už účet má */
+    const ACH = [['🎯', 'Prvá stovka', 'Získaj spolu 100 bodov', T.p, 100], ['💯', 'Tisícka', 'Získaj spolu 1 000 bodov', T.p, 1000], ['🚀', 'Desaťtisíc', 'Získaj spolu 10 000 bodov', T.p, 10000],
+      ['⚔', 'Prvý boj', 'Dohraj jednu hru Dobyvateľa s iným človekom', cq.g, 1, cq.g ? '' : 'zatiaľ žiadna hra'], ['👑', 'Prvá výhra', 'Vyhraj hru Dobyvateľa', cq.v, 1, cq.v ? '' : 'zatiaľ žiadna výhra'], ['🏅', 'Päť výhier', 'Vyhraj päť hier Dobyvateľa', cq.v, 5],
+      ['📅', 'Denná výzva', 'Dokonči jednu dennú výzvu (všetkých 20 otázok)', ex.c + ex.w >= 20 ? 1 : 0, 1, 'ešte si žiadnu nedokončil'], ['🔥', 'Týždeň v kuse', 'Získaj body 7 dní po sebe', streak, 7],
+      ['🧠', 'Ostrostrelec', 'Maj úspešnosť aspoň 90 % pri najmenej 200 odpovediach', ans >= 200 ? accN : 0, 90, ans < 200 ? 'máš ' + ans + ' z 200 odpovedí' : 'máš ' + accN + ' %, treba 90 %'],
+      ['⏱', 'Hodina', 'Trénuj spolu 1 hodinu', Math.floor(T.s / 60), 60, Math.floor(T.s / 60) + ' z 60 minút'], ['🕙', 'Desať hodín', 'Trénuj spolu 10 hodín', Math.floor(T.s / 3600), 10, Math.floor(T.s / 3600) + ' z 10 hodín'],
+      ['🧩', 'Všestranný', 'Získaj body vo všetkých šiestich moduloch MOD 01 – 06', mods6, 6, mods6 + ' zo 6 modulov'], ['🗺', 'Dobyvateľ územia', 'Drž oblasť na mape: maj v module najviac bodov zo všetkých a aspoň 100', terrBig, 1, terr.length ? 'oblasť držíš, ale treba v nej aspoň 100 bodov' : 'zatiaľ nedržíš žiadnu oblasť'],
+      ['🤝', 'Parťák', 'Pridaj si priateľa a nech ťa potvrdí', frOk.length, 1, 'zatiaľ žiadny priateľ'], ['🥈', 'Striebro', 'Postúp z ligy Bronz do ligy Striebro (prví traja na konci mesiaca)', lgN >= 2 ? 1 : 0, 1, 'si v lige ' + LG[lgN]],
+      ['🛫', 'Na veži', 'Dosiahni LVL 6 — Stážista OJT TWR (1 500 bodov)', rkLevel(T.p).n >= 6 ? 1 : 0, 1, 'si LVL ' + rkLevel(T.p).n + ', treba LVL 6']];
     const got = ACH.filter(x => x[3] >= x[4]).length;
     body = `<div class="pf-trio">
         <div class="t-fire${streak ? ' on' : ''}"><i>🔥</i><b>${streak}</b><span>${streak === 1 ? 'deň v rade' : streak >= 2 && streak <= 4 ? 'dni v rade' : 'dní v rade'}</span></div>
@@ -715,7 +721,8 @@ function renderProfile(card) {
           <div class="pf-bars">${D.map((d, i) => `<div class="${i >= 7 ? 'w1' : 'w0'}${i === 13 ? ' today' : ''}" title="${d.k}: ${d.p} bodov"><u>${d.p || ''}</u><i style="height:${Math.max(3, Math.round(d.p / mx * 100))}%"></i><small>${d.wd}<br>${d.dd}</small></div>`).join('')}</div>
           <div class="pf-act-f"><span>minulý týždeň <b>${w0}</b></span><span>tento týždeň <b>${w1}</b> · ${days1} z 7 dní</span></div></div>`; })()}
       <div class="pf-ach"><div class="pf-ach-h"><h3>ÚSPECHY</h3><span><b>${got}</b> / ${ACH.length}</span><i><em style="width:${Math.round(got / ACH.length * 100)}%"></em></i></div>
-        <div class="pf-ach-g">${ACH.slice().sort((x, y) => (y[3] >= y[4]) - (x[3] >= x[4]) || y[3] / y[4] - x[3] / x[4]).map(x => { const ok = x[3] >= x[4]; return `<div class="${ok ? 'ok' : ''}" title="${x[1]} — ${x[2]}"><i>${x[0]}</i><b>${x[1]}</b><span>${x[2]}</span>${ok ? '<u>✓ ZÍSKANÉ</u>' : `<s><em style="width:${Math.min(100, Math.round(x[3] / x[4] * 100))}%"></em></s><small>${nfo(Math.min(x[3], x[4]))} / ${nfo(x[4])}</small>`}</div>`; }).join('')}</div></div>
+        <p class="pf-ach-n">Odznaky za míľniky. <b>Farebné</b> už máš, <b>sivé so zámkom</b> ešte nie — pri každom je napísané, čo treba spraviť a ako ďaleko si. Počítajú sa z tvojich bodov, odpovedí, času a hier uložených v účte; body, ktoré ešte čakajú na odoslanie, pribudnú do pol minúty.</p>
+        <div class="pf-ach-g">${ACH.slice().sort((x, y) => (y[3] >= y[4]) - (x[3] >= x[4]) || y[3] / y[4] - x[3] / x[4]).map(x => { const ok = x[3] >= x[4]; return `<div class="${ok ? 'ok' : 'lock'}"><i>${x[0]}</i><b>${x[1]}</b><span>${x[2]}</span>${ok ? '<u>✓ ZÍSKANÉ</u>' : `<s><em style="width:${Math.min(100, Math.round(x[3] / x[4] * 100))}%"></em></s><small>🔒 ${x[5] != null && x[5] !== '' ? x[5] : nfo(Math.min(x[3], x[4])) + ' z ' + nfo(x[4])}</small>`}</div>`; }).join('')}</div></div>
       <div class="pf-cards">
         <div class="pf-card"><h3>DNES</h3><div class="pf-kv"><span>Na opakovanie</span><b>${due}</b><span>Moje chyby</span><b>${weak}</b></div><button class="btn" data-go2="daily">SPUSTIŤ TRÉNING ▶</button></div>
         <div class="pf-card"><h3>DOBYVATEĽ</h3><div class="pf-kv"><span>Hry</span><b>${cq.g}</b><span>Výhry</span><b>${cq.v}${cq.g ? ' · ' + Math.round(cq.v / cq.g * 100) + ' %' : ''}</b><span>Body</span><b>${cq.p}</b></div><button class="btn ghost" data-go2="conquer">HRAŤ ▶</button></div>
@@ -776,15 +783,19 @@ function renderProfile(card) {
   } else {
     const me = RK.me || {};
     body = `${RK.meErr ? `<div class="rk-err">${dqEsc(RK.meErr)}</div>` : ''}
-      <div class="pf-set">
-        <section><h3>PROFILOVÁ FOTKA</h3><div class="pf-avrow">${pfAvatar(me.avatar, RK.acct.nick, 'big', me.emoji)}<div><label class="btn ghost pf-file">NAHRAŤ FOTKU<input type="file" id="pf-avfile" accept="image/*"></label>${me.avatar ? '<button class="btn ghost" id="pf-avdel">ODSTRÁNIŤ</button>' : ''}<small>Zmenší sa na 96 × 96 px. Vidno ju v rebríčku, na mape, v hre a u priateľov.</small></div></div></section>
-        <section><h3>EMOJI <em>— ukáže sa všade tam, kde nemáš fotku</em></h3><div class="pf-emo">${PF_EMO.map(e => `<button data-emo="${e}" class="${me.emoji === e ? 'on' : ''}">${e}</button>`).join('')}${me.emoji ? '<button data-emo="" class="x" title="Bez emoji">✕</button>' : ''}</div></section>
-        <section><h3>PREZÝVKA</h3><div class="pf-form"><input type="text" id="pf-nnick" maxlength="16" placeholder="nová prezývka" value="${dqEsc(RK.acct.nick)}" autocomplete="off" spellcheck="false"><input type="password" id="pf-npass" placeholder="heslo na potvrdenie" autocomplete="current-password"><button class="btn" id="pf-nsave">ZMENIŤ PREZÝVKU</button></div><small>Musí byť jedinečná, 3 – 16 znakov. Body a priatelia ti ostanú.</small></section>
-        <section><h3>HESLO</h3><div class="pf-form"><input type="password" id="pf-pold" placeholder="terajšie heslo" autocomplete="current-password"><input type="password" id="pf-pnew" placeholder="nové heslo" autocomplete="new-password"><button class="btn" id="pf-psave">ZMENIŤ HESLO</button></div><div class="rk-pw" id="pf-pw"><i></i><span>Aspoň 8 znakov, písmeno aj číslica. Po zmene sa ostatné zariadenia odhlásia.</span></div></section>
-        <section><h3>E-MAIL <em>— nepovinný</em></h3><div class="pf-form"><input type="email" id="pf-mail" maxlength="120" placeholder="tvoj@email.sk" value="${dqEsc(me.email || '')}" autocomplete="email"><button class="btn" id="pf-msave">ULOŽIŤ</button></div><small>Na hranie ani rebríček ho netreba. Zatiaľ sa len uloží — overenie e-mailom a obnova zabudnutého hesla prídu s verejným spustením.</small></section>
-        <section><h3>PRIHLÁSENIE CEZ GOOGLE</h3><button class="btn ghost" disabled>G · PRIPRAVUJE SA</button><small>Príde s verejným spustením — treba naň nastaviť Google účet projektu.</small></section>
-        <section class="wide"><h3>VZHĽAD</h3>${pfLookHTML()}</section>
-        <section class="wide danger"><h3>ÚČET</h3><div class="pf-form"><button class="btn ghost" id="rk-out">ODHLÁSIŤ SA</button><button class="rk-reset" id="rk-reset">VYNULOVAŤ MOJE SKÓRE</button></div><small>Vynulovanie zmaže body, odpovede, čas aj hry a nedá sa vrátiť späť. Pred zmazaním sa ťa stránka ešte raz opýta.</small></section>
+      <div class="st">
+        <section class="st-card wide st-id"><h3><i>🪪</i>AKO ŤA VIDIA OSTATNÍ</h3>
+          <div class="st-prev"><div class="st-prev-row">${pfAvatar(me.avatar, RK.acct.nick, '', me.emoji)}<b>${dqEsc(RK.acct.nick)}</b>${lvTag(rkLevel(T.p).n, true, ((RK.rows || []).find(x => x.nick === RK.acct.nick) || {}).lg)}<strong>${T.p} b.</strong></div><small>Takto vyzeráš v rebríčku, na mape území a u priateľov.</small></div>
+          <div class="st-2">
+            <div><h4>FOTKA</h4><div class="st-photo">${pfAvatar(me.avatar, RK.acct.nick, 'big', me.emoji)}<div><label class="btn pf-file"><span>📷 ${me.avatar ? 'ZMENIŤ FOTKU' : 'NAHRAŤ FOTKU'}</span><input type="file" id="pf-avfile" accept="image/*"></label>${me.avatar ? '<button class="btn ghost" id="pf-avdel">ODSTRÁNIŤ</button>' : ''}</div></div><small>Najlepšie štvorcová. Zmenší sa na 96 × 96 px.</small></div>
+            <div><h4>EMOJI <em>— keď nemáš fotku</em></h4><div class="pf-emo">${PF_EMO.map(e => `<button data-emo="${e}" class="${me.emoji === e ? 'on' : ''}">${e}</button>`).join('')}${me.emoji ? '<button data-emo="" class="x" title="Bez emoji">✕</button>' : ''}</div></div>
+          </div></section>
+        <section class="st-card"><h3><i>🔑</i>PRIHLASOVACIE ÚDAJE</h3>
+          <div class="st-f"><label for="pf-nnick">PREZÝVKA</label><div class="pf-form"><input type="text" id="pf-nnick" maxlength="16" placeholder="nová prezývka" value="${dqEsc(RK.acct.nick)}" autocomplete="off" spellcheck="false"><input type="password" id="pf-npass" placeholder="heslo na potvrdenie" autocomplete="current-password"><button class="btn" id="pf-nsave">ZMENIŤ</button></div><small>Jedinečná, 3 – 16 znakov. Body aj priatelia ti ostanú.</small></div>
+          <div class="st-f"><label for="pf-pold">HESLO</label><div class="pf-form"><input type="password" id="pf-pold" placeholder="terajšie heslo" autocomplete="current-password"><input type="password" id="pf-pnew" placeholder="nové heslo" autocomplete="new-password"><button class="btn" id="pf-psave">ZMENIŤ</button></div><div class="rk-pw" id="pf-pw"><i></i><span>Aspoň 8 znakov, písmeno aj číslica. Po zmene sa ostatné zariadenia odhlásia.</span></div></div>
+          <div class="st-f"><label for="pf-mail">E-MAIL <em>— nepovinný</em></label><div class="pf-form"><input type="email" id="pf-mail" maxlength="120" placeholder="tvoj@email.sk" value="${dqEsc(me.email || '')}" autocomplete="email"><button class="btn" id="pf-msave">ULOŽIŤ</button></div><small>Nikto ho nevidí. Zatiaľ sa len uloží; obnova hesla e-mailom príde neskôr.</small></div></section>
+        <section class="st-card"><h3><i>🎨</i>VZHĽAD</h3>${pfLookHTML()}</section>
+        <section class="st-card wide danger"><h3><i>⚠</i>ÚČET</h3><div class="st-danger"><div><b>Odhlásiť sa</b><small>Body ostanú uložené, prihlásiš sa znova prezývkou a heslom.</small></div><button class="btn ghost" id="rk-out">ODHLÁSIŤ SA</button><div><b>Vynulovať skóre</b><small>Zmaže body, odpovede, čas aj hry. Nedá sa vrátiť späť — stránka sa ešte raz opýta.</small></div><button class="rk-reset" id="rk-reset">VYNULOVAŤ</button></div></section>
       </div>`;
   }
   const html = `<div class="rk pf">
