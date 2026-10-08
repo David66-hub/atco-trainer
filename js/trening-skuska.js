@@ -106,7 +106,18 @@ function startCustom(list, mode) {
    Body do rebríčka sa pripíšu až po dokončení: správna +3 (pri písaní +6), nesprávna alebo preskočená −2,
    bonus za 80 % = počet otázok, za 90 % dvojnásobok, za 100 % trojnásobok. Menej ako 0 sa nepripíše. */
 const EXAM_PASS = 80;
-function examSecs() { const F = state.filters; return F.exN * (F.dAns === 'type' ? 20 : 12); }
+/* DENNÁ VÝZVA (v4.9): každý deň tých istých 20 otázok pre všetkých (losuje ich dátum), pravidlá a body ako pri skúške.
+   Do rebríčka sa počíta len prvý pokus dňa; ďalšie sú tréning. */
+const DC_N = 20, DC_KEY = 'atcoTrainerV2.dailyDone';
+function dcDay() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function dcRand(seed) { let h = 1779033703 ^ seed.length; for (let i = 0; i < seed.length; i++) { h = Math.imul(h ^ seed.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); } return () => { h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
+function dcDone() { const d = lsGet(DC_KEY, null); return d && d.day === dcDay() ? d : null; }
+function dcTopHTML() {
+  const L = (RK.rows || []).filter(r => r.dc).map(r => ({ n: r.nick, g: r.dc.g, t: r.dc.t, s: r.dc.s, p: r.dc.p })).sort((a, b) => b.g / b.t - a.g / a.t || a.s - b.s);
+  if (!L.length) return '<div class="rk-empty">Dnes ešte výzvu nikto nedokončil — buď prvý.</div>';
+  return `<div class="rk-tbl"><table><thead><tr><th>#</th><th>HRÁČ</th><th>SPRÁVNE</th><th>ČAS</th><th>BODY</th></tr></thead><tbody>${L.slice(0, 15).map((o, i) => `<tr class="${RK.acct && o.n === RK.acct.nick ? 'me' : ''}"><td class="rk-pos">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</td><td class="rk-nick">${dqEsc(o.n)}</td><td class="rk-pts">${o.g} / ${o.t}</td><td>${examClock(o.s)}</td><td>+${o.p}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function examSecs() { const F = state.filters; return DC_N * (F.dAns === 'type' ? 20 : 12); }
 function examClock(sec) { return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
 function examPoints(good, bad, total, typed) {
   const per = typed ? 6 : 3, pct = Math.round(good / Math.max(1, total) * 100);
@@ -119,14 +130,15 @@ function examStop() {
   document.body.classList.remove('exam-on');
 }
 function examBuild() {
-  const P = poolAll(), N = state.filters.exN, src = {};
-  ['aircraft', 'airport', 'callsign', 'coord'].forEach(m => { src[m] = shuffle(P[m]); });
+  const P = poolAll(), R = dcRand('dc' + dcDay()), src = {};
+  const sh = a => { a = a.slice().sort((x, y) => x.id < y.id ? -1 : x.id > y.id ? 1 : 0); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+  ['aircraft', 'airport', 'callsign', 'coord'].forEach(m => { src[m] = sh(P[m]); });
   const list = [], used = {};
-  for (let g = 0; list.length < N && g < 1000; g++) {
+  for (let g = 0; list.length < DC_N && g < 1000; g++) {
     const q = src[['callsign', 'airport', 'coord', 'aircraft'][g % 4]].shift();
     if (q && !used[q.id]) { used[q.id] = 1; list.push(q); }
   }
-  return shuffle(list);
+  return list;
 }
 function examStart() {
   examStop();
@@ -143,7 +155,7 @@ function examTick() {
   if (!E || state.mode !== 'exam') return;
   const left = Math.max(0, E.limit - (Date.now() - E.t0)), s = Math.ceil(left / 1000);
   const lbl = document.getElementById('mode-label');
-  if (state.current && lbl) lbl.textContent = 'SKÚŠKA · ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  if (state.current && lbl) lbl.textContent = 'VÝZVA · ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   if (left <= 0 && state.current) { E.timeout = true; state.index = state.queue.length; state.current = null; renderQuestion(); }
 }
 function examRecord(q, ok, shown) {
@@ -161,19 +173,23 @@ function examAsk(q) {
 function renderExamStart(card) {
   const F = state.filters;
   document.getElementById('qnum').textContent = '•';
-  document.getElementById('qtotal').textContent = F.exN + ' otázok';
-  document.getElementById('mode-label').textContent = 'SKÚŠKA';
+  document.getElementById('qtotal').textContent = DC_N + ' otázok';
+  document.getElementById('mode-label').textContent = 'DENNÁ VÝZVA';
+  const done = dcDone();
   card.innerHTML = `
     <div class="home-hero">
-      <div class="home-kicker">SKÚŠKA</div>
-      <h1>${F.exN} otázok, čas ${examClock(examSecs())}, žiadne nápovede.</h1>
-      <p>Namiešané otázky zo všetkých modulov. <strong>Výsledok uvidíš až na konci</strong>, na úspech treba ${EXAM_PASS} %. <a href="#" data-hp="exam">Ako to funguje ❓</a></p>
+      <div class="home-kicker">DENNÁ VÝZVA · ${new Date().toLocaleDateString('sk-SK')}</div>
+      <h1>${DC_N} otázok, čas ${examClock(examSecs())}, každý deň nové.</h1>
+      <p>Dnes majú všetci <strong>tých istých ${DC_N} otázok</strong>. Výsledok uvidíš až na konci, na úspech treba ${EXAM_PASS} %. Do rebríčka sa počíta <strong>prvý pokus dňa</strong>. <a href="#" data-hp="exam">Ako to funguje ❓</a></p>
+      ${done ? `<div class="dc-done">Dnešnú výzvu máš splnenú: <b>${done.pct} %</b> · <b>+${done.pts}</b> bodov. Ďalší pokus je už len tréning bez bodov.</div>` : ''}
       <div class="exam-rules"><strong>BODY DO REBRÍČKA</strong>
         <span>správna odpoveď <b>+${F.dAns === 'type' ? 6 : 3}</b></span><span>nesprávna alebo preskočená <b>−2</b></span>
-        <span>bonus za ${EXAM_PASS} % <b>+${F.exN}</b></span><span>za 90 % <b>+${F.exN * 2}</b></span><span>za 100 % <b>+${F.exN * 3}</b></span>
-        <em>V bežnom cvičení je správna odpoveď za 1 bod (pri písaní za 2). Body zo skúšky sa pripíšu až po jej dokončení${RK.acct ? '' : ' — a len prihláseným (tlačidlo PRIHLÁSIŤ vpravo hore)'}. Počet otázok a obtiažnosť si nastav v tabuľke dole.</em></div>
-      <p><button class="btn" id="exam-go" style="padding:16px 34px;font-size:15px">SPUSTIŤ SKÚŠKU ▶</button></p>
-    </div>`;
+        <span>bonus za ${EXAM_PASS} % <b>+${DC_N}</b></span><span>za 90 % <b>+${DC_N * 2}</b></span><span>za 100 % <b>+${DC_N * 3}</b></span>
+        <em>V bežnom cvičení je správna odpoveď za 1 bod (pri písaní za 2). Body sa pripíšu až po dokončení${RK.acct ? '' : ' — a len prihláseným (tlačidlo PRIHLÁSIŤ vpravo hore)'}. Obtiažnosť si nastav v tabuľke dole; pri písaní je bodov dvakrát toľko.</em></div>
+      <p><button class="btn" id="exam-go" style="padding:16px 34px;font-size:15px">${done ? 'SKÚSIŤ ZNOVA (TRÉNING) ▶' : 'SPUSTIŤ VÝZVU ▶'}</button></p>
+    </div>
+    <div class="home-h">DNEŠNÉ PORADIE</div>${dcTopHTML()}`;
+  if (!RK.rows && !RK.loading) rkLoad();
   document.getElementById('exam-go').onclick = examStart;
 }
 function renderExamResult(card) {
@@ -184,22 +200,29 @@ function renderExamResult(card) {
   if (!E.applied) {
     /* až teraz sa výsledky zapíšu do opakovania a slabých miest */
     E.applied = true; E.secs = secs;
-    E.recs.forEach(r => { srUpdate(r.q.id, r.ok); if (!r.ok) state.mistakes[r.q.id] = (state.mistakes[r.q.id] || 0) + 1; });
+    E.recs.forEach(r => { srUpdate(r.q.id, r.ok); if (!r.ok) { state.mistakes[r.q.id] = (state.mistakes[r.q.id] || 0) + 1; wkLog(r.q, r.shown); } });
     apSaveProgress(); renderWeak();
     E.sc = examPoints(good, wrong.length, total, E.typed);
-    if (RK.acct) { rkAdd('exam', { c: good, w: wrong.length, p: E.sc.pts }); rkPendSave(); rkFlush(); }
+    E.first = !dcDone();
+    if (E.first) {
+      lsSet(DC_KEY, { day: dcDay(), pts: E.sc.pts, pct });
+      if (RK.acct) {
+        rkAdd('exam', { c: good, w: wrong.length, p: E.sc.pts }); rkPendSave();
+        rkFlush().then(() => rkRpc('atco_daily_submit', { p_token: RK.acct.token, p_good: good, p_total: total, p_secs: secs, p_pts: E.sc.pts })).catch(() => {}).then(() => rkLoad());
+      }
+    }
   }
   document.getElementById('qnum').textContent = E.recs.length;
   document.getElementById('qtotal').textContent = total;
-  document.getElementById('mode-label').textContent = 'SKÚŠKA · VÝSLEDOK';
+  document.getElementById('mode-label').textContent = 'DENNÁ VÝZVA · VÝSLEDOK';
   const byMod = {};
   E.recs.forEach(r => { const m = modOfId(r.q.id); (byMod[m] = byMod[m] || [0, 0])[r.ok ? 0 : 1]++; });
   card.innerHTML = `
     <div class="session-done" style="padding-bottom:10px">
-      <h2>${E.timeout ? 'ČAS VYPRŠAL' : 'SKÚŠKA DOKONČENÁ'} · <span class="${pct >= EXAM_PASS ? 'exam-ok' : 'exam-no'}">${pct >= EXAM_PASS ? 'PREŠIEL SI' : 'NEPREŠIEL SI'}</span></h2>
+      <h2>${E.timeout ? 'ČAS VYPRŠAL' : 'VÝZVA DOKONČENÁ'} · <span class="${pct >= EXAM_PASS ? 'exam-ok' : 'exam-no'}">${pct >= EXAM_PASS ? 'PREŠIEL SI' : 'NEPREŠIEL SI'}</span></h2>
       <div class="score-big">${pct}%</div>
       <p>${good} z ${total} správne · čas ${Math.floor(E.secs / 60)}:${String(E.secs % 60).padStart(2, '0')}${E.recs.length < total ? ' · nezodpovedané: ' + (total - E.recs.length) : ''} · hranica ${EXAM_PASS} %</p>
-      <div class="exam-rules res"><strong>${RK.acct ? 'DO REBRÍČKA +' + E.sc.pts + ' BODOV' : 'BODY: ' + E.sc.pts + ' — NEPRIPÍSANÉ, NIE SI PRIHLÁSENÝ'}</strong>
+      <div class="exam-rules res"><strong>${!E.first ? 'TRÉNINGOVÝ POKUS — BODY SA NEPOČÍTAJÚ (' + E.sc.pts + ')' : RK.acct ? 'DO REBRÍČKA +' + E.sc.pts + ' BODOV' : 'BODY: ' + E.sc.pts + ' — NEPRIPÍSANÉ, NIE SI PRIHLÁSENÝ'}</strong>
         <span>${good} správnych × ${E.sc.per} <b>+${E.sc.plus}</b></span><span>${wrong.length} nesprávnych × 2 <b>−${E.sc.minus}</b></span><span>bonus za ${pct} % <b>+${E.sc.bonus}</b></span></div>
     </div>
     <div class="home-tips">${Object.keys(byMod).map(m => `<div><strong>${MOD_NAME[m]}</strong>${byMod[m][0]} správne, ${byMod[m][1]} zle</div>`).join('')}</div>
@@ -207,7 +230,7 @@ function renderExamResult(card) {
     <div class="exam-list">${wrong.map(r => `<div><span>${examAsk(r.q)}</span><s>${String(r.shown || '—').replace(/</g, '&lt;')}</s><b>${examAnswerOf(r.q)}</b></div>`).join('')}</div>
     <div class="blind-actions" style="justify-content:center;margin-top:20px">
       ${wrong.length ? '<button class="btn" id="exam-fix">PRECVIČIŤ CHYBY ▶</button>' : ''}
-      <button class="btn ghost" id="exam-again">NOVÁ SKÚŠKA</button>
+      <button class="btn ghost" id="exam-again">SPÄŤ NA VÝZVU</button>
     </div>`;
   const fix = document.getElementById('exam-fix');
   if (fix) fix.onclick = () => startCustom(wrong.map(r => r.q), 'daily');
@@ -226,7 +249,7 @@ function homeDashHTML() {
         <button class="btn" data-go="daily">SPUSTIŤ ▶</button>
       </div>
       <div class="home-cta alt">
-        <div><strong>SKÚŠKA</strong><span>Na čas, bez nápovedí, výsledok až na konci.</span></div>
+        <div><strong>DENNÁ VÝZVA</strong><span>20 otázok dňa, rovnaké pre všetkých. Výsledok na konci.</span></div>
         <button class="btn ghost" data-go="exam">OTVORIŤ ▶</button>
       </div>
     </div>
@@ -270,14 +293,15 @@ function searchAll(text) {
   return out.length ? `<div class="home-tips search">${out.join('')}</div>` : '<div class="weak-empty" style="padding:10px 2px">— nič som nenašiel —</div>';
 }
 
-/* ---------- NAHLÁSIŤ CHYBU: otvorí WhatsApp s predvyplnenou správou ---------- */
+/* ---------- NAHLÁSIŤ CHYBU: otvorí e-mail s predvyplnenou správou ---------- */
 function reportBug() {
   const q = state.current, F = state.filters;
   const where = state.mode === 'home' ? 'Úvod' : (document.getElementById('mode-label').textContent || state.mode);
   const lines = ['ATCO Trainer — nahlásenie chyby', 'Kde: ' + where];
   if (q && q.id) lines.push('Otázka: ' + labelForId(q.id) + ' [' + q.id + ']');
   lines.push('Čo je zle: ');
-  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+  lines.push('', 'Verzia: ' + APP_VERSION);
+  window.location.href = 'mailto:davidsvec24.76@gmail.com?subject=' + encodeURIComponent('ATCO Trainer — chyba') + '&body=' + encodeURIComponent(lines.join('\n'));
 }
 
 /* ---------- klávesy: 1–6 vyberie možnosť, medzerník ide na ďalšiu otázku ---------- */

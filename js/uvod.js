@@ -15,7 +15,7 @@ function renderHome(card) {
       how: ["V riadku OBTIAŽNOSŤ nechaj ĽAHKÁ — pod fotkou sú štyri typy, klikni na správny.", "Chceš len veľké dopravné lietadlá? V riadku TURBULENCIA V ÚPLAVE zvoľ HEAVY. Malé lietadlá a bizjety sú pod LIGHT.", "Keď ti to ide, prepni na HARDCORE a píš označenie z hlavy (B738). Uzná sa aj bežný názov, napr. „737-800“.", "Po odpovedi si prečítaj tabuľku pod fotkou — kategória turbulencie v úplave a dostup sa oplatí vedieť."] },
     { m: 'airport', n: 'MOD 02', t: 'Letiská a ICAO kódy', what: `Kód → mesto a mesto → kód. Dá sa to robiť ako kvíz, s mapou, kde letisko svieti, alebo klikaním do mapy. Zvlášť sa dajú trénovať prefixy štátov (LO = Rakúsko) a v ŠTÚDIU vidíš, ktorá časť Európy má ktoré prvé písmeno.`,
       has: `${AIRPORTS.length} letísk — ${AIRPORTS.filter(a => a.cat === 'sk').length} slovenských, ${AIRPORTS.filter(a => a.cat === 'neigh').length} v susedných štátoch a ${AIRPORTS.filter(a => a.cat === 'other').length} ďalších. Prefixy ${pxAll().length} štátov.`,
-      set: ['REŽIM: KVÍZ / MAPA / KLIKNI NA MAPU / PREFIXY ŠTÁTOV / ŠTÚDIUM', 'OBTIAŽNOSŤ: výber alebo písanie; pri klikaní 100 km alebo 50 km', 'REGION: Slovensko / susedné štáty / ostatné'],
+      set: ['REŽIM: KVÍZ / MAPA / NÁJDI NA MAPE / PREFIXY ŠTÁTOV / ŠTÚDIUM', 'OBTIAŽNOSŤ: výber alebo písanie; pri klikaní 100 km alebo 50 km', 'REGION: Slovensko / susedné štáty / ostatné'],
       good: 'Letový plán aj koordinácia pracujú s ICAO kódmi — treba ich vedieť čítať bez rozmýšľania.',
       how: ["Začni režimom ŠTÚDIUM: pozri si, ktorá časť Európy má písmeno E, L, U… a klikaj na kódy štátov.", "Potom PREFIXY ŠTÁTOV — naučíš sa prvé dve písmená (LO, LK, EP…). Keď vieš prefix, z kódu letiska ti ostávajú už len dve písmená.", "Prepni na KVÍZ a v riadku REGION zvoľ SK LETISKÁ. Až keď ich vieš, pridaj SUSEDNÉ ŠTÁTY a nakoniec OSTATNÉ.", "MAPA ukáže, kde letisko leží, a KLIKNI NA MAPU ťa nechá ukázať to samého — vhodné na koniec.", "V každom režime si v riadku OBTIAŽNOSŤ vyber ĽAHKÁ (výber) alebo HARDCORE (písanie)."] },
     { m: 'callsign', n: 'MOD 03', t: 'Volacie znaky', what: `Trojpísmenový kód prevádzkovateľa ↔ volací znak (BAW ↔ SPEEDBIRD). Najprv idú tie, ktoré sa na simulátore objavujú najčastejšie. Pri väčšine vidíš aj meno prevádzkovateľa, krajinu a obrázok.`,
@@ -43,9 +43,7 @@ function renderHome(card) {
     <div class="home-hero">
       <div class="home-kicker">ATCO TRAINER</div>
       <h1>Všetko, čo treba vedieť naspamäť, na jednom mieste.</h1>
-      <p>Trenažér na učenie typov lietadiel, letísk, volacích znakov, bodov, kurzov a koordinácie. Spravil ho <strong>Denzy</strong> pre kolegov z výcviku — používaj ho, koľko chceš.</p>
-      <p>Vo výcviku je veľa vecí, ktoré sa nedajú pochopiť, len naučiť: stovky kódov, názvov a čísel. Z papiera to ide pomaly, lebo ťa nikto neskúša. Tu ťa skúša počítač — hneď vidíš, či to vieš, a to, čo nevieš, ti vracia dovtedy, kým to nesedí.</p>
-      <p>Je tu šesť modulov. Každý sa dá nastaviť od úplne ľahkej verzie, kde len vyberáš z možností, až po hardcore, kde píšeš z hlavy. Nemusíš sa nikde prihlasovať a nič inštalovať — stačí otvoriť túto stránku na notebooku alebo telefóne.</p>
+      <p>Trenažér pre kolegov z výcviku: typy lietadiel, letiská, volačky, body, kurzy a koordinácia. Skúša ťa počítač a to, čo nevieš, ti vracia, kým to nesedí. Spravil <strong>Denzy</strong>. <a href="#" data-hp="home">Ako na to ❓</a></p>
     </div>
     ${homeDashHTML()}
     <div class="home-steps">
@@ -53,9 +51,10 @@ function renderHome(card) {
       <div><b>2</b><span><strong>Nastav si ho</strong> v tabuľke pod otázkou — režim, obtiažnosť a čo sa má skúšať.</span></div>
       <div><b>3</b><span><strong>Odpovedaj.</strong> Čo pokazíš, vráti sa ti neskôr v tom istom cvičení.</span></div>
     </div>
+    <details class="home-more"><summary>PODROBNÝ NÁVOD — obrazovka, nastavenia, ako sa učiť</summary>
     <div class="home-h">KDE ČO NA OBRAZOVKE JE</div>
     <div class="home-tips">
-      <div><strong>Lišta modulov (úplne hore)</strong>ÚVOD a MOD 01 až MOD 06. Kliknutím prepneš modul; zelený je ten, v ktorom práve si.</div>
+      <div><strong>Lišta hore</strong>MODULY otvorí okno so všetkými cvičeniami, vedľa sú DENNÁ VÝZVA, DOBYVATEĽ a REBRÍČEK. Na úvod sa vrátiš kliknutím na ATCO TRAINER.</div>
       <div><strong>Hlavička panelu</strong>Vľavo názov modulu a číslo otázky (napr. 12 / 200). Vpravo CORRECT, WRONG a STREAK — koľko máš správne, zle a koľko správnych za sebou.</div>
       <div><strong>Otázka (stred)</strong>Fotka, kód alebo mapa a pod tým políčko na odpoveď alebo tlačidlá s možnosťami. Po odpovedi sa hneď ukáže, či to bolo správne, a všetko podstatné k danej veci.</div>
       <div><strong>ČO TU ROBÍŠ</strong>Zelený rámček pod otázkou. Jednou-dvoma vetami povie, čo sa v práve zvolenom režime robí. Zmení sa vždy, keď prepneš režim.</div>
@@ -80,6 +79,7 @@ function renderHome(card) {
       <div><strong>Najprv pozeraj, potom sa skúšaj</strong>Skoro každý modul má ŠTÚDIUM alebo ZOZNAM. Prejdi si ho pred kvízom, nech nehádaš naslepo.</div>
       <div><strong>Hovor si to nahlas</strong>Hlavne volačky a kurzy. Na frekvencii ich budeš hovoriť, nie písať.</div>
     </div>
+    </details>
     <div class="home-h">MODULY</div>
     <div class="home-mods">${mods.map(x => `
       <div class="home-mod">
@@ -92,6 +92,7 @@ function renderHome(card) {
         <div class="home-row home-how"><em>AKO ZAČAŤ — KROK ZA KROKOM</em><ol>${x.how.map(s => `<li>${s}</li>`).join('')}</ol></div>
         <button class="btn" data-go="${x.m}">OTVORIŤ ${x.n} ▶</button>
       </div>`).join('')}</div>
+    <details class="home-more"><summary>ČO PLATÍ VŠADE — obtiažnosť, opakovanie, klávesnica</summary>
     <div class="home-h">ČO PLATÍ VŠADE</div>
     <div class="home-tips">
       <div><strong>ĽAHKÁ a HARDCORE</strong>Každý modul má dve obtiažnosti. Začni ľahkou (výber z možností), potom prejdi na hardcore (písanie z hlavy).</div>
@@ -104,9 +105,10 @@ function renderHome(card) {
       <div><strong>Telefón aj notebook</strong>Funguje na oboch. Fotky lietadiel a prevádzkovateľov sa sťahujú z Wikipédie, takže potrebujú internet.</div>
       <div><strong>Je to pomôcka, nie predpis</strong>Údaje sú prepísané z výcvikových podkladov a máp. Ak sa niečo líši od platnej dokumentácie, platí dokumentácia.</div>
     </div>
+    </details>
     <div class="home-contact">
       <strong>Našiel si chybu alebo ti niečo chýba?</strong>
-      Dole na každej stránke je tlačidlo <b>⚑ NAHLÁSIŤ CHYBU</b>. Otvorí WhatsApp so správou, kde je už vyplnené, v ktorom module a pri ktorej otázke si — vyber Denzyho, dopíš, čo je zle, a pošli.
+      Dole na každej stránke je päta s tlačidlami <b>Napísať návrh</b>, <b>Nahlásiť chybu</b> a <b>Kontaktovať tvorcu</b>. Otvoria e-mail na <b>davidsvec24.76@gmail.com</b>; pri chybe je v ňom už vyplnené, v ktorom module a pri ktorej otázke si.
     </div>`;
   card.querySelectorAll('[data-go]').forEach(b => { b.onclick = () => { startMode(b.dataset.go); window.scrollTo(0, 0); }; });
   const sq = document.getElementById('home-q');

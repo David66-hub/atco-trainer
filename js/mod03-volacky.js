@@ -119,6 +119,7 @@ function csCardRate(ok) {
   } else {
     state.wrong++; state.streak = 0;
     state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1;
+    wkLog(q, '— nevedel som —');
   }
   renderStats(); renderWeak();
   apAfterAnswer(q, ok);

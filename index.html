@@ -7,36 +7,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=38170c0c">
+<link rel="stylesheet" href="css/styles.css?v=4b259398">
 </head>
 <body>
 <div class="app">
-  <header>
-    <div class="brand">
-      <span class="brand-mark">▲ ATCO TRAINER</span>
-      <span class="brand-sub">LPS SR // TRAINING MODULE <b class="app-ver"></b></span>
-    </div>
-    <div class="head-r"><div class="clock"><span class="blink">●</span> <span id="clock">--:--:-- UTC</span></div><button id="acct-btn" class="acct-btn" title="Profil a prihlásenie">PRIHLÁSIŤ</button></div>
+  <header class="hd2">
+    <div class="clock"><span class="blink">●</span> <span id="clock">--:--:-- UTC</span></div>
+    <button class="brand2" id="brand-home" title="Úvod"><span>▲ ATCO TRAINER</span><b class="beta">BETA</b><i>ÚVOD</i></button>
+    <div class="head-r"><button id="inbox-btn" class="inbox-btn" title="Správy a pozvánky" style="display:none">✉</button><button id="acct-btn" class="acct-btn" title="Profil a prihlásenie">PRIHLÁSIŤ</button></div>
   </header>
-  <div class="tabs">
-    <button class="tab active" data-mode="home"><span class="tab-num">ŠTART</span><span class="tab-label">ÚVOD</span></button>
-    <button class="tab" data-mode="daily"><span class="tab-num">DNES</span><span class="tab-label">TRÉNING</span></button>
-    <button class="tab" data-mode="aircraft"><span class="tab-num">MOD 01</span><span class="tab-label">AIRCRAFT TYPE</span></button>
-    <button class="tab" data-mode="airport"><span class="tab-num">MOD 02</span><span class="tab-label">AIRPORTS / ICAO</span></button>
-    <button class="tab" data-mode="callsign"><span class="tab-num">MOD 03</span><span class="tab-label">CALLSIGNS</span></button>
-    <button class="tab" data-mode="waypoint"><span class="tab-num">MOD 04</span><span class="tab-label">FRA BODY / MAPA</span></button>
-    <button class="tab" data-mode="heading"><span class="tab-num">MOD 05</span><span class="tab-label">HRA NA KURZY</span></button>
-    <button class="tab" data-mode="coord"><span class="tab-num">MOD 06</span><span class="tab-label">KOORDINÁCIA</span></button>
-    <button class="tab" data-mode="exam"><span class="tab-num">TEST</span><span class="tab-label">SKÚŠKA</span></button>
+  <div class="tabs nav2">
+    <button class="tab" id="nav-mods"><span class="tab-num">CVIČENIE</span><span class="tab-label" id="nav-mods-l">MODULY ▾</span></button>
+    <button class="tab" data-mode="exam"><span class="tab-num">KAŽDÝ DEŇ</span><span class="tab-label">DENNÁ VÝZVA</span></button>
     <button class="tab" data-mode="conquer"><span class="tab-num">HRA</span><span class="tab-label">DOBYVATEĽ</span></button>
     <button class="tab" data-mode="rank"><span class="tab-num">LIGA</span><span class="tab-label">REBRÍČEK</span></button>
-    <span class="ver-tag app-ver"></span>
   </div>
   <div class="panel">
     <div class="panel-head">
-      <div><span id="mode-label">AIRCRAFT TYPE</span> <span style="margin-left:10px;color:var(--text-faint)">QUESTION <span id="qnum">1</span> / <span id="qtotal">--</span></span></div>
+      <div><span id="mode-label">AIRCRAFT TYPE</span> <span id="qcount" style="margin-left:10px;color:var(--text-faint)">QUESTION <span id="qnum">1</span> / <span id="qtotal">--</span></span></div>
       <div class="stats">
-        <button class="demo-btn hp-btn" id="btn-help" data-hp="*" title="Pravidlá a postup v obrázkoch">❓<span> AKO NA TO</span></button>
         <button class="demo-btn" id="btn-demo">▶<span> VZOR</span></button>
         <button class="set-btn" id="btn-set">⚙<span> NASTAVENIA</span></button>
         <button class="fs-btn" id="btn-fs" style="display:none">⛶ CELÁ OBRAZOVKA</button>
@@ -55,34 +44,41 @@
     </div>
   </div>
   <div class="demo-bubble" id="demo-bubble"></div>
-  <div class="weak-section">
-    <div class="weak-title">WEAK SPOTS (3+ wrong attempts)</div>
+  <div class="weak-section" id="weak-sec">
+    <div class="weak-title">MOJE CHYBY <em>— klikni na chybu a uvidíš, čo si odpovedal a čo je správne</em></div>
     <div class="weak-list" id="weak-list"><span class="weak-empty">— no weak spots yet —</span></div>
   </div>
-  <footer class="site-foot"><span><strong>ATCO Trainer <span class="app-ver"></span></strong> · spravil Denzy · pomôcka na učenie, nie oficiálny zdroj</span><button id="btn-report">⚑ NAHLÁSIŤ CHYBU</button></footer>
+  <footer class="site-foot2">
+    <div class="sf-brand"><strong>▲ ATCO TRAINER</strong><span>Pomôcka na učenie pre kolegov z výcviku. Nie je to oficiálny zdroj — keď sa niečo líši, platí dokumentácia.</span><small>LPS SR // TRAINING MODULE</small><small>verzia <b class="app-ver"></b> · BETA · spravil Denzy</small></div>
+    <div class="sf-col"><em>NAPÍŠ MI</em>
+      <a href="mailto:davidsvec24.76@gmail.com?subject=ATCO%20Trainer%20%E2%80%94%20n%C3%A1vrh">💡 Napísať návrh</a>
+      <button id="btn-report">⚑ Nahlásiť chybu</button>
+      <a href="mailto:davidsvec24.76@gmail.com?subject=ATCO%20Trainer">✉ Kontaktovať tvorcu</a></div>
+    <div class="sf-col"><em>E-MAIL</em><a class="sf-mail" href="mailto:davidsvec24.76@gmail.com">davidsvec24.76@gmail.com</a><span>Návrhy, chyby v otázkach, nápady na nové moduly — napíš čokoľvek.</span></div>
+  </footer>
 </div>
-<script src="data/lietadla.js?v=38170c0c"></script>
-<script src="data/letiska.js?v=38170c0c"></script>
-<script src="data/volacky.js?v=38170c0c"></script>
-<script src="data/body-fra.js?v=38170c0c"></script>
-<script src="data/mapa-europy.js?v=38170c0c"></script>
-<script src="js/zaklad.js?v=38170c0c"></script>
-<script src="js/mod02-letiska.js?v=38170c0c"></script>
-<script src="js/mod03-volacky.js?v=38170c0c"></script>
-<script src="js/napovedy-obrazovka.js?v=38170c0c"></script>
-<script src="js/mod05-kurzy.js?v=38170c0c"></script>
-<script src="js/mod06-koordinacia.js?v=38170c0c"></script>
-<script src="js/uvod.js?v=38170c0c"></script>
-<script src="js/trening-skuska.js?v=38170c0c"></script>
-<script src="js/doplnky.js?v=38170c0c"></script>
-<script src="js/rebricek.js?v=38170c0c"></script>
-<script src="data/otazky-atm-nav.js?v=38170c0c"></script>
-<script src="data/mapa-priestorov.js?v=38170c0c"></script>
-<script src="js/dobyvatel.js?v=38170c0c"></script>
-<script src="js/otazky.js?v=38170c0c"></script>
-<script src="js/vykreslenie.js?v=38170c0c"></script>
-<script src="js/mod04-mapa.js?v=38170c0c"></script>
-<script src="js/odpovede.js?v=38170c0c"></script>
-<script src="js/pozadie.js?v=38170c0c"></script>
+<script src="data/lietadla.js?v=4b259398"></script>
+<script src="data/letiska.js?v=4b259398"></script>
+<script src="data/volacky.js?v=4b259398"></script>
+<script src="data/body-fra.js?v=4b259398"></script>
+<script src="data/mapa-europy.js?v=4b259398"></script>
+<script src="js/zaklad.js?v=4b259398"></script>
+<script src="js/mod02-letiska.js?v=4b259398"></script>
+<script src="js/mod03-volacky.js?v=4b259398"></script>
+<script src="js/napovedy-obrazovka.js?v=4b259398"></script>
+<script src="js/mod05-kurzy.js?v=4b259398"></script>
+<script src="js/mod06-koordinacia.js?v=4b259398"></script>
+<script src="js/uvod.js?v=4b259398"></script>
+<script src="js/trening-skuska.js?v=4b259398"></script>
+<script src="js/doplnky.js?v=4b259398"></script>
+<script src="js/rebricek.js?v=4b259398"></script>
+<script src="data/otazky-atm-nav.js?v=4b259398"></script>
+<script src="data/mapa-priestorov.js?v=4b259398"></script>
+<script src="js/dobyvatel.js?v=4b259398"></script>
+<script src="js/otazky.js?v=4b259398"></script>
+<script src="js/vykreslenie.js?v=4b259398"></script>
+<script src="js/mod04-mapa.js?v=4b259398"></script>
+<script src="js/odpovede.js?v=4b259398"></script>
+<script src="js/pozadie.js?v=4b259398"></script>
 </body>
 </html>

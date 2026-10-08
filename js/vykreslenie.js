@@ -15,7 +15,9 @@ function renderQuestion() {
   fsSync();
   /* súťažné stránky — Dobyvateľ a rebríček */
   const comp = state.mode === 'conquer' || state.mode === 'rank' || state.mode === 'profile';
-  rkHeadBtn();
+  rkHeadBtn(); navSync();
+  document.getElementById('qcount').style.display = comp || state.mode === 'home' ? 'none' : '';
+  document.getElementById('weak-sec').style.display = comp || state.mode === 'home' ? 'none' : '';
   document.body.classList.toggle('on-comp', comp);
   if (state.mode !== 'conquer') dqHideStage();
   if (comp) {
@@ -38,7 +40,7 @@ function renderQuestion() {
   document.getElementById('qnum').textContent = state.index + 1;
   document.getElementById('qtotal').textContent = state.total;
   document.getElementById('mode-label').textContent =
-    state.mode === 'home' ? 'ÚVOD' : state.mode === 'daily' ? 'DNEŠNÝ TRÉNING' : state.mode === 'exam' ? 'SKÚŠKA' :
+    state.mode === 'home' ? 'ÚVOD' : state.mode === 'daily' ? 'DNEŠNÝ TRÉNING' : state.mode === 'exam' ? 'DENNÁ VÝZVA' :
     state.mode === 'aircraft' ? 'AIRCRAFT TYPE' :
     state.mode === 'airport' ? 'AIRPORTS / ICAO' :
     state.mode === 'callsign' ? 'CALLSIGNS' : state.mode === 'coord' ? 'KOORDINÁCIA / FREKVENCIE' : 'FRA BODY / MAPA';

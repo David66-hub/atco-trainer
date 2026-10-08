@@ -9,7 +9,7 @@ const DQ_COL = ['#e63946', '#2dc653', '#3a86ff', '#ffbe0b', '#b45cff', '#1fd6d6'
 const DQ_STYLE = 'a';   // vzhľad mapy: a = čistá čierna, b = čierna s typmi, c = radar
 const DQ_CAT = { AD: ['LETISKO', '#ffffff'], CTR: ['CTR', '#8fb8ff'], TMA: ['TMA', '#c3d6ff'], TRA: ['TRA', '#d9c2f5'], TSA: ['TSA', '#c7a6ee'],
   R: ['LZR', '#f7b3b3'], P: ['LZP', '#f08a8a'], D: ['LZD', '#f5c9a0'], G: ['TRIEDA G', '#dfe8e2'] };
-const DQ_QS = [['ac', 'MOD 01', 'TYPY LIETADIEL'], ['ap', 'MOD 02', 'LETISKÁ'], ['px', 'MOD 02', 'PREFIXY ŠTÁTOV'], ['cs', 'MOD 03', 'VOLAČKY'], ['hd', 'MOD 05', 'KURZY'], ['co', 'MOD 06', 'FREKVENCIE'], ['atm', 'OKRUH', 'ATM'], ['nav', 'OKRUH', 'NAVIGÁCIA'], ['met', 'OKRUH', 'METEOROLÓGIA'], ['eqps', 'OKRUH', 'ZARIADENIA'], ['hum', 'OKRUH', 'ĽUDSKÉ FAKTORY'], ['acft', 'OKRUH', 'LIETADLÁ'], ['pen', 'OKRUH', 'PRAC. PROSTREDIE']];
+const DQ_QS = [['ac', 'MOD 01', 'TYPY LIETADIEL'], ['ap', 'MOD 02', 'LETISKÁ'], ['px', 'MOD 02', 'PREFIXY ŠTÁTOV'], ['cs', 'MOD 03', 'VOLAČKY'], ['hd', 'MOD 05', 'KURZY'], ['co', 'MOD 06', 'FREKVENCIE'], ['atm', 'OKRUH', 'ATM'], ['nav', 'OKRUH', 'NAVIGÁCIA'], ['met', 'OKRUH', 'METEOROLÓGIA'], ['eqps', 'OKRUH', 'ZARIADENIA'], ['hum', 'OKRUH', 'ĽUDSKÉ FAKTORY'], ['acft', 'OKRUH', 'LIETADLÁ'], ['pen', 'OKRUH', 'PRAC. PROSTREDIE'], ['hist', 'OKRUH', 'HISTÓRIA LETECTVA'], ['gen', 'OKRUH', 'VŠEOBECNÝ PREHĽAD']];
 const DQ_OPT = { map: ['auto', 's', 'm', 'l'], max: [2, 3, 4, 5, 6], time: [10, 15, 20, 30], claim: [3, 5, 8, 10, 12], war: [0, 3, 5, 8, 10], pm: [0, 1], lv: [0, 1], fast: [0, 1], jk: [0, 1] };
 const DQ_FIX = { rest: 4200, count: 3700, tierev: 8500, startrev: 8500, startpick: 25000, claimrev: 4500, pick: 25000, warpick: 30000, modpick: 25000, duelintro: 3000, duelrev: 5500 };
 const DQ_FXMS = 2400;   // ako dlho sa priestor vyfarbuje
@@ -548,6 +548,7 @@ function dqGenQ(mods, lvl) {
   K.atm = bank('atm', 'OKRUH · ATM'); K.nav = bank('nav', 'OKRUH · NAVIGÁCIA');
   K.met = bank('met', 'OKRUH · METEOROLÓGIA'); K.eqps = bank('eqps', 'OKRUH · ZARIADENIA A SYSTÉMY'); K.hum = bank('hum', 'OKRUH · ĽUDSKÉ FAKTORY');
   K.acft = bank('acft', 'OKRUH · LIETADLÁ'); K.pen = bank('pen', 'OKRUH · PRACOVNÉ PROSTREDIE');
+  K.hist = bank('hist', 'OKRUH · HISTÓRIA LETECTVA'); K.gen = bank('gen', 'OKRUH · VŠEOBECNÝ PREHĽAD');
   const CU = dqcAll();
   if (CU.length) K.cu = () => { const c = pick(CU), opts = shuffle([c.a].concat(shuffle(c.w).slice(0, 3))); return { mod: 'VLASTNÉ OTÁZKY', prompt: c.q, sub: 'Vyber správnu odpoveď.', opts, ans: opts.indexOf(c.a) }; };
   const ks = (mods || []).filter(m => K[m]), all = ks.length ? ks : Object.keys(K).filter(m => m !== 'cu'), H = DQ.H;
@@ -1653,7 +1654,7 @@ function dqRender(card) {
     const H0 = lsGet(DQ_HOSTK, null), hback = H0 && H0.S && H0.room && H0.S.phase !== 'end' && Date.now() - H0.t < 30 * 60000 ? H0 : null;
     card.innerHTML = `<div class="dq-home">
         <h2>DOBYVATEĽ</h2>
-        <p class="dq-lead">Vedomostný súboj o slovenský vzdušný priestor pre 2 až 6 hráčov naživo — na mape skutočných priestorov, s otázkami z modulov a zo siedmich okruhov teórie.</p>
+        <p class="dq-lead">Vedomostný súboj o slovenský vzdušný priestor pre 2 až 6 hráčov naživo — na mape skutočných priestorov, s otázkami z modulov a z deviatich okruhov vrátane histórie letectva.</p>
         <div class="dq-back demo"><div><strong>NEVIEŠ, AKO SA TO HRÁ?</strong><span>Pusti si ukážku: krátka hra proti počítaču, ktorá sa pri každej novej veci zastaví a vysvetlí, čo sa deje a čo máš urobiť. Asi 5 minút, netreba kód, prihlásenie ani spoluhráča a nepočíta sa do rebríčka.</span></div><button class="btn" id="dq-demo">▶ UKÁZAŤ VZOR HRY</button></div>
         ${dqRulesHTML()}
         ${DQ.err ? `<div class="rk-err">${dqEsc(DQ.err)}</div>` : ''}
@@ -1692,6 +1693,8 @@ function dqRender(card) {
         <div class="dq-lobby-grid">
           <div>
             <div class="dq-code"><span>KÓD MIESTNOSTI</span><b>${DQ.room}</b><small>${DQ.host ? 'Pošli ho kolegom. Otvoria kartu DOBYVATEĽ, napíšu kód a dajú PRIPOJIŤ SA.' : 'Si v miestnosti. Hru spustí hostiteľ.'}</small></div>
+            ${RK.acct && DQ.host ? (() => { const fr = SOC.friends.filter(f => f.st === 'ok'); DQ.invited = DQ.invited && DQ.invRoom === DQ.room ? DQ.invited : {}; DQ.invRoom = DQ.room;
+              return `<div class="dq-inv"><strong>POZVAŤ PRIATEĽOV</strong>${fr.length ? `<div>${fr.map(f => `<button class="rk-chip${f.online ? ' on' : ''}" data-dqinv="${dqEsc(f.nick)}" ${DQ.invited[f.nick] ? 'disabled' : ''}>${f.online ? '● ' : ''}${dqEsc(f.nick)}${DQ.invited[f.nick] ? ' ✓' : ''}</button>`).join('')}</div><small>Zelení sú práve online. Pozvánka im vyskočí vpravo hore a ostane v správach.</small>` : '<small>Zatiaľ nemáš priateľov — pridaj si ich v profile (vpravo hore → PRIATELIA) a nabudúce ich pozveš jedným klikom.</small>'}</div>`; })() : ''}
             <div class="dq-lobby">${S.players.map((p, i) => `<div class="dq-pl"><i style="background:${dqC(i)}">${dqI(i)}</i><span>${dqEsc(p.nick)}${i === 0 ? ' <em>hostiteľ</em>' : ''}${i === me ? ' <em>(ty)</em>' : ''}</span>${DQ.host && i > 0 ? `<button class="dq-x" data-kick="${i}" title="Odobrať">✕</button>` : ''}</div>`).join('')}${slots.join('')}</div>
             ${me >= 0 ? `<div class="dq-look"><strong>TVOJA FARBA A LIETADLO</strong>
               <div class="dq-look-row">${DQ_PAL.map((c, ci) => { const taken = S.players.some((p, j) => j !== me && p.col === ci); return `<button class="dq-sw${S.players[me].col === ci ? ' on' : ''}" data-col="${ci}" style="background:${c}" ${taken ? 'disabled title="farbu už má iný hráč"' : ''}></button>`; }).join('')}</div>
@@ -1714,6 +1717,7 @@ function dqRender(card) {
     if (go) go.onclick = () => dqSend({ t: 'start' });
     if (bot) bot.onclick = () => dqSend({ t: 'bot' });
     card.querySelectorAll('[data-kick]').forEach(b => { b.onclick = () => dqSend({ t: 'kick', who: +b.dataset.kick }); });
+    card.querySelectorAll('[data-dqinv]').forEach(b => { b.onclick = () => { const n = b.dataset.dqinv; DQ.invited[n] = 1; b.disabled = true; b.textContent = n + ' ✓'; rkRpc('atco_msg_send', { p_token: RK.acct.token, p_nick: n, p_kind: 'invite', p_body: DQ.room }).catch(e => { DQ.invited[n] = 0; DQ.err = socErr(e); dqShow(); }); }; });
     card.querySelectorAll('[data-cfg]').forEach(b => { b.onclick = () => dqSend({ t: 'cfg', key: b.dataset.cfg, val: b.dataset.cfg === 'mods' || b.dataset.cfg === 'map' ? b.dataset.val : +b.dataset.val }); });
     const look = ch => { const L = Object.assign(dqLook(), ch); lsSet(DQ_LOOKK, L); dqSend({ t: 'look', col: L.col, ico: L.ico }); };
     card.querySelectorAll('[data-col]').forEach(b => { b.onclick = () => look({ col: +b.dataset.col }); });
@@ -1737,7 +1741,7 @@ function dqRender(card) {
       <div class="dq-top">
         <div class="dq-brand"><b>DOBYVATEĽ</b><span>miestnosť ${DQ.room} · v${APP_VERSION}</span></div>
         <div class="dq-players" id="dq-chips"></div>
-        <div class="dq-tools"><button id="dq-emob" title="Poslať reakciu">😀</button><button id="dq-fxb" title="Animácie">✨</button><button data-hp="conquer" title="Pravidlá v obrázkoch">?</button><div id="dq-emop">${DQ_EMO.map((e, i) => `<button data-e="${i}">${e}</button>`).join('')}</div><button id="dq-zi" title="Priblížiť">+</button><button id="dq-zo" title="Oddialiť">−</button><button id="dq-zr" title="Celá mapa">⤢</button><button id="dq-leave" class="x">ODÍSŤ</button></div>
+        <div class="dq-tools"><button id="dq-emob" title="Poslať reakciu">😀</button><button id="dq-fxb" title="Animácie">✨</button><button data-hp="game" title="Čo sa práve deje a pravidlá">?</button><div id="dq-emop">${DQ_EMO.map((e, i) => `<button data-e="${i}">${e}</button>`).join('')}</div><button id="dq-zi" title="Priblížiť">+</button><button id="dq-zo" title="Oddialiť">−</button><button id="dq-zr" title="Celá mapa">⤢</button><button id="dq-leave" class="x">ODÍSŤ</button></div>
       </div>
       <div class="dq-status" id="dq-status"><b id="dq-st-a"></b><span id="dq-st-b"></span><button class="dq-btn" id="dq-unpeek" style="display:none">VÝSLEDKY</button><div class="dq-timer"><i class="dq-bar-i" id="dq-sbar"></i></div></div>
       <div class="dq-mapwrap"><div id="dq-maph"></div><div id="dq-fxl"></div><div id="dq-toast"></div><div id="dq-poph"></div></div>

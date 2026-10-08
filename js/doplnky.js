@@ -238,7 +238,7 @@ function renderCoScen(q, card) {
     renderStats();
     if (X.i >= X.steps.length) {
       const all = X.res.every(x => x.ok);
-      if (!all) state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1;
+      if (!all) { state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1; wkLog(q, X.res.map(x => x.val).join(' · ')); }
       renderWeak(); apAfterAnswer(q, all);
     }
     renderCoScen(q, card);
@@ -301,7 +301,7 @@ async function demoRun() {
     if (state.mode === 'home') {
       await demoSay($('.home-cta'), 'DNEŠNÝ TRÉNING ti sám namieša otázky zo všetkých modulov. Stačí kliknúť na SPUSTIŤ.');
       await demoSay($('.home-search input'), 'Sem napíš akýkoľvek kód alebo názov a trenažér ukáže všetko, čo o ňom vie.');
-      await demoSay(document.querySelector('.tabs'), 'Moduly prepínaš tu hore. V každom module ti toto tlačidlo ukáže vzorovú odpoveď.');
+      await demoSay(document.querySelector('.tabs'), 'Moduly otvoríš tlačidlom MODULY tu hore. V každom module ti toto tlačidlo ukáže vzorovú odpoveď.');
     } else if (state.mode === 'exam' && !state.exam) {
       await demoSay($('#exam-go'), 'Skúška sa spustí týmto tlačidlom. Odpovede sa vyhodnotia až na konci.');
     } else if (state.mode === 'heading' && F.hgMode === 'static') {

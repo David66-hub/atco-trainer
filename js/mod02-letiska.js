@@ -510,6 +510,7 @@ function apFinish(q, ok, shown) {
   } else {
     state.wrong++; state.streak = 0;
     state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1;
+    wkLog(q, shown);
   }
   renderStats(); renderWeak();
   const hb = document.getElementById('btn-hint'); if (hb) hb.disabled = true;
@@ -630,7 +631,7 @@ function svgAdd(svg, tag, attrs) {
 function renderClickQuestion(q, card) {
   const sk = q.data.cat === 'sk';
   card.innerHTML = `
-    <div class="qmeta">AIRPORT ID <span class="sep">·</span> KLIKNI NA MAPU</div>
+    <div class="qmeta">AIRPORT ID <span class="sep">·</span> NÁJDI NA MAPE</div>
     <div class="map-prompt">
       <span class="mp-label">KLIKNI, KDE LETISKO LEŽÍ</span>
       <div class="mp-name">${q.subtype === 'icao-to-city' ? q.data.icao : q.data.city}</div>

@@ -4,36 +4,6 @@
    Každé tlačidlo má krátke vysvetlenie, ktoré sa ukáže, keď nad
    ním podržíš myš.
    ============================================================ */
-const MODE_HELP = {
-  'aircraft.cmp': 'Vidíš dve fotky podobných lietadiel a úlohu, ktorý typ máš nájsť. Klikni na správnu fotku (alebo kláves 1 / 2). Po odpovedi dostaneš tabuľku, čím sa tie dva typy líšia.',
-  'heading.calc': 'Počítanie s kurzom z hlavy: opačný kurz, nový kurz po zatáčke o X stupňov a ktorým smerom je zatáčka kratšia. Pri každej úlohe je napísané, čo presne spraviť; v ľahkej verzii aj pravidlo. Po odpovedi vidíš výpočet.',
-  'coord.scen': 'Jeden let od začiatku do odovzdania. Krok za krokom určíš koordinačný bod, hladinu, prípadnú podmienku a nakoniec stanovište s frekvenciou podľa vertikálnych hraníc. Keď určíš bod, lietadlo k nemu na mape vyletí.',
-  daily: 'Otázky zo všetkých modulov naraz. Najprv to, čo má podľa kalendára prísť na opakovanie, potom tvoje slabé miesta a zvyšok je nová látka. Čo vieš, príde znova o 1, 3, 7, 14 a 30 dní; čo nevieš, hneď zajtra.',
-  exam: 'Skúška na čas. Počas nej nevidíš, či si odpovedal správne — výsledok a zoznam chýb dostaneš na konci. SKIP počíta otázku ako nesprávnu.',
-  'coord.cop':   'Na mape svieti koordinačný bod — urči, s ktorým susedom sa na ňom koordinuje. V druhom type otázky dostaneš názov bodu a klikneš, kde leží.',
-  'coord.freq':  'Dostaneš stanovište a určíš jeho frekvenciu, alebo dostaneš frekvenciu a určíš stanovište. Možnosti sú zámerne podobné čísla.',
-  'coord.vert':  'Dostaneš stanovište a určíš, od akej po akú výšku siaha (napr. FL285 – FL660). Po odpovedi vidíš celý rez danej skupiny.',
-  'coord.level': 'Dostaneš situáciu z koordinačnej dohody — smer, trať a typ letu. Postupne sa pýtam na koordinačný bod, hladinu na ňom a podmienku. Na mape je bod a šípka smeru letu.',
-  'coord.fill':  'Tabuľka presne ako v dokumente, ale COP, hladina a podmienka sú prázdne. Doplň ich a daj VYHODNOTIŤ. Tabuľku si vyberáš v riadku TABUĽKA.',
-  'coord.study': 'Tu sa nič neskúša. Vľavo mapa koordinačných bodov podľa suseda, vpravo frekvencie, vertikálne hranice a všetky tabuľky z dohody.',
-  'heading.static': 'Lietadlo stojí na mieste a na mape je oranžový bod. Napíš kurz po 5°, ktorý od lietadla vedie na bod (správny je vždy násobok 5), a stlač Enter. Lietadlo sa natočí a uvidíš, či to sedí. Ďalší Enter dá novú úlohu.',
-  'heading.gate': 'Lietadlo letí samo. Napíš kurz po 5° (napr. 245) a stlač Enter — lietadlo hneď zatočí. Prelet medzi stĺpikmi oranžovej bránky je zásah a hneď sa objaví ďalšia.',
-  'heading.city': 'Lietadlo letí samo. Hore vpravo je miesto, nad ktoré máš preletieť. Napíš kurz po 5° a stlač Enter. Keď názvy na mape vypneš, musíš vedieť, kde miesto leží.',
-  'heading.fra':  'To isté ako MIESTA, ale ciele sú význačné body FRA z MOD 04 — precvičíš kurzy aj polohu bodov naraz.',
-  aircraft: 'Na fotke je lietadlo. V ĽAHKEJ verzii vyberieš typ zo štyroch možností, v HARDCORE napíšeš jeho ICAO označenie (napr. B738) alebo názov a potvrdíš Enterom. HINT napovedá po krokoch.',
-  'airport.quiz':   'Dostaneš ICAO kód a určíš mesto, alebo dostaneš mesto a určíš štvorpísmenový ICAO kód. ĽAHKÁ: vyberáš zo štyroch možností. HARDCORE: píšeš z hlavy a potvrdíš Enterom.',
-  'airport.map':    'To isté ako KVÍZ, ale vľavo na mape svieti miesto, kde letisko leží. Odpovedáš vpravo — kód si tak spojíš s polohou.',
-  'airport.click':  'Dostaneš kód alebo mesto a klikneš do mapy tam, kde letisko leží. ĽAHKÁ uzná klik do 100 km (na mape Slovenska do 15 km), HARDCORE do 50 km (8 km).',
-  'airport.prefix': 'Prvé dve písmená ICAO kódu určujú štát. Dostaneš prefix (napr. LO) a napíšeš štát, alebo dostaneš štát a napíšeš prefix.',
-  'airport.study':  'Tu sa nič neskúša. Mapa ukazuje, ktorá časť Európy má ktoré prvé písmeno kódu. Klikni na dvojpísmenový kód štátu pre detail.',
-  'callsign.quiz':  'Dostaneš trojpísmenový kód prevádzkovateľa (BAW) a určíš volací znak (SPEEDBIRD), alebo naopak — v ĽAHKEJ verzii výberom zo štyroch, v HARDCORE písaním. Najskôr idú volačky, ktoré sa na simulátore používajú najčastejšie. Výber si zmenši cez VÝBER, PÍSMENO a BALÍČEK — všetkých je vyše tisíc.',
-  'callsign.cards': 'Kartička ukáže kód alebo volačku. Odpoveď si povedz nahlas, odkry ju medzerníkom a ohodnoť sa: 1 = vedel som, 2 = nevedel som. Nič nepíšeš.',
-  'callsign.list':  'Tu sa nič neskúša. Je to zoznam na čítanie — zakry si stĺpec volačiek alebo kódov a odkrývaj políčka kliknutím.',
-  'waypoint.quiz':  'Dostaneš názov bodu a klikneš na krúžok na mape, kde bod leží.',
-  'waypoint.name':  'Na mape svieti jeden bod. Napíš jeho názov a potvrď Enterom.',
-  'waypoint.blind': 'Na mape sú očíslované body bez mien. Do políčok pod mapou napíš názov ku každému číslu a daj VYHODNOTIŤ — nemusíš vyplniť všetky. V ĽAHKEJ verzii je v políčku prvé písmeno.',
-  'waypoint.study': 'Tu sa nič neskúša. Mapa ukazuje všetky body s menami, farebne podľa sektora. Klikni na bod pre detail.',
-};
 function modeHelpKey() {
   const F = state.filters, m = state.mode;
   if (m === 'aircraft' && F.acMode === 'cmp') return 'aircraft.cmp';
@@ -50,7 +20,7 @@ function renderModeHelp() {
   if (!el) return;
   const k = modeHelpKey(), H = HELP[k];
   el.insertAdjacentHTML('afterbegin', `<div class="mode-help">
-      <div><strong>ČO TU ROBÍŠ</strong>${H ? `<span class="mh-steps">${H[1].map((x, i) => `<i>${i + 1}</i>${x[1]}`).join('<u>›</u>')}</span>` : (MODE_HELP[k] || '')}</div>
+      <div><strong>ČO TU ROBÍŠ</strong>${H ? `<span class="mh-steps">${H[1].map((x, i) => `<i>${i + 1}</i>${x[1]}`).join('<u>›</u>')}</span>` : ''}</div>
       ${H ? `<button class="hp-open" data-hp="${k}">❓ AKO NA TO</button>` : ''}
     </div>`);
 }
@@ -67,7 +37,7 @@ const TIPS = {
   'dans=choice': 'Odpovedáš výberom z možností (klávesy 1 až 6).', 'dans=type': 'Odpovede píšeš z hlavy.',
   'exn': 'Koľko otázok bude mať skúška.', 'exmin': 'Časový limit skúšky.', 'dcount': 'Koľko otázok bude mať dnešný tréning.',
   '#exam-go': 'Spustí skúšku a časomieru.', '#exam-fix': 'Pustí len otázky, ktoré si v skúške pokazil.', '#exam-again': 'Nová skúška s inými otázkami.',
-  '#btn-report': 'Otvorí WhatsApp so správou, v ktorej je už vyplnené, v ktorom module a pri ktorej otázke si. Vyber Denzyho a dopíš, čo je zle.',
+  '#btn-report': 'Otvorí e-mail tvorcovi so správou, v ktorej je už vyplnené, v ktorom module a pri ktorej otázke si. Dopíš, čo je zle.',
   'mode=home': 'Úvod — návod, čo je v ktorom module a ako sa s trenažérom učiť.',
   'go': 'Otvorí tento modul.',
   'mode=coord': 'MOD 06 — koordinačné body, hladiny na nich a frekvencie susedných stanovíšť.',

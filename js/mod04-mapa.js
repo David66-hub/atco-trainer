@@ -262,6 +262,7 @@ function onWaypointPick(pickedName, target, svg, cands) {
   } else {
     state.wrong++; state.streak = 0;
     state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1;
+    wkLog(q, pickedName);
   }
   renderStats(); renderWeak();
   apAfterAnswer(q, ok);
@@ -501,6 +502,7 @@ function submitWaypointName() {
   } else {
     state.wrong++; state.streak = 0;
     state.mistakes[q.id] = (state.mistakes[q.id] || 0) + 1;
+    wkLog(q, val);
   }
   renderStats(); renderWeak();
   apAfterAnswer(q, ok);
@@ -576,15 +578,47 @@ function renderStats() {
   document.getElementById('stat-streak').textContent = state.streak;
 }
 
+/* Zlé pokusy: počet je v state.mistakes (riadi opakovanie), posledná moja odpoveď a správna odpoveď v zázname WK. */
+const WK_KEY = 'atcoTrainerV2.wrongLog';
+function wkLog(q, mine) {
+  if (!q || !q.id) return;
+  const L = lsGet(WK_KEY, {});
+  let right = '', ask = '';
+  try { right = examAnswerOf(q); } catch (e) {}
+  try { ask = examAsk(q); } catch (e) {}
+  L[q.id] = { mine: String(mine == null || mine === '' ? '— bez odpovede —' : mine).slice(0, 120), right: String(right || '').slice(0, 160), ask: String(ask || '').slice(0, 160), t: Date.now() };
+  const ks = Object.keys(L);
+  if (ks.length > 400) ks.sort((a, b) => L[a].t - L[b].t).slice(0, ks.length - 400).forEach(k => { delete L[k]; });
+  lsSet(WK_KEY, L);
+}
+function wkOpen(id) {
+  const L = lsGet(WK_KEY, {}), r = L[id] || {}, n = state.mistakes[id] || 0;
+  let right = r.right, ask = r.ask;
+  if (!right || !ask) { try { const q = poolById()[id]; if (q) { right = right || examAnswerOf(q); ask = ask || examAsk(q); } } catch (e) {} }
+  wkClose();
+  const w = document.createElement('div'); w.id = 'wk-wrap';
+  w.innerHTML = `<div class="hp wk" role="dialog">
+      <div class="hp-top"><span>MOJA CHYBA${n ? ' · POKAZENÉ ' + n + '×' : ''}</span><button data-wk="x" title="Zavrieť">✕</button></div>
+      <div class="wk-ask">${dqEsc(ask || labelForId(id))}</div>
+      <div class="wk-row no"><em>TVOJA ODPOVEĎ</em><b>${dqEsc(r.mine || 'neuložená — chyba je staršia než táto verzia')}</b></div>
+      <div class="wk-row ok"><em>SPRÁVNE</em><b>${dqEsc(right || labelForId(id))}</b></div>
+      <div class="hp-act"><button class="btn ghost" data-wk="del">UŽ TO VIEM — VYMAZAŤ</button><button class="btn" data-wk="x">ZAVRIEŤ</button></div>
+    </div>`;
+  w.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-wk]');
+    if (e.target === w || (b && b.dataset.wk === 'x')) return wkClose();
+    if (b && b.dataset.wk === 'del') { delete state.mistakes[id]; const M = lsGet(WK_KEY, {}); delete M[id]; lsSet(WK_KEY, M); try { apSaveProgress(); } catch (e2) {} renderWeak(); wkClose(); }
+  });
+  document.body.appendChild(w);
+}
+function wkClose() { const w = document.getElementById('wk-wrap'); if (w) w.remove(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') wkClose(); });
 function renderWeak() {
   const el = document.getElementById('weak-list');
-  const items = Object.entries(state.mistakes)
-    .filter(([_, n]) => n >= 3).sort((a,b) => b[1] - a[1]);
-  if (!items.length) {
-    el.innerHTML = '<span class="weak-empty">— no weak spots yet —</span>';
-    return;
-  }
-  el.innerHTML = items.map(([id, n]) => `<span class="weak-item">${labelForId(id)} · ×${n}</span>`).join('');
+  const items = Object.entries(state.mistakes).filter(([_, n]) => n >= 1).sort((a, b) => b[1] - a[1]);
+  if (!items.length) { el.innerHTML = '<span class="weak-empty">— zatiaľ žiadne chyby —</span>'; return; }
+  el.innerHTML = items.slice(0, 150).map(([id, n]) => `<button class="weak-item" data-wkid="${dqEsc(id)}">${labelForId(id)} · ×${n}</button>`).join('') + (items.length > 150 ? `<span class="weak-empty">a ďalších ${items.length - 150}</span>` : '');
+  el.onclick = e => { const b = e.target.closest && e.target.closest('[data-wkid]'); if (b) wkOpen(b.dataset.wkid); };
 }
 
 function labelForId(id) {
@@ -660,7 +694,7 @@ function renderFilters() {
     const chip = (on, attr, val, txt) => `<button class="filter-chip ${on ? 'on' : ''}" data-${attr}="${val}">${txt}</button>`;
     let h = lab('REŽIM:', true) +
       chip(apm==='quiz', 'apmode', 'quiz', 'KVÍZ') + chip(apm==='map', 'apmode', 'map', 'MAPA') +
-      chip(apm==='click', 'apmode', 'click', 'KLIKNI NA MAPU') + chip(apm==='prefix', 'apmode', 'prefix', 'PREFIXY ŠTÁTOV') +
+      chip(apm==='click', 'apmode', 'click', 'NÁJDI NA MAPE') + chip(apm==='prefix', 'apmode', 'prefix', 'PREFIXY ŠTÁTOV') +
       chip(apm==='study', 'apmode', 'study', 'ŠTÚDIUM');
     if (apm !== 'study') {
       const ck = apm === 'click';
@@ -802,7 +836,6 @@ function renderFilters() {
     const br = '<span class="filter-break"></span>';
     let h = lab('OBTIAŽNOSŤ:') + chip(F.dAns==='choice', 'dans', 'choice', 'ĽAHKÁ (výber z možností)') + chip(F.dAns==='type', 'dans', 'type', 'HARDCORE (písanie)');
     if (ex) {
-      h += br + lab('POČET OTÁZOK:') + [20, 30, 50].map(n => chip(F.exN===n, 'exn', n, n)).join('');
       h += br + lab('ČAS: ' + examClock(examSecs()) + ' — ' + (F.dAns === 'type' ? '20' : '12') + ' s na otázku');
     } else {
       h += br + lab('POČET OTÁZOK:') + [15, 25, 40].map(n => chip(F.dCount===n, 'dcount', n, n)).join('');
