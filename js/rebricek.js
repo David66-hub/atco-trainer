@@ -209,7 +209,7 @@ function helpOpen(key) { if (HELP[key]) hpDraw(key, 0); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hp]'); if (b) { e.preventDefault(); if (b.dataset.hp === 'game') hpGameNow(); else helpOpen(b.dataset.hp === '*' ? hpKeyNow() : b.dataset.hp); } });
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '5.4.5';
+const APP_VERSION = '5.4.7';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -934,8 +934,11 @@ function pfBind(card) {
 }
 /* ---------- MAPA v rebríčku (v4.11): deväť oblastí Slovenska = deväť modulov; oblasť drží ten, kto má v module najviac bodov ---------- */
 /* [modul, mesto, lon, lat, popis hore/dole, lon a lat miesta, kam ide popis mimo mapy] */
-const RKM = [['airport', 'Bratislava', 17.11, 48.15, 'dn', 16.30, 47.52], ['daily', 'Trnava', 17.59, 48.37, 'up', 16.20, 49.50], ['coord', 'Nitra', 18.09, 48.31, 'dn', 17.95, 47.30], ['aircraft', 'Trenčín', 18.04, 48.89, 'up', 17.70, 49.98], ['heading', 'Žilina', 18.74, 49.22, 'up', 19.15, 50.02],
-  ['waypoint', 'Banská Bystrica', 19.15, 48.74, 'dn', 19.70, 47.34], ['exam', 'Poprad', 20.30, 49.06, 'up', 20.65, 50.02], ['conquer', 'Prešov', 21.24, 49.00, 'up', 22.15, 49.98], ['callsign', 'Košice', 21.26, 48.72, 'dn', 21.60, 47.50]];
+const RKM = [   // [modul, mesto, lon, lat, 'up'|'dn' (kam vedie štítok), lon a lat konca čiary so štítkom] — jedna oblasť na každý zdroj bodov (moduly, hry, denné úlohy)
+  ['daily', 'Trnava', 17.59, 48.37, 'up', 16.10, 50.02], ['theory', 'Piešťany', 17.83, 48.59, 'up', 16.95, 51.65], ['aircraft', 'Trenčín', 18.04, 48.89, 'up', 17.80, 50.02], ['heading', 'Žilina', 18.74, 49.22, 'up', 18.65, 51.65],
+  ['metar', 'Liptovský Mikuláš', 19.61, 49.08, 'up', 19.50, 50.02], ['exam', 'Poprad', 20.30, 49.06, 'up', 20.35, 51.65], ['conquer', 'Prešov', 21.24, 49.00, 'up', 21.25, 50.02], ['bonus', 'Humenné', 21.91, 48.93, 'up', 22.20, 51.65],
+  ['airport', 'Bratislava', 17.11, 48.15, 'dn', 16.30, 47.45], ['coord', 'Nitra', 18.09, 48.31, 'dn', 17.15, 45.9], ['wake', 'Levice', 18.60, 48.21, 'dn', 18.00, 47.45], ['waypoint', 'Banská Bystrica', 19.15, 48.74, 'dn', 18.85, 45.9],
+  ['phrase', 'Lučenec', 19.67, 48.33, 'dn', 19.70, 47.45], ['calc', 'Rožňava', 20.53, 48.66, 'dn', 20.55, 45.9], ['callsign', 'Košice', 21.26, 48.72, 'dn', 21.40, 47.45], ['abbr', 'Michalovce', 21.92, 48.76, 'dn', 22.25, 45.9]];
 const RKM_COL = ['#e63946', '#3a86ff', '#ffbe0b', '#2dc653', '#b45cff', '#ff8c2b', '#1fd6d6', '#ff7ab6', '#8d99ae'];
 /* náznak hraníc susedov: od trojmedzí smerom, ktorým hranica naozaj pokračuje [lon, lat → lon, lat] */
 const RKM_NB = [[16.940, 48.617, 16.05, 48.79], [18.851, 49.517, 18.60, 49.84], [22.566, 49.088, 22.74, 49.56], [22.155, 48.397, 22.88, 48.06], [17.161, 48.007, 17.06, 47.62]];
@@ -965,7 +968,7 @@ function rkmCells() {
 function rkmPlace() {
   const w = document.getElementById('rkm-wrap'); if (!w) return;
   const R = w.getBoundingClientRect();
-  w.querySelectorAll(window.innerWidth <= 760 ? '.rkm-pt' : '.rkm-an').forEach(c => { const l = w.querySelector('.rkm-lab[data-m="' + c.dataset.m + '"]'), r = c.getBoundingClientRect(); if (l) { l.style.left = (r.left + r.width / 2 - R.left).toFixed(1) + 'px'; l.style.top = (r.top + r.height / 2 - R.top).toFixed(1) + 'px'; l.classList.add('set'); } });
+  w.querySelectorAll('.rkm-pt').forEach(c => { const l = w.querySelector('.rkm-lab[data-m="' + c.dataset.m + '"]'), r = c.getBoundingClientRect(); if (l) { l.style.left = (r.left + r.width / 2 - R.left).toFixed(1) + 'px'; l.style.top = (r.top + r.height / 2 - R.top).toFixed(1) + 'px'; l.classList.add('set'); } });
 }
 window.addEventListener('resize', () => { if (state.mode === 'rank' && RK.view === 'map') rkmPlace(); });
 function renderRankMap(card) {
@@ -974,6 +977,8 @@ function renderRankMap(card) {
   /* farby: každý držiteľ má jednu, rozdielnu od ostatných; kto drží najviac oblastí, je prvý */
   const cnt = {}; O.forEach(o => { if (o.top) cnt[o.top.r.nick] = (cnt[o.top.r.nick] || 0) + 1; });
   const kings = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a] || a.localeCompare(b)), colOf = n => RKM_COL[kings.indexOf(n) % RKM_COL.length];
+  /* tabuľka: hore ten, kto drží najviac oblastí; v rámci hráča od najväčších bodov, voľné oblasti na konci */
+  const ord = RKM.map((x, i) => i).sort((a, b) => { const A = O[a].top, B = O[b].top; if (!A || !B) return (A ? 0 : 1) - (B ? 0 : 1) || a - b; return kings.indexOf(A.r.nick) - kings.indexOf(B.r.nick) || B.p - A.p || a - b; });
   const name = m => (RK_MODS.find(x => x[0] === m) || ['', m])[1], me = RK.acct ? RK.acct.nick : '';
   const lv = r => rkLevel(rkTotal(r));
   const nf = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -998,7 +1003,7 @@ function renderRankMap(card) {
         ${RKM.map((x, i) => { const o = O[i].top; return `<button class="rkm-lab ${x[4]}${o ? '' : ' free'}${o && o.r.nick === me ? ' me' : ''}" data-m="${x[0]}" style="--c:${o ? colOf(o.r.nick) : '#7d9087'}"><small>${name(x[0])}</small>${o ? `<span>${avFace(o.r.nick, o.r.emo, 'sm')}<b>${dqEsc(o.r.nick)}</b></span><i>LVL ${lv(o.r).n} · ${nf(o.p)} b.</i>` : '<span><b>VOĽNÉ</b></span><i>získaj prvý bod</i>'}</button>`; }).join('')}
       </div>
       <div class="rk-note"><b>Ako to funguje:</b> každá oblasť patrí jednému modulu. Drží ju hráč, ktorý má v tom module <b>najviac bodov zo všetkých</b>. Klikni na oblasť a rozbalí sa, kto je druhý, tretí, štvrtý a kde si ty.</div>
-      <div class="rk-tbl rkm-tbl"><table><thead><tr><th>OBLASŤ</th><th>MODUL</th><th>DRŽÍ</th><th>BODY</th><th>ÚROVEŇ</th></tr></thead><tbody>${RKM.map((x, i) => { const o = O[i].top, L = O[i].L, open = RK.mapOpen === x[0], myI = L.findIndex(q => q.r.nick === me);
+      <div class="rk-tbl rkm-tbl"><table><thead><tr><th>OBLASŤ</th><th>MODUL</th><th>DRŽÍ</th><th>BODY</th><th>ÚROVEŇ</th></tr></thead><tbody>${ord.map(i => { const x = RKM[i], o = O[i].top, L = O[i].L, open = RK.mapOpen === x[0], myI = L.findIndex(q => q.r.nick === me);
         const line = (q, k, cls) => `<div class="rkm-ln ${cls || ''}${q.r.nick === me ? ' me' : ''}"><b>${k + 1}.</b>${avFace(q.r.nick, q.r.emo, 'sm')}<span>${dqEsc(q.r.nick)}</span>${lvTag(lv(q.r).n, true, q.r.lg)}<strong>${nf(q.p)} b.</strong><small>${k ? 'na 1. miesto chýba ' + nf(L[0].p - q.p + 1) + ' b.' : 'drží oblasť'}</small></div>`;
         const more = !open ? '' : `<tr class="rkm-more"><td colspan="5"><div class="rkm-exp" style="--c:${o ? colOf(o.r.nick) : '#7d9087'}">
             ${L.length > 1 ? L.slice(1, 4).map((q, k) => line(q, k + 1)).join('') : `<div class="rkm-ln none">${o ? 'Nikto ďalší tu zatiaľ body nemá.' : 'Oblasť je voľná — kto získa prvý bod v tomto module, drží ju.'}</div>`}
