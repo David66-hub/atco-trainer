@@ -821,7 +821,8 @@ function dqApply(S) {
   if (S.phase === 'end' && DQ.reported !== S.gid) {
     DQ.reported = S.gid;
     const me = dqMe(), place = S.rank.indexOf(me);
-    if (me >= 0 && S.league[me] > 0 && !S.cfg.demo) { rkAdd('conquer', S.humans >= 2 ? { p: S.league[me], g: 1, v: place === 0 ? 1 : 0 } : { p: S.league[me] }); rkPendSave(); rkFlush(); }
+    const lgMe = me >= 0 ? dqLeaguePts(S, me).pts : 0;   // počíta si ich každý sám z konca hry, nie z čísla od hostiteľa (ten mohol mať starú verziu)
+    if (me >= 0 && lgMe > 0 && !S.cfg.demo) { rkAdd('conquer', S.humans >= 2 ? { p: lgMe, g: 1, v: place === 0 ? 1 : 0 } : { p: lgMe }); rkPendSave(); rkFlush(); }
   }
   const sig = JSON.stringify(Object.assign({}, S, { dur: 0 })) + JSON.stringify(DQ.my);
   if (sig !== DQ.sig && state.mode === 'conquer') { DQ.sig = sig; dqRender(document.getElementById('qcard')); }
@@ -1638,7 +1639,7 @@ function dqAxisSVG(S, el) {
 /* koniec hry: stupne víťazov, zvyšok poradia a ocenenia */
 function dqPodiumHTML(S, me) {
   const nm = i => dqEsc(S.players[i] ? S.players[i].nick : '?'), top = S.rank.slice(0, 3), ord = top.length === 3 ? [1, 0, 2] : top.length === 2 ? [1, 0] : [0];
-  const lg = pi => !S.cfg.demo && !S.players[pi].bot && S.league[pi] ? `<em>+${S.league[pi]} do rebríčka</em>` : '';
+  const lg = pi => !S.cfg.demo && !S.players[pi].bot && dqLeaguePts(S, pi).pts ? `<em>+${dqLeaguePts(S, pi).pts} do rebríčka</em>` : '';
   let h = `<div class="dq-podium">${ord.map(r => { const pi = top[r]; return `<div class="p${r + 1}${pi === me ? ' me' : ''}" style="--c:${dqC(pi)};animation-delay:${(1.0 - r * 0.35).toFixed(2)}s">${dqFace(S, pi)}<span>${nm(pi)}</span><strong>${dqScore(S, pi)}</strong><small>${S.own.filter(o => o === pi).length} priestorov</small>${lg(pi)}<b>${r + 1}</b></div>`; }).join('')}</div>`;
   if (S.rank.length > 3) h += `<div class="dq-endlist">${S.rank.slice(3).map((pi, r) => `<div class="${pi === me ? 'me' : ''}" style="animation-delay:${(1.3 + r * 0.15).toFixed(2)}s"><b>${r + 4}.</b><i style="background:${dqC(pi)}"></i><span>${nm(pi)}</span><small>${S.own.filter(o => o === pi).length} priestorov</small><strong>${dqScore(S, pi)}</strong>${lg(pi)}</div>`).join('')}</div>`;
   const aw = [], St = S.stat || [];
@@ -1654,7 +1655,7 @@ function dqPodiumHTML(S, me) {
   }
   if (me >= 0 && !S.cfg.demo && !S.players[me].bot) {
     const L = dqLeaguePts(S, me), f = x => String(x).replace('.', ',');
-    h += `<div class="dq-lgcalc"><strong>BODY DO REBRÍČKA · +${S.league[me]}</strong><div><span>základ <b>500</b></span><span>× miesto <b>${f(L.place)}</b></span><span>× výkon <b>${f(L.perf)}</b></span><span>× hráči <b>${f(L.F.pl)}</b></span><span>× dĺžka <b>${f(L.F.len)}</b></span><span>× okruhy <b>${f(L.F.top)}</b></span></div>
+    h += `<div class="dq-lgcalc"><strong>BODY DO REBRÍČKA · +${L.pts}</strong><div><span>základ <b>500</b></span><span>× miesto <b>${f(L.place)}</b></span><span>× výkon <b>${f(L.perf)}</b></span><span>× hráči <b>${f(L.F.pl)}</b></span><span>× dĺžka <b>${f(L.F.len)}</b></span><span>× okruhy <b>${f(L.F.top)}</b></span></div>
       <small>${L.F.h} ${L.F.h === 1 ? 'človek' : L.F.h < 5 ? 'ľudia' : 'ľudí'}${L.F.bots ? ' a ' + L.F.bots + ' počítač' + (L.F.bots === 1 ? '' : L.F.bots < 5 ? 'e' : 'ov') : ''} · ${L.F.R} kôl · ${L.F.m} z ${DQ_QS.length} sád otázok · výkon = tvoje body oproti víťazovi. ${L.F.h < 2 ? 'Proti počítačom je bodov málo — s kolegami ich je mnohonásobne viac.' : 'Viac ľudí, viac kôl a viac okruhov = viac bodov.'}</small></div>`;
   }
   /* rozpis bodov: z čoho kto body má */
