@@ -33,8 +33,8 @@ const CO_UNITS = [
   { g: 'LV', n: 'L\'VIV LOWER',   lim: '5 000 ft – FL335',      f: '118,675', alt: '118,625' },
   { g: 'LV', n: 'L\'VIV FIC',     lim: 'GND – 5 000 ft AMSL',   f: '' },
   { g: 'BU', n: 'BUDAPEST UPPER', lim: 'FL335 – FL660',         f: '135,205' },
-  { g: 'BU', n: 'BUDAPEST LOWER', lim: 'FL195 – FL335',         f: '133,200' },
-  { g: 'BU', n: 'BUDAPEST APP',   lim: '1 500 ft – FL195',      f: '122,975' },
+  { g: 'BU', n: 'BUDAPEST LOWER', lim: 'FL195 – FL335',         f: '133,200', ch: '133,205' },
+  { g: 'BU', n: 'BUDAPEST APP',   lim: '1 500 ft – FL195',      f: '122,975', ch: '122,980' },
   { g: 'BU', n: 'BUDAPEST FIC',   lim: 'GND – 9 500 ft AMSL',   f: '' },
   { g: 'WI', n: 'WIEN UPPER',     lim: 'FL345 – FL660',         f: '133,985', alt: '132,160' },
   { g: 'WI', n: 'WIEN LOWER',     lim: 'FL245 – FL345',         f: '134,440' },
@@ -157,7 +157,7 @@ function coLvlAccept(txt) {
   if (/^(descending|climbing)/.test(txt) && fl.length === 1) { out.push(w + ' ' + fl[0].replace('FL', '')); }
   return out;
 }
-function coFreqAccept(u) { const a = [u.f, u.f.replace(',', '.')]; if (u.alt) a.push(u.alt, u.alt.replace(',', '.')); return a; }
+function coFreqAccept(u) { const a = [u.f, u.f.replace(',', '.')]; if (u.alt) a.push(u.alt, u.alt.replace(',', '.')); if (u.ch) a.push(u.ch, u.ch.replace(',', '.')); return a; }   // ch = názov toho istého kanála v rastri 8,33 kHz (tak ho uvádza AIP)
 function coScenario(t, r) { return t.id + '|' + r[0] + '|' + r[1]; }
 
 function buildCoordQuestions() {
@@ -175,7 +175,7 @@ function buildCoordQuestions() {
   } else if (m === 'freq') {
     const us = CO_UNITS.filter(u => u.f), all = us.map(u => u.f);
     us.filter(u => coNbOk(u.g)).forEach(u => {
-      const near = all.filter(f => f !== u.f && f !== u.alt).sort((a, b) => Math.abs(parseFloat(a.replace(',', '.')) - parseFloat(u.f.replace(',', '.'))) - Math.abs(parseFloat(b.replace(',', '.')) - parseFloat(u.f.replace(',', '.'))));
+      const near = all.filter(f => f !== u.f && f !== u.alt && f !== u.ch).sort((a, b) => Math.abs(parseFloat(a.replace(',', '.')) - parseFloat(u.f.replace(',', '.'))) - Math.abs(parseFloat(b.replace(',', '.')) - parseFloat(u.f.replace(',', '.'))));
       Q('u2f', 'U2F_' + u.n, { unit: u, correct: u.f + ' MHz', pool: near.map(f => f + ' MHz'), accept: coFreqAccept(u), label: u.n + '→' + u.f });
       Q('f2u', 'F2U_' + u.n, { unit: u, correct: u.n, exact: false,
         pool: us.filter(x => x.n !== u.n).sort((a, b) => (a.g === u.g ? 0 : 1) - (b.g === u.g ? 0 : 1)).map(x => x.n), accept: [u.n], label: u.f + '→' + u.n });
@@ -297,7 +297,7 @@ function coHints(q) {
 function coStackHTML(g, mark) {
   const top = u => { const b = u.lim.split('–')[1]; return /FL/.test(b) ? parseInt(b.replace(/\D/g, ''), 10) * 100 : parseInt(b.replace(/\D/g, ''), 10); };
   return `<div class="co-stack">${CO_UNITS.filter(u => u.g === g).slice().sort((a, b) => top(b) - top(a)).map(u =>
-    `<div class="co-band${u.n === mark ? ' on' : ''}"><strong>${u.n}</strong><span>${u.lim}</span><em>${u.f ? u.f + ' MHz' + (u.alt ? ' (v Annex E: ' + u.alt + ')' : '') : '—'}</em></div>`).join('')}</div>`;
+    `<div class="co-band${u.n === mark ? ' on' : ''}"><strong>${u.n}</strong><span>${u.lim}</span><em>${u.f ? u.f + ' MHz' + (u.alt ? ' (v Annex E: ' + u.alt + ')' : '') + (u.ch ? ' (kanál 8,33 kHz: ' + u.ch + ')' : '') : '—'}</em></div>`).join('')}</div>`;
 }
 function coTableHTML(t, hi) {
   return `<table class="co-table"><thead><tr><th colspan="2">ATS-Route</th><th>COP</th><th>Level Allocation</th><th>Special Conditions</th></tr></thead><tbody>${

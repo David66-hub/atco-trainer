@@ -21,7 +21,7 @@ const DQ_STYLE = 'a';   // vzhľad mapy: a = čistá čierna, b = čierna s typm
 const DQ_CAT = { AD: ['LETISKO', '#ffffff'], CTR: ['CTR', '#8fb8ff'], TMA: ['TMA', '#c3d6ff'], TRA: ['TRA', '#d9c2f5'], TSA: ['TSA', '#c7a6ee'],
   R: ['LZR', '#f7b3b3'], P: ['LZP', '#f08a8a'], D: ['LZD', '#f5c9a0'], G: ['TRIEDA G', '#dfe8e2'] };
 const DQ_QS = [['ac', 'MOD 01', 'TYPY LIETADIEL'], ['ap', 'MOD 02', 'LETISKÁ'], ['px', 'MOD 02', 'PREFIXY ŠTÁTOV'], ['cs', 'MOD 03', 'VOLAČKY'], ['hd', 'MOD 05', 'KURZY'], ['co', 'MOD 06', 'FREKVENCIE'], ['atm', 'OKRUH', 'ATM'], ['nav', 'OKRUH', 'NAVIGÁCIA'], ['met', 'OKRUH', 'METEOROLÓGIA'], ['eqps', 'OKRUH', 'ZARIADENIA'], ['hum', 'OKRUH', 'ĽUDSKÉ FAKTORY'], ['acft', 'OKRUH', 'LIETADLÁ'], ['pen', 'OKRUH', 'PRAC. PROSTREDIE'], ['law', 'OKRUH', 'LETECKÉ PRÁVO'], ['hist', 'OKRUH', 'HISTÓRIA LETECTVA'], ['gen', 'OKRUH', 'VŠEOBECNÝ PREHĽAD']];
-const DQ_OPT = { map: ['auto', 's', 'm', 'l'], max: [2, 3, 4, 5, 6], time: [10, 15, 20, 30], claim: [3, 5, 8, 10, 12], war: [0, 3, 5, 8, 10], pm: [0, 1], lv: [0, 1], fast: [0, 1], jk: [0, 1], pk: [0, 1] };
+const DQ_OPT = { map: ['auto', 's', 'm', 'l'], max: [2, 3, 4, 5, 6, 7, 8], bot: [0, 1, 2], priv: [0, 1], time: [10, 15, 20, 30], claim: [3, 5, 8, 10, 12], war: [0, 3, 5, 8, 10], pm: [0, 1], lv: [0, 1], fast: [0, 1], jk: [0, 1], pk: [0, 1] };
 const DQ_FIX = { rest: 4200, count: 3700, tierev: 8500, startrev: 8500, startpick: 25000, claimrev: 4500, pick: 25000, warpick: 30000, modpick: 25000, duelintro: 3000, duelrev: 5500 };
 const DQ_FXMS = 2400;   // ako dlho sa priestor vyfarbuje
 const DQ = { id: null, room: null, host: false, S: null, net: null, H: null, my: null, k: -1, qT0: 0, deadline: 0, sig: '', sb: null, err: '', lastState: 0, loop: null, bar: null, reported: null, guest: '', prev: null };
@@ -32,18 +32,96 @@ try { DQ.id = sessionStorage.getItem('atcoDqId'); if (!DQ.id) { DQ.id = Math.ran
                            bloky oddelené prázdnym riadkom.
    Otázky ostávajú v prehliadači hostiteľa; ostatným hráčom ich posiela hra sama. */
 /* ---------- v4.0: vzhľad hráča, animácie a efekty ---------- */
-const DQ_PAL = ['#e63946', '#2dc653', '#3a86ff', '#ffbe0b', '#b45cff', '#1fd6d6', '#ff7ab6', '#ff8c2b'];   // farby na výber
-const DQ_ICO = ['✈', '🛩', '🚁', '🚀', '🛸', '🪂', '🎈', '🛰'];                                              // ikonka hráča
+const DQ_PAL = ['#e63946', '#2dc653', '#3a86ff', '#ffbe0b', '#b45cff', '#1fd6d6', '#ff7ab6', '#ff8c2b', '#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93', '#f72585', '#7209b7', '#7400b8', '#4361ee', '#4cc9f0', '#06d6a0', '#ef476f', '#ffd166', '#118ab2', '#5e60ce', '#c77dff', '#80ed99', '#ff9f1c', '#2ec4b6', '#e71d36', '#9bf6ff', '#caffbf', '#fdffb6', '#ffc6ff', '#a0c4ff', '#bdb2ff', '#ffadad', '#d4af37', '#00f5d4', '#fb5607', '#8338ec', '#f8f9fa', '#00bbf9', '#f15bb5', '#06aed5', '#dd1c1a'];   // farby na výber
+const DQ_ICO = ['✈', '🛩', '🚁', '🚀', '🛸', '🪂', '🎈', '🛰', '🛫', '🦅', '🐉', '👑'];                                              // ikonka hráča
 const DQ_EMO = ['👍', '😂', '😱', '😭'];                                                                     // rýchle reakcie
 const DQ_JKN = { h: '½ 50:50', t: '⏱ +10 s', d: '×2 BODY', s: '⏱ +5 s', a: '×1,2 BODY', b: '×1,3 BODY' };
 /* boosty za úroveň (v4.11): pribudnú k žolíkom; hostiteľ ich vie vypnúť. [od úrovne, kľúč, názov, popis, druh: 'once' = jednorazový (raz za hru), 'perm' = stály (v každej hre), počet] */
-const DQ_PERK = [[6, 's', '⏱ +5 s', 'päť sekúnd navyše pre všetkých', 'once'], [10, 'z', '↺ ZMENA ODPOVEDE', 'raz za hru zmeníš odpoveď, ale len pri otázkach z ATM', 'once'], [16, 'a', '×1,2 BODY', 'pri dobytí o pätinu bodov viac', 'once'], [20, 'y', '↺ 2 ZMENY ODPOVEDE', 'dvakrát za hru zmeníš odpoveď pri ktoromkoľvek okruhu', 'once', 2], [28, 'h', 'DRUHÉ 50:50', 'ešte jedno 50:50', 'once'], [29, 'u', '↺ ZMENA BEZ LIMITU', 'odpoveď meníš, koľkokrát chceš, kým beží čas — v každej hre', 'perm'], [35, 'b', '×1,3 BODY', 'pri dobytí o 30 % bodov viac', 'once'], [40, 't', 'DRUHÝCH +10 s', 'ešte raz desať sekúnd navyše', 'once']];
+/* ODMENY ZA ÚROVNE (v5.7): každá úroveň dáva niečo. ⚡ jednorazové = doplnia sa na začiatku každej hry a míňajú sa; ♾ stále = platia vždy.
+   DQ_SPEC: úroveň → odmeny. h/t/d = žolíky navyše (50:50, +10 s, ×2 body), e = štít, s/a/b/z/y/u = boosty a zmena odpovede, ico:N = ikona lietadla,
+   col = dve farby hráča, emo = sada emoji, cem = vlastné emoji, fr:N = rámček profilovky, nc:N = farba mena, tt:X = titul pred menom */
+const DQ_SPEC = {
+  1: ['emo'], 2: ['ico:1', 'col'], 3: ['d1', 'nc:1'], 4: ['fr:1', 'emo'], 5: ['ico:2', 't1'], 6: ['s'], 7: ['ico:8', 'col'], 8: ['h1', 'nc:2'], 9: ['ico:3', 'emo', 'col'], 10: ['z', 'col'],
+  11: ['fr:2', 'col'], 12: ['cem'], 13: ['ico:4', 'emo', 'bg:ocean'], 14: ['tt:ATCO', 'snd:1'], 15: ['col'], 16: ['a', 'cf:1'], 17: ['nc:3'], 18: ['ico:5', 'emo'], 19: ['h1', 'fr:3'], 20: ['y', 'd1', 'col'],
+  21: ['e', 'nc:4'], 22: ['ico:6', 't1'], 23: ['emo'], 24: ['tt:Approach', 'bg:rose'], 25: ['col'], 26: ['fr:4'], 27: ['col', 'snd:2'], 28: ['h1', 'ico:7'], 29: ['u'], 30: ['col'],
+  31: ['col'], 32: ['emo', 'tr:1'], 33: ['fr:5'], 34: ['nc:5'], 35: ['b', 'tt:ACC'], 36: ['ico:9', 'col', 'cf:2'], 37: ['emo'], 38: ['h1', 'fr:6', 'bg:gold'], 39: ['col', 'tr:2'], 40: ['t1', 'nc:6'],
+  41: ['e'], 42: ['tt:Veterán'], 43: ['col'], 44: ['emo'], 45: ['ico:10'], 46: ['tt:Šéfkontrolór'], 47: ['fr:7', 'col'], 48: ['col', 'snd:3'], 49: ['d1'], 50: ['t1'],
+  51: ['tt:Mentor', 'bg:night'], 52: ['col'], 53: ['col', 'tr:3'], 54: ['emo'], 55: ['ico:11', 'cf:3'], 56: ['fr:8'], 57: ['nc:7'], 58: ['fr:9', 'tt:Legenda']
+};
+const DQ_STOCK_TOK = ['h1', 'h2', 't1', 't2', 'd1', 'd2', 's'];   // staré pevné žolíky po úrovniach — nahradila ich zásoba (zbierajú sa za úrovne)
+const DQ_RW = (() => {
+  const J = { h1: ['h', '½ 50:50 +1', 'jedno 50:50 navyše v každej hre', 1], h2: ['h', '½ 50:50 +2', 'dve 50:50 navyše v každej hre', 2], t1: ['t', '⏱ +10 s navyše', 'ďalší časový žolík (+10 s) v každej hre', 1], t2: ['t', '⏱ +10 s ×2 navyše', 'dva ďalšie časové žolíky v každej hre', 2],
+    d1: ['d', '×2 BODY navyše', 'ďalší žolík dvojitých bodov pri útoku v každej hre', 1], d2: ['d', '×2 BODY ×2 navyše', 'dva ďalšie žolíky dvojitých bodov v každej hre', 2], e: ['e', '🛡 ŠTÍT', 'raz za hru ti súper nevezme priestor, aj keď vyhrá súboj', 1],
+    s: ['s', '⏱ +5 s', 'päť sekúnd navyše pre všetkých', 1], a: ['a', '×1,2 BODY', 'pri dobytí o pätinu bodov viac', 1], b: ['b', '×1,3 BODY', 'pri dobytí o 30 % bodov viac', 1],
+    z: ['z', '↺ ZMENA ODPOVEDE', 'raz za hru zmeníš odpoveď, ale len pri otázkach z ATM', 1], y: ['y', '↺ 2 ZMENY ODPOVEDE', 'dvakrát za hru zmeníš odpoveď pri ktoromkoľvek okruhu', 2] };
+  const FR = ['Nováčik (bronz)', 'Veža (zelený)', 'Radar (animovaný)', 'Zlatý', 'ACC (platinový)', 'Diamant', 'Legenda (animovaný zlatý)', 'Platina+ (animovaný)', 'LEGENDA'], NC = ['strieborná', 'zelená „radar“', 'oranžová', 'zlatá', 'prechod', 'dúha', 'žiarivá'];
+  const perks = [], icoLv = DQ_ICO.map(() => 1), palLv = DQ_PAL.slice(0, 8).map(() => 1), emo = [], fr = [], nc = [], tt = [], bg = {}, snd = [1], cf = [1], tr = [];
+  const BGN = { ocean: 'OCEÁN', rose: 'RUŽOVÁ', gold: 'ZLATÁ', night: 'POLNOC' }, SNDN = ['', 'Fanfára', 'Arkáda', 'Zvonenie'], CFN = ['', 'teplé', 'neónové', 'zlaté'], TRN = ['', 'žiara', 'biele jadro', 'zlatá stopa'];
+  Object.keys(DQ_SPEC).map(Number).sort((x, y) => x - y).forEach(l => DQ_SPEC[l].forEach(tok => {
+    const k = tok.split(':')[0], a = tok.split(':')[1];
+    if (DQ_STOCK_TOK.indexOf(tok) >= 0) return;
+    if (J[tok]) perks.push([l, J[tok][0], J[tok][1], J[tok][2], 'once', J[tok][3]]);
+    else if (tok === 'u') perks.push([l, 'u', '↺ ZMENA BEZ LIMITU', 'odpoveď meníš, koľkokrát chceš, kým beží čas — v každej hre', 'perm']);
+    else if (k === 'ico') { icoLv[+a] = l; perks.push([l, '', 'IKONA ' + DQ_ICO[+a], 'nová ikona lietadla v Dobyvateľovi', 'perm']); }
+    else if (k === 'col') { palLv.push(l, l); perks.push([l, '', '🎨 2 NOVÉ FARBY', 'dve farby hráča navyše v Dobyvateľovi', 'perm']); }
+    else if (k === 'emo') { emo.push(l); perks.push([l, '', emo.length === 1 ? '😀 ZÁKLADNÉ EMOJI' : '😀 NOVÉ EMOJI', emo.length === 1 ? 'osem emoji na profilovku' : 'šesť nových emoji na profilovku', 'perm']); }
+    else if (k === 'cem') perks.push([l, '', '😀 VLASTNÉ EMOJI', 'ako profilovku si dáš ľubovoľné emoji', 'perm']);
+    else if (k === 'fr') { fr.push([l, 'fr' + a]); perks.push([l, '', '◯ RÁMČEK ' + FR[a - 1], 'rámček tvojej profilovky, vidia ho všetci', 'perm']); }
+    else if (k === 'nc') { nc.push([l, 'nc' + a]); perks.push([l, '', '✎ FARBA MENA: ' + NC[a - 1], 'tvoje meno v Dobyvateľovi je zafarbené', 'perm']); }
+    else if (k === 'bg') { bg[a] = l; perks.push([l, '', '🖼 POZADIE: ' + BGN[a], 'nová farba pozadia stránky v profile', 'perm']); }
+    else if (k === 'snd') { snd[+a] = l; perks.push([l, '', '🔔 ZVUK VÝHRY: ' + SNDN[a], 'nový zvuk pri výhre, vyberieš si ho v profile', 'perm']); }
+    else if (k === 'cf') { cf[+a] = l; perks.push([l, '', '🎊 KONFETY: ' + CFN[a], 'nová farba konfiet pri oslave, vyberieš si ju v profile', 'perm']); }
+    else if (k === 'tr') { tr.push([l, 'tr' + a]); perks.push([l, '', '✈ STOPA LIETADLA: ' + TRN[a], 'stopa za tvojím lietadlom pri útoku, vidia ju všetci', 'perm']); }
+    else if (k === 'tt') { tt.push([l, a]); perks.push([l, '', '🏷 TITUL ' + a.toUpperCase(), 'titul pred tvojím menom pri súboji', 'perm']); }
+  }));
+  /* zásoba žolíkov: každá úroveň +5 s, každá 2. úroveň 50:50, každá 3. ×2 body, každá 5. +10 s — zbierajú sa, v hre sa použije najviac po jednom kuse od každého */
+  for (let n = 1; n <= 58; n++) {
+    perks.push([n, '', '⏱ +5 s ŽOLÍK', 'pridá sa do zásoby · v hre najviac raz', 'stock']);
+    if (n % 2 === 0) perks.push([n, '', '½ 50:50 ŽOLÍK', 'pridá sa do zásoby · v hre najviac raz', 'stock']);
+    if (n % 3 === 0) perks.push([n, '', '×2 BODY ŽOLÍK', 'pridá sa do zásoby · v hre najviac raz', 'stock']);
+    if (n % 5 === 0) perks.push([n, '', '⏱ +10 s ŽOLÍK', 'pridá sa do zásoby · v hre najviac raz', 'stock']);
+  }
+  perks.sort((x, y) => x[0] - y[0]);
+  return { perks, icoLv, palLv, emo, fr, nc, tt, bg, snd, cf, tr };
+})();
+const DQ_PERK = DQ_RW.perks;
+function lvPickCem() { return +Object.keys(DQ_SPEC).find(l => DQ_SPEC[l].indexOf('cem') >= 0); }
+function lvPick(L, n) { let r = null; L.forEach(x => { if (x[0] <= n) r = x; }); return r; }
 const DQ_ZT = 'atm';   // okruh, v ktorom platí najprv obmedzená zmena odpovede (perk ↺ z)
 const DQ_MUL = { d: 2, a: 1.2, b: 1.3 };
 function dqMulTxt(m) { return '×' + String(m === true ? 2 : m).replace('.', ','); }
 function dqMyLv() { if (!RK.acct) return 1; const r = (RK.rows || []).find(x => x.nick === RK.acct.nick); return r ? rkLevel(rkTotal(r)).n : (lsGet('atcoTrainerV2.lvSeen:' + RK.acct.nick.toLowerCase(), 1) || 1); }
-function dqMeta() { return Object.assign(dqLook(), { lv: dqMyLv(), acc: RK.acct ? 1 : 0 }); }
-function dqJkFor(p, cfg) { if (!cfg.jk) return null; const J = { h: 1, t: 1, d: 1 }; if (cfg.pk && !cfg.demo && !p.bot) DQ_PERK.forEach(x => { if ((p.lv || 1) >= x[0]) J[x[1]] = (J[x[1]] || 0) + (x[5] || 1); }); return J; }
+/* ZÁSOBA ŽOLÍKOV: zarobená podľa úrovne (+5 s za každú, 50:50 za každé 2., ×2 za každé 3., +10 s za každé 5.) mínus použité; použité drží server (atco_boosts) */
+const BST = { loaded: false, srv: false, used: { s: 0, h: 0, d: 0, t: 0 }, earned: null };
+function bstEarned(n) { return { s: n, h: Math.floor(n / 2), d: Math.floor(n / 3), t: Math.floor(n / 5) }; }
+function bstKey() { return 'atcoTrainerV2.bstUsed:' + (RK.acct ? RK.acct.nick.toLowerCase() : ''); }
+function bstLeft() {
+  if (!RK.acct) return { s: 0, h: 0, d: 0, t: 0 };
+  const E = BST.srv && BST.earned ? BST.earned : bstEarned(dqMyLv()), U = BST.used || {}, L = {};
+  ['s', 'h', 'd', 't'].forEach(k => { L[k] = Math.max(0, (E[k] || 0) - (U[k] || 0)); }); return L;
+}
+function bstFlags() { const L = bstLeft(); return { s: L.s > 0 ? 1 : 0, h: L.h > 0 ? 1 : 0, d: L.d > 0 ? 1 : 0, t: L.t > 0 ? 1 : 0 }; }
+async function bstLoad() {
+  if (!RK.acct) return;
+  const was = BST.loaded;
+  try { const r = await rkRpc('atco_boosts', { p_token: RK.acct.token }); if (r && r.used) { BST.srv = true; BST.used = r.used; BST.earned = r.earned; } }
+  catch (e) { BST.srv = false; BST.used = lsGet(bstKey(), { s: 0, h: 0, d: 0, t: 0 }); }
+  BST.loaded = true;
+  if (!was && state.mode === 'profile') { const c = document.getElementById('qcard'); if (c && typeof renderProfile === 'function') renderProfile(c); }
+}
+async function bstUse(k) {
+  BST.used[k] = (BST.used[k] || 0) + 1; lsSet(bstKey(), BST.used);
+  try { const r = await rkRpc('atco_boost_use', { p_token: RK.acct.token, p_kind: k }); if (r && r.used) { BST.srv = true; BST.used = r.used; BST.earned = r.earned; } } catch (e) {}
+}
+/* použitie žolíka v hre: základný kus (50:50, +10 s, ×2) je zadarmo, ďalší aj +5 s ide zo zásoby */
+function bstCount(j, gid) {
+  if (DQ.jkG !== gid) { DQ.jkG = gid; DQ.jkUse = {}; }
+  const base = { s: 0, h: 1, t: 1, d: 1 }[j]; if (base === undefined) return;
+  DQ.jkUse[j] = (DQ.jkUse[j] || 0) + 1;
+  if (DQ.jkUse[j] > base) bstUse(j);
+}
+function dqMeta() { return Object.assign(dqLook(), { lv: dqMyLv(), acc: RK.acct ? 1 : 0, bst: bstFlags() }); }
+function dqJkFor(p, cfg) { if (!cfg.jk) return null; const J = { h: 1, t: 1, d: 1 }; if (cfg.pk && !cfg.demo && !p.bot) { DQ_PERK.forEach(x => { if (x[1] && (p.lv || 1) >= x[0]) J[x[1]] = (J[x[1]] || 0) + (x[5] || 1); }); const B = p.bst || {}; if (B.s) J.s = 1; if (B.h) J.h += 1; if (B.t) J.t += 1; if (B.d) J.d += 1; } return J; }
 /* profilovky a emoji hráčov (v4.11) — načítajú sa zvlášť, len pre prezývky, ktoré práve vidno */
 function avNeed(nicks) {
   const L = [...new Set((nicks || []).filter(n => n && !(n in AV.m)))].slice(0, 40);
@@ -56,7 +134,10 @@ function avNeed(nicks) {
     else if (state.mode === 'conquer' && DQ.room && DQ.S) { const c = document.getElementById('dq-chips'), me = DQ.S.players.findIndex(p => p.id === DQ.id); if (c && DQ.S.phase !== 'lobby') c.innerHTML = dqChipsHTML(DQ.S, me); }
   });
 }
-function avFace(nick, emo, cls) { const o = AV.m[nick], a = o && o.a, e = (o && o.e) || emo; return `<span class="pf-av ${cls || ''}">${a ? `<img src="${dqEsc(a)}" alt="">` : e ? `<u>${dqEsc(e)}</u>` : `<b>${dqEsc(String(nick || '?').trim().charAt(0).toUpperCase())}</b>`}</span>`; }
+/* úroveň hráča podľa prezývky (z rebríčka) — z nej sa odvodí rámček profilovky */
+function rkLvOf(nick) { const R = RK.rows; if (!R) return 1; if (RK._lvR !== R) { RK._lvR = R; RK._lvM = {}; R.forEach(r => { RK._lvM[r.nick] = rkLevel(rkTotal(r)).n; }); } return RK._lvM[nick] || 1; }
+function frCls(nick) { const f = lvPick(DQ_RW.fr, rkLvOf(nick)); return f ? ' ' + f[1] : ''; }
+function avFace(nick, emo, cls) { const o = AV.m[nick], a = o && o.a, e = (o && o.e) || emo; return `<span class="pf-av ${cls || ''}${frCls(nick)}">${a ? `<img src="${dqEsc(a)}" alt="">` : e ? `<u>${dqEsc(e)}</u>` : `<b>${dqEsc(String(nick || '?').trim().charAt(0).toUpperCase())}</b>`}</span>`; }
 function dqFace(S, i) { const p = S.players[i], o = p && p.acc && AV.m[p.nick], a = o && o.a; return a ? `<i class="av"><img src="${dqEsc(a)}" alt=""></i>` : `<i>${dqI(i)}</i>`; }
 /* otázky s fotkou z Wikipédie (v4.11): [heslo na en.wikipedia, správna odpoveď]; p = ako často v danom okruhu padnú */
 const DQ_IMGQ = {
@@ -77,6 +158,10 @@ const DQ_IMGQ = {
     { q: 'Kto je na fotke?', it: [['Charles_Lindbergh', 'Charles Lindbergh'], ['Amelia_Earhart', 'Amelia Earhartová'], ['Yuri_Gagarin', 'Jurij Gagarin'], ['Milan_Rastislav_Štefánik', 'Milan Rastislav Štefánik'], ['Louis_Blériot', 'Louis Blériot'], ['Chuck_Yeager', 'Chuck Yeager'], ['Neil_Armstrong', 'Neil Armstrong'], ['Otto_Lilienthal', 'Otto Lilienthal'], ['Howard_Hughes', 'Howard Hughes'], ['Igor_Sikorsky', 'Igor Sikorskij'], ['Ferdinand_von_Zeppelin', 'Ferdinand von Zeppelin'], ['Štefan_Banič', 'Štefan Banič'], ['Bessie_Coleman', 'Bessie Colemanová'], ['Frank_Whittle', 'Frank Whittle']] }] },
 };
 const DQ_LOOKK = 'atcoTrainerV2.dqLook', DQ_LOWK = 'atcoTrainerV2.dqLow';
+/* meno hráča vo farbe jeho úrovne; titul len pri súboji */
+function dqNmH(S, i) { const p = S.players[i]; if (!p) return '?'; const c = p.bot ? null : lvPick(DQ_RW.nc, p.lv || 1); return c ? `<span class="nm ${c[1]}">${dqEsc(p.nick)}</span>` : dqEsc(p.nick); }
+function dqTtT(S, i) { const p = S.players[i], t = p && !p.bot ? lvPick(DQ_RW.tt, p.lv || 1) : null; return t ? ' · ' + dqEsc(t[1]).toUpperCase() : ''; }
+function dqTtH(S, i) { const p = S.players[i], t = p && !p.bot ? lvPick(DQ_RW.tt, p.lv || 1) : null; return t ? `<em class="nm-tt">${dqEsc(t[1])}</em>` : ''; }
 function dqC(i) { const p = DQ.S && DQ.S.players[i]; return p && DQ_PAL[p.col] ? DQ_PAL[p.col] : DQ_PAL[((i % DQ_PAL.length) + DQ_PAL.length) % DQ_PAL.length]; }
 function dqI(i) { const p = DQ.S && DQ.S.players[i]; return p && DQ_ICO[p.ico] ? DQ_ICO[p.ico] : DQ_ICO[0]; }
 function dqLook() { const L = lsGet(DQ_LOOKK, null) || {}; return { col: DQ_PAL[L.col] ? L.col : -1, ico: DQ_ICO[L.ico] ? L.ico : 0 }; }
@@ -122,11 +207,12 @@ function dqOrigin(S, a, t) {
   return best ? { x: best.x, y: best.y, r: best.r || 6 } : { x: T.x - 70, y: T.y - 45, r: 6 };
 }
 /* lietadlo letí po oblúku z A do B a kreslí za sebou trať; back = z cieľa sa odrazí a vráti sa */
-function dqFly(A, B, col, ms, back) {
+function dqTrC(i) { const p = DQ.S && DQ.S.players[i], t = p && !p.bot ? lvPick(DQ_RW.tr, p.lv || 1) : null; return t ? t[1] : ''; }
+function dqFly(A, B, col, ms, back, cls) {
   const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, bend = Math.min(46, L * 0.3);
   const cx = (A.x + B.x) / 2 - dy / L * bend, cy = (A.y + B.y) / 2 + dx / L * bend - bend * 0.35;
   const d = `M${A.x.toFixed(1)},${A.y.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${B.x.toFixed(1)},${B.y.toFixed(1)}`;
-  const g = dqFxAdd(`<path class="dq-track" d="${d}" pathLength="1" style="--pc:${col};animation-duration:${ms}ms"/><g class="dq-plane" style="--pc:${col}"><g transform="scale(1.35)"><path d="M1,0 L-5,-12 L-8,-12 L-4.5,0 L-8,12 L-5,12 Z"/><path d="M11,0 L-7,-3.2 L-9,-7 L-11,-7 L-9.5,0 L-11,7 L-9,7 L-7,3.2 Z"/></g></g>`, ms * (back ? 1.8 : 1) + 600);
+  const g = dqFxAdd(`<path class="dq-track${cls ? ' ' + cls : ''}" d="${d}" pathLength="1" style="--pc:${col};animation-duration:${ms}ms"/><g class="dq-plane" style="--pc:${col}"><g transform="scale(1.35)"><path d="M1,0 L-5,-12 L-8,-12 L-4.5,0 L-8,12 L-5,12 Z"/><path d="M11,0 L-7,-3.2 L-9,-7 L-11,-7 L-9.5,0 L-11,7 L-9,7 L-7,3.2 Z"/></g></g>`, ms * (back ? 1.8 : 1) + 600);
   if (!g) return;
   const path = g.querySelector('.dq-track'), pl = g.querySelector('.dq-plane'), len = path.getTotalLength(), t0 = performance.now();
   let ang = Math.atan2(cy - A.y, cx - A.x) * 180 / Math.PI;
@@ -647,7 +733,7 @@ async function dqReNet() {
   try {
     const n = await dqNet(room, DQ.host ? dqHostMsg : dqClientMsg);
     if (DQ.room !== room) { try { n.close(); } catch (e) {} }
-    else { DQ.net = n; if (DQ.host) dqCast(); else n.send(Object.assign({ t: 'join', id: DQ.id, nick: dqNick() }, dqMeta())); }
+    else { DQ.net = n; if (DQ.host) dqCast(); else n.send(Object.assign({ t: 'join', id: DQ.id, nick: dqNick() || 'divák', spec: DQ.spec ? 1 : 0 }, dqMeta())); }
   } catch (e) {}
   DQ.reNet = false;
 }
@@ -680,11 +766,14 @@ function dqHostSave() {
   H.savK = S.k; H.savT = now;
   lsSet(DQ_HOSTK, { room: DQ.room, id: DQ.id, t: now, S, ans: H.ans, got: H.got, used: H.used, pq: H.pq || null });
 }
+/* počítače: p = ako často vie správnu odpoveď, ex = ako často trafí číslo presne, sp = rozptyl tipu, t0 – t1 = ako rýchlo odpovedá (ms) */
+const DQ_BOT = [{ p: 0.4, ex: 0.15, sp: 0.3, t0: 3200, t1: 7500 }, { p: 0.6, ex: 0.3, sp: 0.2, t0: 2200, t1: 6000 }, { p: 0.8, ex: 0.5, sp: 0.1, t0: 1400, t1: 4200 }];
+function dqBotLv(S) { const b = S.cfg.bot; return b === 0 || b === 2 ? b : 1; }
 function dqBotAns(pi) {
-  const S = DQ.S, H = DQ.H, p = S.players[pi], k = S.k, ms = Math.min(S.tot - 600, 1500 + Math.random() * 4000);
+  const S = DQ.S, H = DQ.H, p = S.players[pi], k = S.k, B = DQ_BOT[dqBotLv(S)], ms = Math.max(600, Math.min(S.tot - 600, B.t0 + Math.random() * (B.t1 - B.t0)));
   let m;
-  if (S.q.num) { const dec = (String(H.ans).split('.')[1] || '').length, off = Math.random() < 0.3 ? 0 : (Math.random() * 2 - 1) * 0.2 * Math.max(1, Math.abs(H.ans)); m = { t: 'ans', id: p.id, k, v: +(H.ans + off).toFixed(dec), ms }; }
-  else m = { t: 'ans', id: p.id, k, c: Math.random() < 0.6 ? H.ans : (H.ans + 1 + Math.floor(Math.random() * (S.q.opts.length - 1))) % S.q.opts.length, ms };
+  if (S.q.num) { const dec = (String(H.ans).split('.')[1] || '').length, off = Math.random() < B.ex ? 0 : (Math.random() * 2 - 1) * B.sp * Math.max(1, Math.abs(H.ans)); m = { t: 'ans', id: p.id, k, v: +(H.ans + off).toFixed(dec), ms }; }
+  else m = { t: 'ans', id: p.id, k, c: Math.random() < B.p ? H.ans : (H.ans + 1 + Math.floor(Math.random() * (S.q.opts.length - 1))) % S.q.opts.length, ms };
   H.bots.push(setTimeout(() => { if (DQ.S && DQ.S.k === k) dqHostMsg(m); }, ms));
 }
 function dqDuelGo() { const S = DQ.S, D = S.duel; dqPhase('duelintro', () => dqAskSoon('duelq', D.d >= 0 ? [D.a, D.d] : [D.a], dqDuelRev, false, false, { mods: D.m ? [D.m] : S.cfg.mods, lvl: D.lvl })); }
@@ -723,7 +812,8 @@ async function dqHostResume() {
   try { DQ.net = await dqNet(L.room, dqHostMsg); } catch (e) { DQ.err = 'Miestnosť sa nepodarilo obnoviť — skontroluj pripojenie a skús to znova.'; return dqShow(); }
   const S = L.S, now = Date.now(), seen = {};
   S.players.forEach(p => { if (!p.bot) { seen[p.id] = now; p.on = true; } });
-  DQ.room = L.room; DQ.host = true; DQ.err = ''; DQ.S = S;
+  DQ.room = L.room; DQ.host = true; DQ.spec = false; DQ.err = ''; DQ.S = S;
+  { const K = lsGet(DQ_ROOMK, null); if (K && K.room === L.room && K.key) { DQ.roomKey = K.key; DQ.roomSig = ''; } else dqRoomKeyNew(L.room); }
   if (S.map && DQ_MAPS[S.map]) DQ_MAP = DQ_MAPS[S.map];
   DQ.H = { ans: L.ans, got: L.got || {}, deadline: 0, timer: null, seen, used: L.used || {}, bots: [], next: null, pq: L.pq || null };
   /* moja vlastná odpoveď na práve bežiacu otázku ostáva zapísaná */
@@ -733,6 +823,55 @@ async function dqHostResume() {
   try { dqResumePhase(); } catch (e) { DQ.err = 'Hru sa nepodarilo obnoviť.'; lsSet(DQ_HOSTK, null); return dqLeave(DQ.err); }
   dqShow();
 }
+/* ---------- verejné miestnosti (v6.1) ----------
+   Hostiteľ verejnej miestnosti sa každých pár sekúnd ohlási do tabuľky atco_rooms (názov, počet hráčov, čo sa deje).
+   Úvod Dobyvateľa zoznam ukáže každému: dá sa pripojiť (kým hra nezačala) alebo sledovať ako divák.
+   Súkromná miestnosť sa neohlasuje — dostane sa do nej len ten, kto pozná kód. */
+const DQ_ROOMK = 'atcoTrainerV2.dqRoomKey', DQR = { list: null, err: false, timer: null };
+function dqRoomKeyNew(room) { DQ.roomKey = Math.random().toString(36).slice(2) + Date.now().toString(36); DQ.roomSig = ''; DQ.roomPub = false; lsSet(DQ_ROOMK, { room, key: DQ.roomKey }); }
+function dqRoomTitle(S) { return (S && S.cfg && S.cfg.name) || ((S && S.players[0] ? S.players[0].nick : 'Hráč') + ' — miestnosť'); }
+function dqRoomPut() {
+  const S = DQ.S;
+  if (!DQ.host || !DQ.room || !S || DQ.demo || !DQ.roomKey) return;
+  if (DQ.roomFail && Date.now() - DQ.roomFail < 120000) return;      // zoznam miestností nie je dostupný (chýba SQL doplnok alebo sieť) → skúša sa len raz za dve minúty
+  if (S.cfg.priv) { if (DQ.roomPub) dqRoomDel(); return; }
+  const row = { p_code: DQ.room, p_key: DQ.roomKey, p_name: dqRoomTitle(S), p_host: S.players[0] ? S.players[0].nick : '', p_players: S.players.length, p_max: S.cfg.max, p_specs: (S.specs || []).length,
+    p_phase: S.phase === 'lobby' ? 'lobby' : S.phase === 'end' ? 'end' : 'game', p_info: S.phase === 'lobby' || S.phase === 'end' ? '' : dqStageName(S).slice(0, 40) };
+  const sig = JSON.stringify(row), now = Date.now();
+  if (sig === DQ.roomSig && now - (DQ.roomT || 0) < 8000) return;      // bez zmeny stačí ohlásiť sa raz za 8 sekúnd
+  DQ.roomSig = sig; DQ.roomT = now; DQ.roomPub = true;
+  rkRpc('atco_room_put', row).then(() => { DQ.roomFail = 0; }).catch(() => { DQ.roomFail = Date.now(); });
+}
+function dqRoomDel() { if (!DQ.room || !DQ.roomKey) return; DQ.roomPub = false; DQ.roomSig = ''; rkRpc('atco_room_del', { p_code: DQ.room, p_key: DQ.roomKey }).catch(() => {}); }
+async function dqRoomsLoad() {
+  try { const L = await rkRpc('atco_rooms', {}); DQR.list = Array.isArray(L) ? L.filter(r => r && /^[A-Z]{4}$/.test(r.code)) : []; DQR.err = false; }
+  catch (e) { if (DQR.list == null) DQR.list = []; DQR.err = true; DQR.errT = Date.now(); }
+  dqRoomsDraw();
+}
+function dqRoomsStart() {
+  dqRoomsDraw(); dqRoomsLoad();
+  clearInterval(DQR.timer);
+  DQR.timer = setInterval(() => { if (state.mode !== 'conquer' || DQ.room || !document.getElementById('dq-rooms')) { clearInterval(DQR.timer); DQR.timer = null; return; } if (!document.hidden && !(DQR.err && Date.now() - (DQR.errT || 0) < 60000)) dqRoomsLoad(); }, 6000);
+}
+function dqRoomsDraw() {
+  const el = document.getElementById('dq-rooms'); if (!el) return;
+  const L = DQR.list, n = L ? L.length : 0, wd = k => k === 1 ? 'miestnosť' : k > 1 && k < 5 ? 'miestnosti' : 'miestností';
+  const head = `<div class="dqr-h"><div><small><i></i>NAŽIVO</small><h3>Otvorené miestnosti</h3></div><span>${L == null ? 'načítavam…' : DQR.err ? '' : n + ' ' + wd(n)}</span></div>`;
+  let body;
+  if (L == null) body = '<div class="dqr-e">Načítavam zoznam…</div>';
+  else if (DQR.err && !n) body = '<div class="dqr-e">Zoznam miestností sa teraz nedá načítať. Pripojiť sa dá stále kódom.</div>';
+  else if (!n) body = '<div class="dqr-e"><b>Práve sa nič nehrá.</b> Založ miestnosť — verejná sa objaví tu a kolegovia sa pridajú jedným klikom.</div>';
+  else body = `<div class="dqr-g">${L.map((r, i) => {
+    const open = r.phase === 'lobby', full = r.players >= r.max, dots = Array.from({ length: Math.max(2, Math.min(8, r.max)) }, (x, k) => `<i class="${k < r.players ? 'on' : ''}"></i>`).join('');
+    return `<div class="dqr-c${open ? ' open' : ' live'}" style="animation-delay:${(Math.min(i, 8) * 0.05).toFixed(2)}s">
+        <div class="dqr-t"><b>${dqEsc(r.name || (r.host + ' — miestnosť'))}</b><em>${open ? (full ? 'PLNÁ' : 'ČAKÁ NA HRÁČOV') : '● HRÁ SA'}</em></div>
+        <div class="dqr-m"><span>👤 ${dqEsc(r.host || '—')}</span><span class="dqr-d">${dots}<u>${r.players} / ${r.max}</u></span>${r.specs ? `<span>👁 ${r.specs}</span>` : ''}</div>
+        ${!open && r.info ? `<div class="dqr-i">${dqEsc(r.info)}</div>` : `<div class="dqr-i">kód <b>${r.code}</b></div>`}
+        <div class="dqr-a">${open && !full ? `<button class="btn" data-rj="${r.code}">PRIPOJIŤ ▶</button>` : ''}<button class="btn ghost" data-rw="${r.code}">👁 SLEDOVAŤ</button></div>
+      </div>`; }).join('')}</div>`;
+  el.innerHTML = head + body;
+}
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-rj],[data-rw]'); if (!b || DQ.room) return; if (b.dataset.rj) dqJoin(b.dataset.rj); else dqJoin(b.dataset.rw, true); });
 async function dqNet(code, onMsg) {
   if (SB_ON) {
     await dqLoadSb();
@@ -750,12 +889,12 @@ function dqSend(m) { m.id = DQ.id; if (DQ.host) dqHostMsg(m); else if (DQ.net) D
 function dqMe() { return DQ.S ? DQ.S.players.findIndex(p => p.id === DQ.id) : -1; }
 function dqLeave(msg, keep) {
   if (!keep) lsSet(DQ_LASTK, null);
-  if (DQ.host && !keep && !DQ.demo) lsSet(DQ_HOSTK, null);      // hostiteľ odišiel sám → miestnosť sa neobnovuje
+  if (DQ.host && !keep && !DQ.demo) { lsSet(DQ_HOSTK, null); dqRoomDel(); }      // hostiteľ odišiel sám → miestnosť sa neobnovuje
   dqWaitBar(0); dqWake(false); DQ.demo = false; DQ.demoHold = null;
   if (DQ.net) { try { DQ.net.send({ t: DQ.host ? 'bye' : 'leave', id: DQ.id }); DQ.net.close(); } catch (e) {} }
   if (DQ.H) { clearTimeout(DQ.H.timer); DQ.H.bots.forEach(clearTimeout); }
   clearInterval(DQ.loop);
-  DQ.room = null; DQ.host = false; DQ.S = null; DQ.net = null; DQ.H = null; DQ.sig = ''; DQ.k = -1; DQ.prev = null; DQ.err = msg || '';
+  DQ.room = null; DQ.host = false; DQ.spec = false; DQ.S = null; DQ.net = null; DQ.H = null; DQ.sig = ''; DQ.k = -1; DQ.prev = null; DQ.err = msg || '';
   dqShow();
 }
 function dqShow() { if (state.mode === 'conquer') { DQ.sig = ''; dqRender(document.getElementById('qcard')); } }
@@ -764,29 +903,31 @@ async function dqCreate() {
   const L = 'ABCDEFGHJKLMNPRSTUVXYZ'; let code = '';
   for (let i = 0; i < 4; i++) code += L.charAt(Math.floor(Math.random() * L.length));
   try { DQ.net = await dqNet(code, dqHostMsg); } catch (e) { DQ.err = 'Nepodarilo sa otvoriť miestnosť — skontroluj pripojenie.'; return dqShow(); }
-  DQ.room = code; DQ.host = true; DQ.err = '';
+  DQ.room = code; DQ.host = true; DQ.spec = false; DQ.err = ''; dqRoomKeyNew(code);
   DQ.H = { ans: -1, got: {}, deadline: 0, timer: null, seen: {}, used: {}, bots: [], next: null };
-  DQ.S = { gid: '', k: 0, phase: 'lobby', players: [{ id: DQ.id, nick: dqNick(), bot: false, on: true, bonus: 0 }], cfg: { map: 'auto', max: 4, time: 15, claim: 5, war: 5, pm: 0, lv: 1, fast: 0, jk: 1, pk: 1, mods: DQ_QS.map(x => x[0]), cuN: dqcAll().length },
+  DQ.S = { gid: '', k: 0, phase: 'lobby', players: [{ id: DQ.id, nick: dqNick(), bot: false, on: true, bonus: 0 }], cfg: { map: 'auto', max: 4, bot: 1, priv: 0, name: '', time: 15, claim: 5, war: 5, pm: 0, lv: 1, fast: 0, jk: 1, pk: 1, mods: DQ_QS.map(x => x[0]), cuN: dqcAll().length },
     own: [], round: 0, wr: 0, wq: [], q: null, rev: null, picks: [], allowed: [], chooser: -1, duel: null, answered: [], dur: 0, tot: 0 };
-  { const L = dqMeta(); DQ.S.players[0].col = DQ_PAL[L.col] ? L.col : 0; DQ.S.players[0].ico = L.ico; DQ.S.players[0].lv = L.lv; DQ.S.players[0].acc = L.acc; }
+  { const L = dqMeta(); DQ.S.players[0].col = DQ_PAL[L.col] ? L.col : 0; DQ.S.players[0].ico = L.ico; DQ.S.players[0].lv = L.lv; DQ.S.players[0].acc = L.acc; DQ.S.players[0].bst = L.bst; }
   clearInterval(DQ.loop); DQ.loop = setInterval(dqHostLoop, 2000);
   dqCast();
 }
-async function dqJoin(code) {
+/* som v miestnosti? (ako hráč alebo ako divák) */
+function dqIn() { return dqMe() >= 0 || !!(DQ.spec && DQ.S && (DQ.S.specs || []).some(x => x.id === DQ.id)); }
+async function dqJoin(code, spec) {
   code = (code || '').toUpperCase().replace(/[^A-Z]/g, '');
-  if (!dqNick()) { DQ.err = 'Najprv si napíš prezývku.'; return dqShow(); }
+  if (!spec && !dqNick()) { DQ.err = 'Najprv si napíš prezývku.'; return dqShow(); }
   if (code.length !== 4) { DQ.err = 'Kód miestnosti má štyri písmená.'; return dqShow(); }
   try { DQ.net = await dqNet(code, dqClientMsg); } catch (e) { DQ.err = 'Nepodarilo sa pripojiť — skontroluj pripojenie.'; return dqShow(); }
-  DQ.room = code; DQ.host = false; DQ.S = null; DQ.err = ''; DQ.lastState = Date.now(); DQ.joinAt = Date.now();
-  const hello = () => DQ.net && DQ.net.send(Object.assign({ t: 'join', id: DQ.id, nick: dqNick() }, dqMeta()));
+  DQ.room = code; DQ.host = false; DQ.spec = !!spec; DQ.S = null; DQ.err = ''; DQ.lastState = Date.now(); DQ.joinAt = Date.now();
+  const hello = () => DQ.net && DQ.net.send(Object.assign({ t: 'join', id: DQ.id, nick: dqNick() || 'divák', spec: DQ.spec ? 1 : 0 }, dqMeta()));
   hello();
   clearInterval(DQ.loop);
   DQ.loop = setInterval(() => {
     if (!DQ.room) return;
-    if (dqMe() < 0) { if (Date.now() - DQ.joinAt > 7000) return dqLeave('Miestnosť s kódom ' + code + ' nie je otvorená.'); hello(); }
+    if (!dqIn()) { if (Date.now() - DQ.joinAt > 7000 && !(DQ.spec && Date.now() - DQ.lastState < 7000)) return dqLeave('Miestnosť s kódom ' + code + ' nie je otvorená.'); hello(); }
     else { try { DQ.net.send({ t: 'ping', id: DQ.id }); } catch (e) {} }
     const gap = Date.now() - DQ.lastState;
-    if (dqMe() >= 0) {
+    if (dqIn()) {
       dqWaitBar(gap > 7000 ? gap : 0);
       if (gap > 180000) return dqLeave('Hostiteľ sa do troch minút nevrátil. Ak hru obnoví, môžeš sa do nej vrátiť.', true);
       if (gap > 9000 && Date.now() - (DQ.reNetT || 0) > 15000) dqReNet(); else dqNetCheck();
@@ -837,7 +978,7 @@ function dqCast() { const S = DQ.S, H = DQ.H; S.dur = Math.max(0, H.deadline - D
 function dqCoachInfo(S, me) {
   const ph = S.phase, D = S.duel, mine = S.chooser === me, c = S.cnt;
   if (ph === 'rest') {
-    if (c === 'war') return ['war', 'Obsadzovanie sa skončilo — idú súboje', 'Voľné priestory, ktoré ostali, sa rozdelili medzi hráčov v pomere bodov (nikomu sa podiel nezmenil o viac než 3 %). Teraz prídu SÚBOJE: v každom kole je každý hráč raz na rade a môže zaútočiť na suseda.', true];
+    if (c === 'war') return ['war', 'Obsadzovanie sa skončilo — idú súboje', 'Zvyšok mapy sa rozdelil rovným dielom — každý dostal rovnaký počet priestorov pri svojom letisku. Body za ne nikto nemá; hodnotu majú až pre toho, kto ich dobyje. Teraz prídu SÚBOJE: v každom kole je každý hráč raz na rade a môže zaútočiť na suseda.', true];
     if (c === 'end') return ['fin', 'Hra sa končí', 'Odohrali sa všetky kolá súbojov. Nasleduje vyhodnotenie.', false];
     return ['rest', 'Krátka prestávka', 'Pozri sa na mapu, čo sa zmenilo. Ďalšia otázka príde o chvíľu.', false];
   }
@@ -899,6 +1040,8 @@ function dqHostLoop() {
   if (!S) return;
   dqNetCheck();
   S.players.forEach(p => { if (!p.bot && p.id !== DQ.id) p.on = now - (H.seen[p.id] || 0) < 9000; });
+  if (S.specs && S.specs.length) S.specs = S.specs.filter(x => now - (H.seen[x.id] || 0) < 12000);
+  dqRoomPut();
   if (S.phase === 'lobby') S.players = S.players.filter(p => p.on);
   else if (S.phase !== 'end') { dqNudge(); dqAllIn(); }
   dqCast();
@@ -909,15 +1052,24 @@ function dqHostMsg(m) {
   if (m.id) H.seen[m.id] = Date.now();
   const pi = S.players.findIndex(p => p.id === m.id);
   if (m.t === 'join') {
+    /* divák: do hry nezasahuje, len dostáva stav; pripojiť sa môže aj do rozohranej hry */
+    if (m.spec && pi < 0) {
+      S.specs = S.specs || [];
+      if (!S.specs.some(x => x.id === m.id)) {
+        if (S.specs.length >= 30) return DQ.net.send({ t: 'no', to: m.id, why: 'Miestnosť má priveľa divákov.' });
+        S.specs.push({ id: m.id, nick: String(m.nick || 'divák').replace(/[<>&"']/g, '').slice(0, 16) || 'divák' });
+      }
+      return dqCast();
+    }
     if (pi >= 0) { S.players[pi].on = true; if (S.phase === 'lobby' && m.lv) { S.players[pi].lv = Math.max(1, Math.min(LV.length, +m.lv || 1)); S.players[pi].acc = m.acc ? 1 : 0; } return dqCast(); }
-    if (S.phase !== 'lobby') return DQ.net.send({ t: 'no', to: m.id, why: 'Hra v tejto miestnosti už beží.' });
+    if (S.phase !== 'lobby') return DQ.net.send({ t: 'no', to: m.id, why: 'Hra v tejto miestnosti už beží. Môžeš ju sledovať ako divák — daj 👁 SLEDOVAŤ.' });
     if (S.players.length >= S.cfg.max) return DQ.net.send({ t: 'no', to: m.id, why: 'Miestnosť je plná.' });
     let nick = String(m.nick || 'HRÁČ').slice(0, 16), n = 2;
     while (S.players.some(p => p.nick === nick)) nick = String(m.nick).slice(0, 14) + ' ' + n++;
-    S.players.push({ id: m.id, nick, bot: false, on: true, bonus: 0, col: dqFreeCol(S, +m.col), ico: DQ_ICO[+m.ico] ? +m.ico : 0, lv: Math.max(1, Math.min(LV.length, +m.lv || 1)), acc: m.acc ? 1 : 0 });
+    S.players.push({ id: m.id, nick, bot: false, on: true, bonus: 0, col: dqFreeCol(S, +m.col), ico: DQ_ICO[+m.ico] ? +m.ico : 0, lv: Math.max(1, Math.min(LV.length, +m.lv || 1)), acc: m.acc ? 1 : 0, bst: { s: m.bst && m.bst.s ? 1 : 0, h: m.bst && m.bst.h ? 1 : 0, d: m.bst && m.bst.d ? 1 : 0, t: m.bst && m.bst.t ? 1 : 0 } });
     return dqCast();
   }
-  if (pi < 0) return;
+  if (pi < 0) { if (m.t === 'leave' && S.specs) { S.specs = S.specs.filter(x => x.id !== m.id); dqCast(); } return; }
   if (m.t === 'leave') { if (S.phase === 'lobby') S.players.splice(pi, 1); else { S.players[pi].on = false; H.seen[m.id] = 0; dqNudge(); dqAllIn(); } return dqCast(); }
   /* farba a ikonka hráča — mení sa len v miestnosti pred štartom; farba nesmie byť obsadená */
   if (m.t === 'look' && S.phase === 'lobby') {
@@ -952,6 +1104,7 @@ function dqHostMsg(m) {
     }
     if (m.t === 'kick' && m.who > 0) { S.players.splice(m.who, 1); return dqCast(); }
     if (m.t === 'cfg') {
+      if (m.key === 'name') { S.cfg.name = String(m.val == null ? '' : m.val).replace(/[<>&"']/g, '').replace(/\s+/g, ' ').trim().slice(0, 24); return dqCast(); }
       if (m.key === 'mods' && m.val === 'cu' && !dqcAll().length) return;
       if (m.key === 'mods') { const i = S.cfg.mods.indexOf(m.val); if (i < 0) S.cfg.mods.push(m.val); else if (S.cfg.mods.length > 1) S.cfg.mods.splice(i, 1); }
       else if (DQ_OPT[m.key] && DQ_OPT[m.key].indexOf(m.val) >= 0 && (m.key !== 'max' || m.val >= S.players.length)) { S.cfg[m.key] = m.val; if (m.key === 'fast' && m.val) { S.cfg.claim = 3; S.cfg.war = 3; S.cfg.time = 10; } }
@@ -989,10 +1142,10 @@ function dqStart() {
   S.map = dqMapFor(S); DQ_MAP = DQ_MAPS[S.map];
   S.own = DQ_MAP.t.map(() => -1);
   S.base = S.players.map(() => -1); S.lives = S.players.map(() => 3);
-  S.players.forEach(p => { p.bonus = 0; p.out = false; p.st = 0; if (DQ.host && p.id === DQ.id) p.lv = dqMyLv(); p.jk = dqJkFor(p, S.cfg); });
+  S.players.forEach(p => { p.bonus = 0; p.out = false; p.st = 0; if (DQ.host && p.id === DQ.id) { p.lv = dqMyLv(); p.bst = bstFlags(); } p.jk = dqJkFor(p, S.cfg); });
   S.stat = S.players.map(() => ({ c: 0, n: 0, mx: 0, fast: 0, at: 0, aw: 0, df: 0, dw: 0, fr: 0 })); S.players.forEach(p => { p.bd = {}; }); S.emo = null; S.jkN = null;
   S.humans = S.players.filter(p => !p.bot).length;
-  S.round = 0; S.wr = 0; S.wq = []; S.duel = null; S.rank = null; S.league = null; S.outs = []; S.dist = 0; S.left = 0; H.used = {};
+  S.round = 0; S.wr = 0; S.wq = []; S.duel = null; S.rank = null; S.league = null; S.outs = []; S.dist = 0; S.each = 0; S.gift = {}; S.left = 0; H.used = {};
   dqAskSoon('startq', dqLive(S), dqStartRev, false, true);
 }
 /* štart: tipovacia otázka — kto je najbližšie, vyberá si domovské letisko prvý */
@@ -1005,7 +1158,7 @@ function dqStartRev() {
 function dqStartPick() {
   const S = DQ.S, H = DQ.H;
   if (!S.picks.length) return dqClaimQ();
-  S.chooser = S.picks[0]; S.allowed = dqFree().filter(t => DQ_MAP.t[t].c === 'AD'); S.q = null; S.rev = null; H.nudged = false;
+  S.chooser = S.picks[0]; S.allowed = dqFree().filter(t => DQ_MAP.t[t].c === 'AD'); if (!S.allowed.length) S.allowed = dqFree(); S.q = null; S.rev = null; H.nudged = false;
   dqPhase('startpick', dqAuto);
   dqNudge();
 }
@@ -1023,17 +1176,7 @@ function dqAsk(phase, who, next) {
   S.q = { mod: q.mod, key: q.key || '', lvl: q.lvl || 0, prompt: q.prompt, sub: q.sub, opts: q.opts || [], img: q.img || '', num: !!q.num, unit: q.unit || '', who };
   dqPhase(phase, next);
   const k = S.k, T = S.tot;
-  who.forEach(pi => {
-    const p = S.players[pi];
-    if (!p.bot) return;
-    const ms = Math.min(T - 600, 2200 + Math.random() * 6000);
-    let m;
-    if (q.num) {      // počítač tipuje: niekedy presne, inak s odchýlkou do ~20 %
-      const dec = (String(q.ans).split('.')[1] || '').length, off = Math.random() < 0.3 ? 0 : (Math.random() * 2 - 1) * 0.2 * Math.max(1, Math.abs(q.ans));
-      m = { t: 'ans', id: p.id, k, v: +(q.ans + off).toFixed(dec), ms };
-    } else m = { t: 'ans', id: p.id, k, c: Math.random() < 0.6 ? q.ans : (q.ans + 1 + Math.floor(Math.random() * (q.opts.length - 1))) % q.opts.length, ms };
-    H.bots.push(setTimeout(() => { if (DQ.S && DQ.S.k === k) dqHostMsg(m); }, ms));
-  });
+  who.forEach(pi => { if (S.players[pi].bot) dqBotAns(pi); });
 }
 /* keď odpovedali všetci, na ktorých sa čaká, netreba čakať do konca času */
 function dqAllIn() {
@@ -1075,46 +1218,34 @@ function dqNumRes() {
   order.forEach((pi, n) => { res[pi].ok = n === 0 && res[pi].v !== null; });
   return { res, order };
 }
-/* Po obsadzovacích kolách sa zvyšné voľné priestory rozdelia v pomere bodov: kto mal 40 % bodov, má potom 37 až 43 %.
-   Prideľuje sa len priestor susediaci s tým, čo hráč už má. Postup: v každom kroku sa urobí to pridelenie, po ktorom
-   sú podiely najbližšie pôvodným; platí posledný stav, v ktorom sa žiadny podiel bodov nepohol o viac než DQ_FAIR
-   (3 percentuálne body) a poradie hráčov ostalo rovnaké. Čo sa takto rozdeliť nedá, ostane voľné.
-   Odmerané simuláciou (v4.1): rozdelí sa 58 – 75 % voľných priestorov; pri pôvodnej hranici 1,2 % to bolo len 9 – 43 %. */
-const DQ_FAIR = 0.03;
-function dqFairSplit(own0, live, T) {
-  let own = own0.slice();
-  const sum = a => a.reduce((x, y) => x + y, 0);
-  const pts = () => live.map(p => own.reduce((s, o, t) => s + (o === p ? T[t].v : 0), 0)), cnt = () => live.map(p => own.filter(o => o === p).length);
-  const s0 = pts(), c0 = cnt(), S0 = sum(s0), C0 = sum(c0);
-  if (!S0 || live.length < 2) return { own: own0.slice(), n: 0 };
-  const fair = () => {
-    const s = pts(), c = cnt(), S = sum(s), C = sum(c); let d = 0, gapOk = true;
-    live.forEach((p, k) => { d = Math.max(d, Math.abs(s[k] / S - s0[k] / S0), 0.5 * Math.abs(c[k] / C - c0[k] / C0)); });
-    live.forEach((p, a) => live.forEach((q, b) => { if (s0[a] > s0[b] && s[a] <= s[b]) gapOk = false; }));
-    return { d, gapOk };
-  };
-  let best = own.slice(), bestN = 0, n = 0;
-  for (let guard = 0; guard < 300; guard++) {
-    let cand = null, cd = 1e9;
-    own.forEach((o, t) => {
-      if (o >= 0) return;
-      live.forEach(p => { if (!T[t].j.some(a => own[a] === p)) return; own[t] = p; const f = fair(); own[t] = -1; if (f.d < cd - 1e-12) { cd = f.d; cand = [t, p]; } });
-    });
-    if (!cand) break;
-    own[cand[0]] = cand[1]; n++;
-    const f = fair();
-    if (f.d <= DQ_FAIR && f.gapOk) { best = own.slice(); bestN = n; }
+/* Po obsadzovacích kolách sa zvyšok mapy rozdelí ROVNÝM DIELOM: každý hráč dostane rovnaký počet voľných priestorov (letiská, CTR, TMA — všetko),
+   takže podiel na území sa každému posunie o rovnaký kus: kto mal 30 / 20 / 10 %, má potom 43 / 33 / 23 %. Berie sa od domovského letiska:
+   prednosť majú priestory susediace s tým, čo hráč už má, a z nich ten najbližší k jeho letisku. Hráči sa pri výbere striedajú a poradie sa
+   každé kolo posunie, aby nikto nebral stále prvý. Takto pridelený priestor držiteľovi NEDÁVA BODY (S.gift) — plnú hodnotu má až pre toho,
+   kto ho dobyje. Čo po delení ostane (najviac o jeden menej, než je hráčov), ostáva voľné. */
+function dqEvenSplit(own0, live, base, T) {
+  const own = own0.slice(), gift = {}, free = own.map((o, t) => o < 0 ? t : -1).filter(t => t >= 0), each = live.length ? Math.floor(free.length / live.length) : 0;
+  if (!each) return { own, gift, n: 0, each: 0 };
+  const left = {}; free.forEach(t => { left[t] = 1; });
+  const home = p => T[base && base[p] >= 0 ? base[p] : own.indexOf(p)];
+  let n = 0;
+  for (let r = 0; r < each; r++) for (let k = 0; k < live.length; k++) {
+    const p = live[(r + k) % live.length], b = home(p); let bt = -1, bk = Infinity;
+    Object.keys(left).forEach(x => { const t = +x, key = (b ? Math.hypot(T[t].x - b.x, T[t].y - b.y) : 0) + (T[t].j.some(a => own[a] === p) ? 0 : 1e6); if (key < bk) { bk = key; bt = t; } });
+    if (bt < 0) break;
+    own[bt] = p; gift[bt] = 1; delete left[bt]; n++;
   }
-  return { own: best, n: bestN };
+  return { own, gift, n, each };
 }
 function dqFree() { return DQ.S.own.map((o, i) => o < 0 ? i : -1).filter(i => i >= 0); }
-function dqScore(S, i) { let s = S.players[i].bonus || 0; S.own.forEach((o, t) => { if (o === i) s += DQ_MAP.t[t].v; }); return s; }
+/* body hráča: bonusy + hodnota priestorov, ktoré získal sám; priestory pridelené pri rozdelení (S.gift) sa mu nepočítajú */
+function dqScore(S, i) { let s = S.players[i].bonus || 0; const G = S.gift || {}; S.own.forEach((o, t) => { if (o === i && !G[t]) s += DQ_MAP.t[t].v; }); return s; }
 function dqClaimQ() {
   const S = DQ.S;
   S.duel = null;
   if (!dqFree().length || S.round >= S.cfg.claim) {
-    const split = dqFairSplit(S.own, dqLive(S), DQ_MAP.t);
-    S.own = split.own; S.dist = split.n; S.left = dqFree().length;
+    const split = dqEvenSplit(S.own, dqLive(S), S.base, DQ_MAP.t);
+    S.own = split.own; S.gift = split.gift; S.dist = split.n; S.each = split.each; S.left = dqFree().length;
     S.cnt = S.cfg.war ? 'war' : 'end'; S.q = null; S.rev = null; S.allowed = []; return dqPhase('rest', dqWarRound);
   }
   S.round++;
@@ -1191,12 +1322,14 @@ function dqWarPick() {
 function dqWinKind() { const S = DQ.S, D = S.duel; return !D.base ? 'took' : (S.lives[D.d] - 1 <= 0 ? 'out' : 'hit'); }
 /* Súboj ako v Dobyvateľovi: rýchlosť nerozhoduje. Útočník správne a obranca zle → útočník vyhral.
    Obranca správne a útočník zle → ubránené. Obaja zle → nič sa nemení. Obaja správne → rozstrel tipovacou otázkou. */
+/* štít obrancu: raz za hru ho ochráni pred stratou priestoru (nie domovského letiska) */
+function dqShieldUse(D, win) { const S = DQ.S; if (!win || D.d < 0 || D.base) return false; const J = S.players[D.d] && S.players[D.d].jk; if (J && J.e > 0) { J.e--; return true; } return false; }
 function dqDuelRev() {
   const S = DQ.S, H = DQ.H, res = dqRes(), D = S.duel, ra = res[D.a], rd = D.d >= 0 ? res[D.d] : null;
-  const tie = !!(rd && ra.ok && rd.ok), win = ra.ok && !tie;
+  const tie = !!(rd && ra.ok && rd.ok), win0 = ra.ok && !tie, sh = dqShieldUse(D, win0), win = win0 && !sh;
   if (tie) D.tn = 1;
   if (rd && rd.ok && !ra.ok) dqBon(D.d, 'def', 100);
-  S.rev = { ans: H.ans, res, win, what: tie ? 'tie' : win ? dqWinKind() : (rd && rd.ok ? 'held' : 'miss') };
+  S.rev = { ans: H.ans, res, win, sh, what: tie ? 'tie' : win ? dqWinKind() : (sh || (rd && rd.ok) ? 'held' : 'miss') };
   S.rev.fire = dqTally(res);
   dqPhase('duelrev', tie ? () => dqAskSoon('tieq', [D.a, D.d], dqTieRev, false, true, { mods: D.m ? [D.m] : S.cfg.mods }) : () => dqDuelDone(win));
 }
@@ -1211,9 +1344,9 @@ function dqTieRev() {
     S.rev = { num: true, ans: H.ans, unit: S.q.unit, res: R.res, order: R.order, win: false, what: 'again' };
     return dqPhase('tierev', () => dqAskSoon('tieq', [D.a, D.d], dqTieRev, false, true, { mods: D.m ? [D.m] : S.cfg.mods }));
   }
-  const win = R.order[0] === D.a && R.res[D.a].v !== null, held = !win && R.res[D.d].v !== null;
+  const win0 = R.order[0] === D.a && R.res[D.a].v !== null, sh = dqShieldUse(D, win0), win = win0 && !sh, held = !win && (sh || R.res[D.d].v !== null);
   if (held) dqBon(D.d, 'def', 100);
-  S.rev = { num: true, ans: H.ans, unit: S.q.unit, res: R.res, order: R.order, win, what: win ? dqWinKind() : held ? 'held' : 'miss' };
+  S.rev = { num: true, ans: H.ans, unit: S.q.unit, res: R.res, order: R.order, win, sh, what: win ? dqWinKind() : held ? 'held' : 'miss' };
   dqPhase('tierev', () => dqDuelDone(win));
 }
 /* zmena na mape sa urobí až po zavretí okna s vyhodnotením, aby ju bolo vidno */
@@ -1222,8 +1355,8 @@ function dqDuelDone(win) {
   if (S.stat && S.stat[D.a]) { const A = S.stat[D.a], Df = D.d >= 0 ? S.stat[D.d] : null; if (Df) { A.at++; Df.df++; if (win) A.aw++; else Df.dw++; } else if (win) A.fr++; }
   if (win) {
     if (D.x2) dqBon(D.a, 'x2', Math.round(DQ_MAP.t[D.t].v * ((D.x2 === true ? 2 : D.x2) - 1)));      // násobič: ×2 = hodnota priestoru ešte raz, ×1,2 a ×1,3 = jej časť
-    if (!D.base) S.own[D.t] = D.a;
-    else if (--S.lives[D.d] <= 0) { S.own = S.own.map(o => o === D.d ? D.a : o); S.players[D.d].out = true; S.base[D.d] = -1; S.outs.push(D.d); }
+    if (!D.base) { S.own[D.t] = D.a; if (S.gift) delete S.gift[D.t]; }   // dobytý priestor má pre nového držiteľa plnú hodnotu
+    else if (--S.lives[D.d] <= 0) { S.own = S.own.map((o, t) => { if (o !== D.d) return o; if (S.gift) delete S.gift[t]; return D.a; }); S.players[D.d].out = true; S.base[D.d] = -1; S.outs.push(D.d); }
   }
   /* útok na domovské letisko sa nekončí jedným zásahom: kým útočník vyhráva a súper má ešte život, ide ďalšia otázka (s rozstrelom) v tom istom kole */
   if (win && D.base && !S.players[D.d].out) { S.chooser = D.a; S.allowed = []; return dqChoose(D.t); }
@@ -1238,15 +1371,16 @@ function dqDuelDone(win) {
    dĺžka:  (kolá obsadzovania + kolá súbojov) / 10, najmenej 0,4 a najviac 1,6
    okruhy: 0,6 + 0,4 × (zapnuté sady / všetky sady)
    Vzorová hra — štyria ľudia, 5 + 5 kôl, všetky okruhy — dáva víťazovi 350 bodov (do v5.6.1 to bolo 500, znížené o 30 %). */
-const DQ_LG = { base: 350, place: [1, 0.5, 0.25, 0.12, 0.06, 0.03], humans: [0, 0.1, 0.6, 0.8, 1, 1.15, 1.3] };
+const DQ_LG = { base: 350, place: [1, 0.5, 0.25, 0.12, 0.06, 0.03, 0.02, 0.01], humans: [0, 0.04, 0.6, 0.8, 1, 1.15, 1.3, 1.4, 1.5], solo: [0.5, 1, 1.5], botAdd: [0.005, 0.01, 0.02] };
 function dqLeagueF(S) {
   const all = S.players.length, h = S.players.filter(p => !p.bot).length, R = (S.cfg.claim || 0) + (S.cfg.war || 0), m = S.cfg.mods.length;
-  return { h, bots: all - h, R, m, pl: +(DQ_LG.humans[Math.min(6, h)] + 0.03 * (all - h)).toFixed(2), len: +Math.max(0.4, Math.min(1.6, R / 10)).toFixed(2), top: +(0.6 + 0.4 * Math.min(1, m / DQ_QS.length)).toFixed(2) };
+  const bl = dqBotLv(S);   // sám proti počítačom: základ 0,04 × obťažnosť (0,5 / 1 / 1,5); každý počítač pridá 0,005 / 0,01 / 0,02
+  return { h, bots: all - h, R, m, bl, pl: +(DQ_LG.humans[Math.min(8, h)] * (h < 2 ? DQ_LG.solo[bl] : 1) + DQ_LG.botAdd[bl] * (all - h)).toFixed(3), len: +Math.max(0.4, Math.min(1.6, R / 10)).toFixed(2), top: +(0.6 + 0.4 * Math.min(1, m / DQ_QS.length)).toFixed(2) };
 }
 function dqLeaguePts(S, pi) {
   const F = dqLeagueF(S), r = S.rank ? S.rank.indexOf(pi) : 0, top = Math.max(1, ...S.players.map((p, i) => dqScore(S, i)));
-  const place = DQ_LG.place[r] || 0.03, perf = +(0.5 + 0.5 * dqScore(S, pi) / top).toFixed(2);
-  return { F, place, perf, pts: S.cfg.demo ? 0 : Math.max(5, Math.round(DQ_LG.base * place * perf * F.pl * F.len * F.top)) };
+  const place = DQ_LG.place[r] || 0.01, perf = +(0.5 + 0.5 * dqScore(S, pi) / top).toFixed(2);
+  return { F, place, perf, pts: S.cfg.demo ? 0 : Math.max(F.h < 2 ? 1 : 5, Math.round(DQ_LG.base * place * perf * F.pl * F.len * F.top)) };
 }
 function dqEnd() {
   const S = DQ.S, H = DQ.H;
@@ -1262,7 +1396,7 @@ function dqEnd() {
 function dqTerrInfo(t, S) {
   const o = DQ_MAP.t[t], own = S && S.own[t] >= 0 ? S.players[S.own[t]] : null;
   const lim = o.lo || o.up ? ' · ' + (o.lo || '?') + ' – ' + (o.up || '?') : '';
-  return `<b>${dqEsc(o.k)}</b><span>${dqEsc(o.c === 'AD' ? 'letisko ' + o.n : o.n)}${o.cl ? ' · trieda ' + dqEsc(o.cl) : ''}${dqEsc(lim)}</span><em>${o.v} b.</em>${own ? `<i style="background:${dqC(S.own[t])}"></i><small>${dqEsc(own.nick)}</small>` : '<small>voľné</small>'}`;
+  return `<b>${dqEsc(o.k)}</b><span>${dqEsc(o.c === 'AD' ? 'letisko ' + o.n : o.n)}${o.cl ? ' · trieda ' + dqEsc(o.cl) : ''}${dqEsc(lim)}</span><em>${o.v} b.</em>${S && S.gift && S.gift[t] ? '<small class="gift">pridelené pri rozdelení — držiteľovi 0 b., kto ho dobyje, má plnú hodnotu</small>' : ''}${own ? `<i style="background:${dqC(S.own[t])}"></i><small>${dqEsc(own.nick)}</small>` : '<small>voľné</small>'}`;
 }
 /* ---------- ukážka hry (v4.16): prehrávač piatich scén na skutočnej mape, farby a pohyb ako v hre ---------- */
 function dqReelPlan() {
@@ -1370,7 +1504,7 @@ function dqGuideHTML() {
         <ol>
           <li><b>Štart.</b> Tipovacia otázka (píše sa číslo). Kto je najbližšie, vyberá si domovské letisko ako prvý.</li>
           <li><b>Obsadzovanie.</b> Niekoľko kôl otázok so štyrmi možnosťami. Kto odpovie správne, berie si voľný susedný priestor; najrýchlejší dva.</li>
-          <li><b>Rozdelenie.</b> Zvyšné voľné priestory sa rozdelia v pomere bodov.</li>
+          <li><b>Rozdelenie.</b> Zvyšok mapy sa rozdelí rovným dielom, bez bodov.</li>
           <li><b>Súboje.</b> Hráči sa striedajú a útočia na susedov. Odpovedá útočník aj obranca; pri zhode rozhodne rozstrel.</li>
           <li><b>Koniec.</b> Stupne víťazov, rozpis bodov a tvoje chyby na precvičenie. Body do rebríčka závisia od umiestnenia, počtu hráčov, dĺžky hry a počtu okruhov (kapitola 5).</li>
         </ol>
@@ -1384,7 +1518,7 @@ function dqGuideHTML() {
       ${sec('2 · Štart a domovské letisko', `<p>Hra sa začína <b>tipovacou otázkou</b>: napíšeš číslo a kto je najbližšie, vyberá si domovské letisko prvý. Jednotka (kg, NM, min…) je vždy uvedená v otázke aj pri políčku.</p>
         <p>Domovské letisko má <b>tri životy</b> — sú to tri červené bodky na jeho krúžku. Z neho sa rozširuješ ďalej.</p>`)}
       ${sec('3 · Obsadzovanie', `<p>V každom kole dostanú všetci tú istú otázku so štyrmi možnosťami. Kto odpovie správne, vyberie si voľný priestor <b>susediaci</b> s tým, čo už má. Najrýchlejší zo správnych vyberá prvý a berie si dva priestory.</p>
-        <p>Po poslednom kole sa zvyšné voľné priestory rozdelia v pomere bodov: podiel žiadneho hráča sa nezmení o viac než 3 % a poradie ostane rovnaké. Každý dostáva len priestory susediace s tým, čo už má. Čo sa takto rozdeliť nedá, ostane voľné a dá sa získať v súbojoch.</p>`)}
+        <p>Po poslednom kole sa <b>celý zvyšok mapy</b> rozdelí rovným dielom: každý hráč dostane rovnaký počet priestorov, a to tie najbližšie k svojmu domovskému letisku. Podiel na území sa tak každému zväčší o rovnaký kus — kto mal 30, 20 a 10 % mapy, má potom 43, 33 a 23 %. <b>Body za pridelené priestory nedostane nikto</b> (na mape majú sivé preškrtnuté číslo); plnú hodnotu majú až pre toho, kto ich dobyje v súboji. Čo sa rovným dielom rozdeliť nedá, ostane voľné.</p>`)}
       ${sec('4 · Súboje', `<p>V každom kole je každý hráč raz na rade, začína ten, kto má najmenej bodov. Na rade môžeš:</p>
         <ul><li><b>zaútočiť</b> na susedný priestor súpera (je označený mečmi), alebo</li><li><b>obsadiť</b> susedný voľný priestor — vtedy odpovedáš sám.</li></ul>
         <p>Pri útoku odpovedá útočník aj obranca na tú istú otázku. <b>Rýchlosť nerozhoduje:</b></p>
@@ -1392,15 +1526,16 @@ function dqGuideHTML() {
         <p><b>Útok na domovské letisko</b> mu pri výhre uberie jeden život. Kým útočník vyhráva, útok pokračuje ďalšou otázkou (s rozstrelom) v tom istom kole — tri životy sa dajú vziať naraz. Pri treťom zásahu hráč vypadáva a všetky jeho priestory berie útočník.</p>`)}
       ${sec('5 · Body a víťaz', `<p>Letisko 500 · CTR 400 · TMA 300 · TRA/TSA 200 · LZR 150 · časť triedy G 100 · ubránenie +100 · každá tretia správna odpoveď v rade +50.</p>
         <p>Vyhráva hráč s najviac bodmi po poslednom kole súbojov, alebo ten, kto ostane na mape sám. Na konci hry je tabuľka, z čoho kto body získal.</p>
-        <p><b>Body do rebríčka</b> sa počítajú zo šiestich vecí: <b>350 × miesto × výkon × hráči × dĺžka × okruhy</b> (najmenej 5).</p>
+        <p><b>Body do rebríčka</b> sa počítajú zo šiestich vecí: <b>350 × miesto × výkon × hráči × dĺžka × okruhy</b> (najmenej 5, sám proti počítačom najmenej 1).</p>
         <ul><li><b>miesto:</b> 1. = 1 · 2. = 0,5 · 3. = 0,25 · 4. = 0,12 · 5. = 0,06 · 6. = 0,03,</li>
           <li><b>výkon:</b> 0,5 až 1 podľa toho, koľko bodov máš oproti víťazovi — tesné druhé miesto je viac než vzdialené,</li>
-          <li><b>hráči:</b> len proti počítačom 0,1 · dvaja ľudia 0,6 · traja 0,8 · štyria 1 · piati 1,15 · šiesti 1,3 (každý počítač navyše +0,03),</li>
+          <li><b>hráči:</b> dvaja ľudia 0,6 · traja 0,8 · štyria 1 · piati 1,15 · šiesti 1,3 · siedmi 1,4 · ôsmi 1,5; sám proti počítačom len 0,04 (ľahké × 0,5, ťažké × 1,5); každý počítač navyše +0,005 až +0,02 podľa obťažnosti,</li>
           <li><b>dĺžka:</b> kolá obsadzovania + kolá súbojov, delené desiatimi (0,4 až 1,6) — rýchla hra 3 + 3 dáva 0,6,</li>
           <li><b>okruhy:</b> 0,6 pri jednej sade až 1 pri všetkých.</li></ul>
-        <p>Príklady pre víťaza: štyria ľudia, 5 + 5 kôl, všetky okruhy = <b>350</b> · šiesti ľudia, 10 + 10 kôl = <b>728</b> · dvaja ľudia v rýchlej hre = <b>126</b> · sám proti dvom počítačom = <b>56</b>. Výhry a počet hier sa v profile počítajú len z hier aspoň dvoch ľudí.</p>`)}
+        <p>Príklady pre víťaza: štyria ľudia, 5 + 5 kôl, všetky okruhy = <b>350</b> · šiesti ľudia, 10 + 10 kôl = <b>728</b> · dvaja ľudia v rýchlej hre = <b>126</b> · sám proti dvom stredným počítačom = <b>21</b>. Výhry a počet hier sa v profile počítajú len z hier aspoň dvoch ľudí.</p>`)}
       ${sec('6 · Nastavenia hry (hostiteľ)', `<ul>
-        <li><b>HRÁČI</b> — koľko miest má miestnosť (2 až 6).</li>
+        <li><b>HRÁČI</b> — koľko miest má miestnosť (2 až 8).</li>
+        <li><b>POČÍTAČE</b> — ako dobre a rýchlo odpovedajú počítače: ľahké, stredné alebo ťažké.</li>
         <li><b>MAPA</b> — malá (${DQ_MAPS.s.t.length} priestorov), stredná (${DQ_MAPS.m.t.length}) alebo veľká (${DQ_MAPS.l.t.length}); pri voľbe PODĽA POČTU HRÁČOV sa vyberie sama.</li>
         <li><b>ČAS NA OTÁZKU</b> — 10, 15, 20 alebo 30 sekúnd.</li>
         <li><b>KOLÁ OBSADZOVANIA</b> a <b>KOLÁ SÚBOJOV</b> — dĺžka oboch častí hry; súboje sa dajú aj vypnúť.</li>
@@ -1442,6 +1577,7 @@ function dqCfgHTML(S) {
   return `<div class="dq-cfg">
       <div class="dq-cfg-t">NASTAVENIE HRY${host ? '' : ' <em>— mení ho len hostiteľ</em>'}</div>
       ${row('HRÁČI', 'max', DQ_OPT.max, v => v)}
+      ${row('POČÍTAČE', 'bot', DQ_OPT.bot, v => ['ĽAHKÉ', 'STREDNÉ', 'ŤAŽKÉ'][v])}
       ${row('MAPA', 'map', DQ_OPT.map, v => ({ auto: 'PODĽA POČTU HRÁČOV', s: 'MALÁ · ' + DQ_MAPS.s.t.length, m: 'STREDNÁ · ' + DQ_MAPS.m.t.length, l: 'VEĽKÁ · ' + DQ_MAPS.l.t.length })[v])}
       ${row('ČAS NA OTÁZKU', 'time', DQ_OPT.time, v => v + ' s')}
       ${row('KOLÁ OBSADZOVANIA', 'claim', DQ_OPT.claim, v => v)}
@@ -1453,7 +1589,7 @@ function dqCfgHTML(S) {
       ${c.jk ? row('BOOSTY ZA ÚROVNE', 'pk', DQ_OPT.pk, v => v ? 'ÁNO' : 'NIE') : ''}
       <div class="dq-cfg-row"><span>OTÁZKY Z</span><div>${DQ_QS.map(x => `<button class="rk-chip${c.mods.indexOf(x[0]) >= 0 ? ' on' : ''}" data-cfg="mods" data-val="${x[0]}" ${host ? '' : 'disabled'}>${x[1]} · ${x[2]}</button>`).join('')}</div></div>
       ${dqcRowHTML(S)}
-      <div class="dq-cfg-hint">${c.fast ? 'Rýchla hra: 3 kolá obsadzovania, 3 kolá súbojov, 10 s na otázku a kratšie prestávky. ' : ''}${c.lv ? 'Obťažnosť: pri útoku na priestor do 150 b. je otázka ľahká, pri TMA a TRA/TSA stredná, pri CTR ťažká a pri letisku z najťažších, s kratším časom na odpoveď. ' : ''}${c.pm ? 'Útočník si pred otázkou vyberie okruh, z ktorého padne. ' : ''}${c.jk ? 'Žolíky: každý hráč má raz za hru 50:50, +10 sekúnd a dvojité body. ' + (c.pk ? 'Boosty za úrovne: prihlásení hráči dostanú k žolíkom malé výhody podľa svojej úrovne — ' + DQ_PERK.map(x => 'od ' + x[0] + '. ' + x[2]).join(', ') + '. Každý raz za hru.' : '') : ''}</div>
+      <div class="dq-cfg-hint">${c.fast ? 'Rýchla hra: 3 kolá obsadzovania, 3 kolá súbojov, 10 s na otázku a kratšie prestávky. ' : ''}${c.lv ? 'Obťažnosť: pri útoku na priestor do 150 b. je otázka ľahká, pri TMA a TRA/TSA stredná, pri CTR ťažká a pri letisku z najťažších, s kratším časom na odpoveď. ' : ''}${c.pm ? 'Útočník si pred otázkou vyberie okruh, z ktorého padne. ' : ''}${c.jk ? 'Žolíky: každý hráč má raz za hru 50:50, +10 sekúnd a dvojité body. ' + (c.pk ? 'Boosty za úrovne: prihlásení hráči môžu použiť aj žolíky zo svojej zásoby (najviac po jednom kuse) a odmeny za úroveň — štít, zmenu odpovede a násobiče. ' : '') : ''}Počítače: ${['ľahké odpovedajú správne asi na 40 % otázok a pomaly', 'stredné odpovedajú správne asi na 60 % otázok', 'ťažké odpovedajú správne asi na 80 % otázok a rýchlo'][c.bot == null ? 1 : c.bot]}.</div>
     </div>`;
 }
 function dqMapSVG(S, me) {
@@ -1481,10 +1617,10 @@ function dqMapSVG(S, me) {
   M.t.forEach((o, i) => {
     const ow = S.own[i] >= 0 ? ' own' : '';
     if (o.c === 'AD') h += `<text class="dq-lab ad${ow}" x="${o.x}" y="${o.y + 2.3}">${o.b}</text>`;
-    else if (o.c === 'G') { const fs = Math.max(5.5, Math.min(13, o.r * 0.3)); h += `<text class="dq-lab g${ow}" x="${o.x}" y="${o.y}" font-size="${fs.toFixed(1)}"><tspan x="${o.x}" dy="-0.25em">${o.k}</tspan><tspan x="${o.x}" dy="1.15em" class="p">${o.v}</tspan></text>`; }
+    else if (o.c === 'G') { const fs = Math.max(5.5, Math.min(13, o.r * 0.3)); h += `<text class="dq-lab g${ow}" x="${o.x}" y="${o.y}" font-size="${fs.toFixed(1)}"><tspan x="${o.x}" dy="-0.25em">${o.k}</tspan><tspan x="${o.x}" dy="1.15em" class="p${S.gift && S.gift[i] ? ' gift' : ''}">${o.v}</tspan></text>`; }
     else if (o.r >= 6.5) {
       const fs = Math.max(4.6, Math.min(11, o.r * 0.42)), three = o.r >= 11;
-      h += `<text class="dq-lab${ow}" x="${o.x}" y="${o.y}" font-size="${fs.toFixed(1)}"><tspan x="${o.x}" dy="${three ? '-0.75em' : '-0.15em'}" class="t">${o.a}</tspan><tspan x="${o.x}" dy="1.05em">${o.b}</tspan>${three ? `<tspan x="${o.x}" dy="1.1em" class="p">${o.v}</tspan>` : ''}</text>`;
+      h += `<text class="dq-lab${ow}" x="${o.x}" y="${o.y}" font-size="${fs.toFixed(1)}"><tspan x="${o.x}" dy="${three ? '-0.75em' : '-0.15em'}" class="t">${o.a}</tspan><tspan x="${o.x}" dy="1.05em">${o.b}</tspan>${three ? `<tspan x="${o.x}" dy="1.1em" class="p${S.gift && S.gift[i] ? ' gift' : ''}">${o.v}</tspan>` : ''}</text>`;
     }
   });
   /* domovské letiská: zlatý krúžok a životy */
@@ -1556,7 +1692,7 @@ function dqRevText(S, nm) {
   if (R.what === 'took') return `${a} získava ${tn} (+${Math.round(DQ_MAP.t[D.t].v * (D.x2 === true ? 2 : D.x2 || 1))} b.${D.x2 ? ' · žolík ' + dqMulTxt(D.x2) : ''})`;
   if (R.what === 'hit') return `${a} zasiahol domovské letisko ${tn} — hráčovi ${d} ostáva ${S.lives[D.d] - 1} ${S.lives[D.d] - 1 === 1 ? 'život' : 'životy'} · útočník pokračuje`;
   if (R.what === 'out') return `${a} dobyl domovské letisko ${tn} — ${d} vypadáva a všetky jeho priestory berie ${a}`;
-  if (R.what === 'held') return `${d} ubránil ${tn} (+100 b.)`;
+  if (R.what === 'held') return R.sh ? `${d} ubránil ${tn} vďaka 🛡 štítu` : `${d} ubránil ${tn} (+100 b.)`;
   return D.d >= 0 ? `Obaja odpovedali nesprávne — ${tn} ostáva hráčovi ${d}` : `${tn} sa získať nepodarilo`;
 }
 /* terč: sivá šípka v strede je správna odpoveď, farebné šípky sú tipy hráčov — čím bližšie k stredu, tým presnejší tip */
@@ -1581,11 +1717,11 @@ function dqDartsSVG(S) {
 /* kto na koho útočí: vľavo obranca, v strede VS, vpravo útočník */
 function dqVsHTML(S, nm, big) {
   const D = S.duel, tn = dqEsc(DQ_MAP.t[D.t].k);
-  const side = (pi, role) => `<div class="vs-side ${role}" style="--c:${dqC(pi)}"><small>${role === 'def' ? 'OBRANCA' : 'ÚTOČNÍK'}</small><div class="vs-who"><i>${dqI(pi)}</i><strong>${nm(pi)}</strong></div></div>`;
+  const side = (pi, role) => `<div class="vs-side ${role}" style="--c:${dqC(pi)}"><small>${role === 'def' ? 'OBRANCA' : 'ÚTOČNÍK'}${dqTtT(S, pi)}</small><div class="vs-who"><i>${dqI(pi)}</i><strong>${nm(pi)}</strong></div></div>`;
   return `<div class="dq-vsx${big ? ' big' : ''}">${D.d >= 0 ? side(D.d, 'def') : `<div class="vs-side def free"><small>VOĽNÝ PRIESTOR</small><div class="vs-who"><i>◯</i><strong>${tn}</strong></div></div>`}<u>VS</u>${side(D.a, 'att')}</div>`;
 }
 function dqPopHTML(S, me, stage, ctx) {
-  const q = S.q, R = S.rev, can = q.who.indexOf(me) >= 0, my = DQ.my, nm = i => dqEsc(S.players[i] ? S.players[i].nick : '?');
+  const q = S.q, R = S.rev, can = q.who.indexOf(me) >= 0, my = DQ.my, nm = i => dqNmH(S, i);
   const sec = ms => (ms / 1000).toFixed(1).replace('.', ',') + ' s';
   const sus = dqSus(S), hid = (q.hid && q.hid[me]) || [], J = S.players[me] && S.players[me].jk;
   const chgL = !R && can && my ? dqChgLeft(S, me) : null, chgTxt = L => L === '∞' ? 'bez limitu' : L + '× zostáva';
@@ -1638,6 +1774,7 @@ function dqPopHTML(S, me, stage, ctx) {
     const mx = att && S.duel.x2 ? (S.duel.x2 === true ? 2 : S.duel.x2) : 0;
     h += `<div class="dq-jk"><span>ŽOLÍKY</span>${q.num ? '' : jb('h', '½ 50:50', 'Zmiznú dve nesprávne odpovede', false, hid.length > 0)}${jb('t', '⏱ +10 s', 'Desať sekúnd navyše pre všetkých')}${jb('s', '⏱ +5 s', 'Boost za úroveň: päť sekúnd navyše pre všetkých')}${att ? jb('d', '×2 BODY', 'Pri výhre dostaneš hodnotu priestoru ešte raz', mx === 2, mx && mx !== 2) + jb('a', '×1,2 BODY', 'Boost za úroveň: pri výhre o pätinu bodov viac', mx === 1.2, mx && mx !== 1.2) + jb('b', '×1,3 BODY', 'Boost za úroveň: pri výhre o 30 % bodov viac', mx === 1.3, mx && mx !== 1.3) : ''}</div>`;
   }
+  if (J && J.e > 0 && !R && can) h += `<div class="dq-chg soft">🛡 ŠTÍT ${J.e}× — ochráni ťa pred stratou priestoru</div>`;
   if (chgL !== null) h += `<div class="dq-chg">↺ <b>ZMENA ODPOVEDE</b> · ${chgTxt(chgL)} — klikni na inú možnosť${q.num ? ' alebo napíš nový tip' : ''}</div>`;
   else if (J && !R && can && !my && dqChgLeft(S, me) !== null) h += `<div class="dq-chg soft">↺ po odpovedi môžeš odpoveď ešte zmeniť · ${chgTxt(dqChgLeft(S, me))}</div>`;
   h += '<div class="dq-pop-foot">';
@@ -1666,7 +1803,7 @@ function dqAxisSVG(S, el) {
 }
 /* koniec hry: stupne víťazov, zvyšok poradia a ocenenia */
 function dqPodiumHTML(S, me) {
-  const nm = i => dqEsc(S.players[i] ? S.players[i].nick : '?'), top = S.rank.slice(0, 3), ord = top.length === 3 ? [1, 0, 2] : top.length === 2 ? [1, 0] : [0];
+  const nm = i => dqNmH(S, i), top = S.rank.slice(0, 3), ord = top.length === 3 ? [1, 0, 2] : top.length === 2 ? [1, 0] : [0];
   const lg = pi => !S.cfg.demo && !S.players[pi].bot && dqLeaguePts(S, pi).pts ? `<em>+${dqLeaguePts(S, pi).pts} do rebríčka</em>` : '';
   let h = `<div class="dq-podium">${ord.map(r => { const pi = top[r]; return `<div class="p${r + 1}${pi === me ? ' me' : ''}" style="--c:${dqC(pi)};animation-delay:${(1.0 - r * 0.35).toFixed(2)}s">${dqFace(S, pi)}<span>${nm(pi)}</span><strong>${dqScore(S, pi)}</strong><small>${S.own.filter(o => o === pi).length} priestorov</small>${lg(pi)}<b>${r + 1}</b></div>`; }).join('')}</div>`;
   if (S.rank.length > 3) h += `<div class="dq-endlist">${S.rank.slice(3).map((pi, r) => `<div class="${pi === me ? 'me' : ''}" style="animation-delay:${(1.3 + r * 0.15).toFixed(2)}s"><b>${r + 4}.</b><i style="background:${dqC(pi)}"></i><span>${nm(pi)}</span><small>${S.own.filter(o => o === pi).length} priestorov</small><strong>${dqScore(S, pi)}</strong>${lg(pi)}</div>`).join('')}</div>`;
@@ -1690,9 +1827,9 @@ function dqPodiumHTML(S, me) {
   const CN = { AD: ['letisko', 'letiská', 'letísk'], CTR: ['CTR', 'CTR', 'CTR'], TMA: ['TMA', 'TMA', 'TMA'], TRA: ['TRA', 'TRA', 'TRA'], TSA: ['TSA', 'TSA', 'TSA'], R: ['LZR', 'LZR', 'LZR'], P: ['LZP', 'LZP', 'LZP'], D: ['LZD', 'LZD', 'LZD'], G: ['časť G', 'časti G', 'častí G'] };
   h += `<div class="dq-ptab"><strong>ROZPIS BODOV</strong><div class="rk-tbl"><table><thead><tr><th>HRÁČ</th><th>ZA PRIESTORY</th><th>OBRANA</th><th>SÉRIE</th><th>NÁSOBIČE</th><th>SPOLU</th><th>ÚTOKY</th><th>OBRANY</th></tr></thead><tbody>${S.rank.map(pi => {
     const p = S.players[pi], bd = p.bd || {}, T = St[pi] || {}, cnt = {}; let terr = 0;
-    S.own.forEach((o, t) => { if (o === pi) { terr += DQ_MAP.t[t].v; const c = DQ_MAP.t[t].c; cnt[c] = (cnt[c] || 0) + 1; } });
+    let gf = 0; S.own.forEach((o, t) => { if (o === pi) { if (S.gift && S.gift[t]) gf++; else terr += DQ_MAP.t[t].v; const c = DQ_MAP.t[t].c; cnt[c] = (cnt[c] || 0) + 1; } });
     const det = Object.keys(CN).filter(c => cnt[c]).map(c => cnt[c] + ' ' + CN[c][cnt[c] === 1 ? 0 : cnt[c] < 5 ? 1 : 2]).join(' · ');
-    return `<tr class="${pi === me ? 'me' : ''}"><td class="rk-nick"><i style="background:${dqC(pi)}"></i>${nm(pi)}${p.out ? ' <em>vyradený</em>' : ''}<small>${det || 'bez priestorov'}</small></td><td>${terr}</td><td>${bd.def || 0}</td><td>${bd.fire || 0}</td><td>${bd.x2 || 0}</td><td class="rk-pts">${dqScore(S, pi)}</td><td>${T.at ? (T.aw || 0) + ' / ' + T.at : '—'}${T.fr ? `<small>+${T.fr} voľných</small>` : ''}</td><td>${T.df ? (T.dw || 0) + ' / ' + T.df : '—'}</td></tr>`;
+    return `<tr class="${pi === me ? 'me' : ''}"><td class="rk-nick"><i style="background:${dqC(pi)}"></i>${nm(pi)}${p.out ? ' <em>vyradený</em>' : ''}<small>${det || 'bez priestorov'}${gf ? ' · z toho ' + gf + ' pridelených bez bodov' : ''}</small></td><td>${terr}</td><td>${bd.def || 0}</td><td>${bd.fire || 0}</td><td>${bd.x2 || 0}</td><td class="rk-pts">${dqScore(S, pi)}</td><td>${T.at ? (T.aw || 0) + ' / ' + T.at : '—'}${T.fr ? `<small>+${T.fr} voľných</small>` : ''}</td><td>${T.df ? (T.dw || 0) + ' / ' + T.df : '—'}</td></tr>`;
   }).join('')}</tbody></table></div><small>OBRANA = +100 za každé ubránenie správnou odpoveďou · SÉRIE = +50 za každú tretiu správnu odpoveď v rade · ÚTOKY a OBRANY = vyhrané / všetky.</small></div>`;
   if (aw.length) h += `<div class="dq-awards">${aw.map(a => `<div><i>${a[0]}</i><small>${a[1]}</small><b>${a[2]}</b><span>${a[3]}</span></div>`).join('')}</div>`;
   return h;
@@ -1768,7 +1905,11 @@ function dqBindStage(st) {
     else {
       const b = e.target.closest && e.target.closest('[data-mod],[data-rep],[data-dr],[data-jk]'), Z = DQ.S;
       if (!b || b.disabled || !Z) return;
-      if (b.dataset.jk) dqSend({ t: 'jk', k: Z.k, j: b.dataset.jk });
+      if (b.dataset.jk) {
+        const j = b.dataset.jk, base = { s: 0, h: 1, t: 1, d: 1 }[j], used = DQ.jkG === Z.gid ? (DQ.jkUse[j] || 0) : 0;
+        if (base !== undefined && !Z.cfg.demo && Z.cfg.pk && used >= base && !bstLeft()[j]) return qrepToast('Zásoba tohto žolíka je prázdna.');
+        dqSend({ t: 'jk', k: Z.k, j });
+      }
       else if (b.dataset.mod) dqSend({ t: 'modsel', k: Z.k, m: b.dataset.mod });
       else if (b.dataset.dr != null) dqDrillPick(+b.dataset.dr);
       else if (b.dataset.rep != null) { const x = dqWrong(Z)[+b.dataset.rep]; if (x) { dqReportQ({ key: x.key, mod: x.mod, q: dqRepText(x), a: x.num ? x.ans : x.opts[x.ans] }); DQ.ui++; dqShow(); } }
@@ -1840,7 +1981,7 @@ function dqRender(card) {
     const H0 = lsGet(DQ_HOSTK, null), hback = H0 && H0.S && H0.room && H0.S.phase !== 'end' && Date.now() - H0.t < 30 * 60000 ? H0 : null;
     card.innerHTML = `<div class="dq-home dqh">
         <section class="dqh-hero">
-          <div class="dqh-copy"><small><i></i>HRA NAŽIVO · 2 – 6 HRÁČOV</small><h2>DOBYVATEĽ</h2>
+          <div class="dqh-copy"><small><i></i>HRA NAŽIVO · 2 – 8 HRÁČOV</small><h2>DOBYVATEĽ</h2>
             <p>Odpovedz rýchlejšie než ostatní a ober ich o slovenské nebo.</p>
             <div class="dqh-pills"><span>🗺 skutočné priestory</span><span>⏱ 10 – 20 minút</span><span>❓ ${Object.keys(DQ_BANK).reduce((x, k) => x + DQ_BANK[k].length, 0)} otázok</span><span>🏆 body do rebríčka</span></div></div>
           <button class="dqh-demo" id="dq-demo"><i>▶</i><span><b>NEVIEŠ, AKO SA TO HRÁ?</b><em>Pusti si vzor hry proti počítaču — 5 minút, bez kódu a bez prihlásenia.</em></span><u>UKÁZAŤ VZOR HRY</u></button>
@@ -1851,8 +1992,9 @@ function dqRender(card) {
         <section class="dqh-play">
           <div class="dqh-card who"><small><b>1</b>HRÁŠ AKO</small>${RK.acct ? `<div class="dqh-me">${avFace(RK.acct.nick, RK.me && RK.me.emoji, '')}<strong>${dqEsc(RK.acct.nick)}</strong></div><span>Body z hry sa ti pripíšu do rebríčka.</span>` : `<input type="text" id="dq-nick" maxlength="16" placeholder="tvoja prezývka" value="${dqEsc(DQ.guest)}" autocomplete="off" spellcheck="false"><span>Hrať môžeš aj bez účtu. Body do rebríčka majú len prihlásení.</span>`}</div>
           <div class="dqh-card new"><small><b>2</b>NOVÁ HRA</small><strong>Založ miestnosť</strong><span>Dostaneš kód zo štyroch písmen a pošleš ho kolegom. Dá sa hrať aj proti počítaču.</span><button class="btn" id="dq-create">VYTVORIŤ MIESTNOSŤ ▶</button></div>
-          <div class="dqh-card code"><small><b>2</b>MÁM KÓD</small><strong>Pripoj sa ku kolegom</strong><span>Napíš kód, ktorý ti poslal hostiteľ.</span><div class="dqh-join"><input type="text" id="dq-code" maxlength="4" placeholder="KÓD" autocomplete="off" spellcheck="false"><button class="btn" id="dq-join">PRIPOJIŤ ▶</button></div></div>
+          <div class="dqh-card code"><small><b>2</b>MÁM KÓD</small><strong>Pripoj sa ku kolegom</strong><span>Napíš kód, ktorý ti poslal hostiteľ.</span><div class="dqh-join"><input type="text" id="dq-code" maxlength="4" placeholder="KÓD" autocomplete="off" spellcheck="false"><button class="btn" id="dq-join">PRIPOJIŤ ▶</button></div><button class="btn ghost dqh-watch" id="dq-watch">👁 LEN SLEDOVAŤ</button></div>
         </section>
+        <section class="dqh-rooms" id="dq-rooms"></section>
         ${SB_ON ? '' : '<div class="rk-warn"><strong>SKÚŠOBNÝ REŽIM</strong> — hra ešte nie je pripojená na server. Proti počítaču funguje hneď; s druhým hráčom zatiaľ len v dvoch kartách toho istého prehliadača.</div>'}
         <section class="dqh-how"><div class="dqh-h"><h3>AKO TO VYZERÁ</h3><span>ukážka beží sama — kliknutím preskočíš na scénu</span></div>
           ${dqReelHTML()}
@@ -1873,25 +2015,31 @@ function dqRender(card) {
     if (hf) hf.onclick = () => { lsSet(DQ_HOSTK, null); dqShow(); };
     const ci = document.getElementById('dq-code'), jn = () => dqJoin(ci.value);
     document.getElementById('dq-join').onclick = jn;
+    document.getElementById('dq-watch').onclick = () => dqJoin(ci.value, true);
+    dqRoomsStart();
     ci.addEventListener('keydown', e => { if (e.key === 'Enter') jn(); });
     return;
   }
   if (!S) { card.innerHTML = `<div class="dq-home"><h2>DOBYVATEĽ</h2><p class="dq-lead">Pripájam sa do miestnosti <strong>${DQ.room}</strong>…</p><button class="btn ghost" id="dq-leave">ZRUŠIŤ</button></div>`; document.getElementById('dq-leave').onclick = () => dqLeave(''); return; }
-  const me = dqMe(), nm = i => dqEsc(S.players[i] ? S.players[i].nick : '?');
+  const me = dqMe(), nm = i => dqNmH(S, i);
   if (S.phase === 'lobby') {
     DQ.prev = null; DQ.view = null;
     const slots = []; for (let i = S.players.length; i < S.cfg.max; i++) slots.push('<div class="dq-pl empty"><span>voľné miesto…</span></div>');
     card.innerHTML = `<div class="dq-home">
-        <h2>DOBYVATEĽ — MIESTNOSŤ</h2>
+        <h2>${dqEsc(dqRoomTitle(S))}</h2>
+        <div class="dq-roomtag"><span class="${S.cfg.priv ? 'pr' : 'pu'}">${S.cfg.priv ? '🔒 SÚKROMNÁ — len s kódom' : '🌐 VEREJNÁ — je v zozname miestností'}</span>${me < 0 ? '<span class="sp">👁 SI TU AKO DIVÁK</span>' : ''}${(S.specs || []).length ? `<span>👁 ${S.specs.length} ${S.specs.length === 1 ? 'divák' : S.specs.length < 5 ? 'diváci' : 'divákov'}: ${S.specs.map(x => dqEsc(x.nick)).join(', ')}</span>` : ''}</div>
         <div class="dq-lobby-grid">
           <div>
             <div class="dq-code"><span>KÓD MIESTNOSTI</span><b>${DQ.room}</b><small>${DQ.host ? 'Pošli ho kolegom. Otvoria kartu DOBYVATEĽ, napíšu kód a dajú PRIPOJIŤ SA.' : 'Si v miestnosti. Hru spustí hostiteľ.'}</small></div>
+            ${DQ.host ? `<div class="dq-room"><strong>NÁZOV A VIDITEĽNOSŤ</strong><input type="text" id="dq-rname" maxlength="24" autocomplete="off" spellcheck="false" placeholder="${dqEsc(S.players[0].nick + ' — miestnosť')}" value="${dqEsc(S.cfg.name || '')}">
+              <div class="dq-look-row"><button class="rk-chip${S.cfg.priv ? '' : ' on'}" data-cfg="priv" data-val="0">🌐 VEREJNÁ</button><button class="rk-chip${S.cfg.priv ? ' on' : ''}" data-cfg="priv" data-val="1">🔒 SÚKROMNÁ</button></div>
+              <small>${S.cfg.priv ? 'Súkromná: nikde ju nevidno, dostane sa do nej len ten, komu pošleš kód.' : 'Verejná: ukazuje sa na úvode Dobyvateľa v zozname miestností — ktokoľvek sa môže pripojiť alebo sledovať.'}</small></div>` : ''}
             ${RK.acct && DQ.host ? (() => { const fr = SOC.friends.filter(f => f.st === 'ok'); DQ.invited = DQ.invited && DQ.invRoom === DQ.room ? DQ.invited : {}; DQ.invRoom = DQ.room;
               return `<div class="dq-inv"><strong>POZVAŤ PRIATEĽOV</strong>${fr.length ? `<div>${fr.map(f => `<button class="rk-chip${f.online ? ' on' : ''}" data-dqinv="${dqEsc(f.nick)}" ${DQ.invited[f.nick] ? 'disabled' : ''}>${f.online ? '● ' : ''}${dqEsc(f.nick)}${DQ.invited[f.nick] ? ' ✓' : ''}</button>`).join('')}</div><small>Zelení sú práve online. Pozvánka im vyskočí vpravo hore a ostane v správach.</small>` : '<small>Zatiaľ nemáš priateľov — pridaj si ich v profile (vpravo hore → PRIATELIA) a nabudúce ich pozveš jedným klikom.</small>'}</div>`; })() : ''}
             <div class="dq-lobby">${S.players.map((p, i) => `<div class="dq-pl"><i style="background:${dqC(i)}">${dqI(i)}</i><span>${dqEsc(p.nick)}${i === 0 ? ' <em>hostiteľ</em>' : ''}${i === me ? ' <em>(ty)</em>' : ''}</span>${DQ.host && i > 0 ? `<button class="dq-x" data-kick="${i}" title="Odobrať">✕</button>` : ''}</div>`).join('')}${slots.join('')}</div>
             ${me >= 0 ? `<div class="dq-look"><strong>TVOJA FARBA A LIETADLO</strong>
-              <div class="dq-look-row">${DQ_PAL.map((c, ci) => { const taken = S.players.some((p, j) => j !== me && p.col === ci); return `<button class="dq-sw${S.players[me].col === ci ? ' on' : ''}" data-col="${ci}" style="background:${c}" ${taken ? 'disabled title="farbu už má iný hráč"' : ''}></button>`; }).join('')}</div>
-              <div class="dq-look-row">${DQ_ICO.map((ic, ii) => `<button class="dq-ic${S.players[me].ico === ii ? ' on' : ''}" data-ico="${ii}">${ic}</button>`).join('')}</div>
+              <div class="dq-look-row">${DQ_PAL.map((c, ci) => { const taken = S.players.some((p, j) => j !== me && p.col === ci), lk = (DQ_RW.palLv[ci] || 1) > dqMyLv(); return `<button class="dq-sw${S.players[me].col === ci ? ' on' : ''}${lk ? ' lock' : ''}" data-col="${ci}" style="background:${c}" ${taken ? 'disabled title="farbu už má iný hráč"' : lk ? 'disabled title="odomkne sa od LVL ' + DQ_RW.palLv[ci] + '"' : ''}></button>`; }).join('')}</div>
+              <div class="dq-look-row">${DQ_ICO.map((ic, ii) => { const lk = (DQ_RW.icoLv[ii] || 1) > dqMyLv(); return `<button class="dq-ic${S.players[me].ico === ii ? ' on' : ''}${lk ? ' lock' : ''}" data-ico="${ii}" ${lk ? 'disabled title="odomkne sa od LVL ' + DQ_RW.icoLv[ii] + '"' : ''}>${lk ? '🔒' : ic}</button>`; }).join('')}</div>
               <div class="dq-look-row"><button class="rk-chip${dqLow() ? '' : ' on'}" id="dq-lowt">ANIMÁCIE: ${dqLow() ? 'MENEJ' : 'PLNÉ'}</button><small>Na slabšom telefóne prepni na MENEJ. Dá sa to zmeniť aj počas hry tlačidlom ✨.</small></div>
             </div>` : ''}
             <div class="dq-acts">
@@ -1899,13 +2047,16 @@ function dqRender(card) {
               <button class="btn ghost" id="dq-leave">ODÍSŤ</button>
             </div>
             ${DQ.host && S.players.length < 2 ? '<div class="dq-note">Na štart treba aspoň dvoch hráčov. Ak nikto nie je poruke, pridaj počítač.</div>' : ''}
-            ${(() => { const F = dqLeagueF(S); return `<div class="dq-note">Výhra v tejto hre dá do rebríčka asi <b>${Math.max(5, Math.round(DQ_LG.base * F.pl * F.len * F.top))} bodov</b> (hráči × ${String(F.pl).replace('.', ',')} · dĺžka × ${String(F.len).replace('.', ',')} · okruhy × ${String(F.top).replace('.', ',')}). ${F.h < 2 ? 'Proti počítačom je bodov málo — pozvi kolegov.' : 'Viac ľudí, viac kôl a viac okruhov = viac bodov.'}</div>`; })()}
+            ${(() => { const F = dqLeagueF(S); return `<div class="dq-note">Výhra v tejto hre dá do rebríčka asi <b>${Math.max(F.h < 2 ? 1 : 5, Math.round(DQ_LG.base * F.pl * F.len * F.top))} bodov</b> (hráči × ${String(F.pl).replace('.', ',')} · dĺžka × ${String(F.len).replace('.', ',')} · okruhy × ${String(F.top).replace('.', ',')}). ${F.h < 2 ? 'Proti počítačom je bodov veľmi málo (ťažšie počítače dajú o niečo viac) — pozvi kolegov.' : 'Viac ľudí, viac kôl a viac okruhov = viac bodov.'}</div>`; })()}
           </div>
           ${dqCfgHTML(S)}
         </div>
         ${dqRulesHTML()}
         ${dqGuideHTML()}
       </div>`;
+    const rn = document.getElementById('dq-rname');
+    if (rn) { rn.oninput = () => { DQ.nameDraft = rn.value; }; rn.onchange = () => { DQ.nameDraft = null; dqSend({ t: 'cfg', key: 'name', val: rn.value }); };
+      if (DQ.nameDraft != null) { rn.value = DQ.nameDraft; rn.focus(); try { rn.setSelectionRange(rn.value.length, rn.value.length); } catch (e) {} } }
     const go = document.getElementById('dq-go'), bot = document.getElementById('dq-bot');
     if (go) go.onclick = () => dqSend({ t: 'start' });
     if (bot) bot.onclick = () => dqSend({ t: 'bot' });
@@ -1932,9 +2083,9 @@ function dqRender(card) {
     st.dataset.gid = S.gid;
     st.innerHTML = `
       <div class="dq-top">
-        <div class="dq-brand"><b>DOBYVATEĽ</b><span>miestnosť ${DQ.room} · v${APP_VERSION}</span></div>
+        <div class="dq-brand"><b>DOBYVATEĽ</b><span>${dqEsc(dqRoomTitle(S)).slice(0, 30)} · ${DQ.room}</span></div>
         <div class="dq-players" id="dq-chips"></div>
-        <div class="dq-tools"><button id="dq-emob" title="Poslať reakciu">😀</button><button id="dq-fxb" title="Animácie">✨</button><button data-hp="game" title="Čo sa práve deje a pravidlá">?</button><div id="dq-emop">${DQ_EMO.map((e, i) => `<button data-e="${i}">${e}</button>`).join('')}</div><button id="dq-zi" title="Priblížiť">+</button><button id="dq-zo" title="Oddialiť">−</button><button id="dq-zr" title="Celá mapa">⤢</button><button id="dq-leave" class="x">ODÍSŤ</button></div>
+        <div class="dq-tools"><span id="dq-specn" class="dq-specn" title="Diváci"></span><button id="dq-emob" title="Poslať reakciu">😀</button><button id="dq-fxb" title="Animácie">✨</button><button data-hp="game" title="Čo sa práve deje a pravidlá">?</button><div id="dq-emop">${DQ_EMO.map((e, i) => `<button data-e="${i}">${e}</button>`).join('')}</div><button id="dq-zi" title="Priblížiť">+</button><button id="dq-zo" title="Oddialiť">−</button><button id="dq-zr" title="Celá mapa">⤢</button><button id="dq-leave" class="x">ODÍSŤ</button></div>
       </div>
       <div class="dq-status" id="dq-status"><b id="dq-st-a"></b><span id="dq-st-b"></span><button class="dq-btn" id="dq-unpeek" style="display:none">VÝSLEDKY</button><div class="dq-timer"><i class="dq-bar-i" id="dq-sbar"></i></div></div>
       <div class="dq-mapwrap"><div id="dq-maph"></div><div id="dq-fxl"></div><div id="dq-toast"></div><div id="dq-poph"></div></div>
@@ -1960,12 +2111,12 @@ function dqRender(card) {
     /* vyradený hráč: jeho priestory najprv zošednú a potom sa prefarbia, vlna ide od dobytého letiska */
     const dl = wave ? Math.round(Math.min(1500, Math.hypot(M.t[t].x - wave.x, M.t[t].y - wave.y) * 4)) : 0;
     DQ.fx.push({ t, col: dqC(o), was, x: +ck.x.toFixed(1), y: +ck.y.toFixed(1), t0: now + dl, grey: !!wave });
-    if (bulk) return;
+    if (bulk || (S.gift && S.gift[t])) return;
     if (!dqLow()) dqFloat('+' + M.t[t].v, dqScr(M.t[t].x, M.t[t].y), dqChipPos(o), 'pts', 1400);
     if (was >= 0) toast(`<small>${was === me ? 'PRIŠIEL SI O PRIESTOR' : o === me ? 'DOBYL SI PRIESTOR' : 'DOBYTÉ'}</small><b>⚔ ${nm(o)} → ${k}</b><em>+${M.t[t].v}</em>`, dqC(o), was === me ? 'lose' : o === me ? 'win' : '');
     else toast(`<small>${M.t[t].c === 'AD' && S.phase.indexOf('start') === 0 ? 'DOMOVSKÉ LETISKO' : 'OBSADENÉ'}</small><b>${nm(o)} → ${k}</b><em>+${M.t[t].v}</em>`, dqC(o), o === me ? 'win' : '');
   });
-  if (bulk && S.phase === 'rest' && S.dist) toast(`<small>ROZDELENIE ZVYŠNÝCH PRIESTOROV</small><b>${S.dist} priestorov v pomere bodov</b>`, '#ffd34d', '');
+  if (S.phase === 'rest' && S.dist && DQ.distK !== S.gid) { DQ.distK = S.gid; toast(`<small>ROZDELENIE ZVYŠKU MAPY</small><b>každý dostal ${S.each} ${S.each === 1 ? 'priestor' : S.each < 5 ? 'priestory' : 'priestorov'} pri svojom letisku</b><em>bez bodov</em>`, '#ffd34d', ''); }
   const outNow = S.players.map(p => !!p.out);
   if (DQ.prevOut) outNow.forEach((o, i) => { if (o && !DQ.prevOut[i]) toast(`<small>DOMOVSKÉ LETISKO PADLO</small><b>${nm(i)} vypadáva</b>`, dqC(i), i === me ? 'lose' : ''); });
   DQ.prevOut = outNow;
@@ -1979,14 +2130,14 @@ function dqRender(card) {
     if (DQ.camK !== id) { DQ.camK = id; if (!dqLow() && (!DQ.view || DQ.camAuto)) { const b = dqCamBox([A, T]); if (b) dqCamTo(b, 700); } }
     if (S.phase === 'duelintro' && DQ.flyK !== id) {
       DQ.flyK = id;
-      if (!dqLow()) { const ms = Math.max(700, Math.min(1500, (S.tot || 3000) - 900)); dqFly(A, T, dqC(S.duel.a), ms); dqFxAdd(`<circle class="dq-ping" cx="${T.x}" cy="${T.y}" r="${((T.r || 6) + 9).toFixed(1)}" style="--pc:${dqC(S.duel.a)};animation-delay:${ms}ms"/>`, ms + 950); }
+      if (!dqLow()) { const ms = Math.max(700, Math.min(1500, (S.tot || 3000) - 900)); dqFly(A, T, dqC(S.duel.a), ms, false, dqTrC(S.duel.a)); dqFxAdd(`<circle class="dq-ping" cx="${T.x}" cy="${T.y}" r="${((T.r || 6) + 9).toFixed(1)}" style="--pc:${dqC(S.duel.a)};animation-delay:${ms}ms"/>`, ms + 950); }
     }
   }
   /* výber priestoru: radarový lúč ukáže, čo sa dá vybrať */
   if (dqPicking(S) && DQ.sweepK !== S.k) { DQ.sweepK = S.k; if (!dqLow()) { if (DQ.camAuto && DQ.view) dqCamTo(null, 500); dqSweep(S); } }
   /* reakcie a žolíky ostatných hráčov */
   if (S.emo && S.emo.n !== DQ.emoN) { DQ.emoN = S.emo.n; const c = dqChipPos(S.emo.p); if (c) dqFloat(DQ_EMO[S.emo.e], { x: c.x, y: c.y + 40 }, { x: c.x, y: c.y + 110 }, 'emo', 2000); }
-  if (S.jkN && S.jkN.n !== DQ.jkN) { DQ.jkN = S.jkN.n; const c = dqChipPos(S.jkN.p); if (c) dqFloat('ŽOLÍK ' + DQ_JKN[S.jkN.j], { x: c.x, y: c.y + 30 }, { x: c.x, y: c.y + 64 }, 'tag', 1900); }
+  if (S.jkN && S.jkN.n !== DQ.jkN) { DQ.jkN = S.jkN.n; if (!S.cfg.demo && S.cfg.pk && S.jkN.p === dqMe()) bstCount(S.jkN.j, S.gid); const c = dqChipPos(S.jkN.p); if (c) dqFloat('ŽOLÍK ' + DQ_JKN[S.jkN.j], { x: c.x, y: c.y + 30 }, { x: c.x, y: c.y + 64 }, 'tag', 1900); }
   /* vyhodnotenie s napätím: prvú chvíľu je vidno len to, kto čo zvolil */
   if (S.rev && S.q && DQ.susK !== S.gid + S.k) {
     DQ.susK = S.gid + S.k; DQ.susT0 = now;
@@ -1999,7 +2150,7 @@ function dqRender(card) {
   let pop = '', banner = '', myTurn = false;
   const stage = dqStageName(S);
   if (S.phase === 'rest') {
-    const dist = S.dist ? ` Zvyšné priestory (${S.dist}) boli rozdelené v pomere bodov — podiel žiadneho hráča sa nezmenil o viac než 3 % a poradie ostalo rovnaké.${S.left ? ' ' + S.left + ' ostalo voľných, lebo sa nedali rozdeliť spravodlivo.' : ''}` : (S.left && S.round >= S.cfg.claim ? ` Voľných ostalo ${S.left} priestorov — spravodlivo sa rozdeliť nedali.` : '');
+    const dist = S.dist ? ` Zvyšok mapy sa rozdelil rovným dielom: každý dostal ${S.each} ${S.each === 1 ? 'priestor' : S.each < 5 ? 'priestory' : 'priestorov'} najbližšie k svojmu letisku. Body za ne nikto nemá — hodnotu majú až pre toho, kto ich dobyje.${S.left ? ' Voľných ostalo ' + S.left + '.' : ''}` : (S.left && S.round >= S.cfg.claim ? ` Voľných ostalo ${S.left} priestorov.` : '');
     banner = S.cnt === 'end' ? 'Hra sa skončila — vyhodnocujem…' + dist : S.cnt === 'war' ? 'Obsadzovanie sa skončilo — začínajú súboje.' + dist : 'Ďalšia otázka o chvíľu…';
   } else if (S.phase === 'count') {
     banner = S.cnt === 'tieq' ? `Rozstrel ${(S.duel && S.duel.tn) || 1} / 3: kto tipne číslo presnejšie?${S.duel && S.duel.tn === 3 ? ' Pri rovnakom tipe rozhodne čas.' : ''}` : S.cnt === 'startq' ? 'Tipovacia otázka o poradie výberu domovského letiska.' : S.cnt === 'duelq' && S.duel ? (S.duel.d >= 0 ? `⚔ ${nm(S.duel.a)} útočí na ${dqEsc(M.t[S.duel.t].k)} hráča ${nm(S.duel.d)}` : `${nm(S.duel.a)} obsadzuje voľný priestor ${dqEsc(M.t[S.duel.t].k)}`) : 'Priprav sa na otázku.';
@@ -2062,7 +2213,8 @@ function dqRender(card) {
   avNeed(S.players.filter(p => p.acc && !p.bot).map(p => p.nick));
   $('dq-chips').innerHTML = dqChipsHTML(S, me);
   $('dq-status').classList.toggle('me', myTurn);
-  $('dq-st-a').textContent = stage; $('dq-st-b').innerHTML = banner;
+  $('dq-st-a').textContent = (me < 0 ? '👁 DIVÁK · ' : '') + stage; $('dq-st-b').innerHTML = banner;
+  { const sn = $('dq-specn'), k = (S.specs || []).length; if (sn) { sn.textContent = k ? '👁 ' + k : ''; sn.title = k ? 'Diváci: ' + S.specs.map(x => x.nick).join(', ') : ''; } }
   $('dq-unpeek').style.display = S.phase === 'end' && !pop ? '' : 'none';
   /* zoznam na výber priestoru — len na dotykových zariadeniach, keď som na rade */
   const pkOn = myTurn && dqPicking(S) && dqCoarse(), pkSig = pkOn ? S.k + '|' + DQ.sel : '';

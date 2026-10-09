@@ -298,16 +298,20 @@ function fxToast(small, title, text) {
 function fxConfetti(n) {
   if (typeof dqLow === 'function' && dqLow()) return;
   const w = document.createElement('div'); w.className = 'fx-conf';
-  w.innerHTML = Array.from({ length: n || 20 }, (x, i) => `<i style="left:${Math.round(Math.random() * 100)}%;background:${['#19d488', '#3a86ff', '#ffbe0b', '#e63946', '#b45cff'][i % 5]};animation-delay:${(Math.random() * 0.35).toFixed(2)}s;--r:${Math.round(Math.random() * 360)}deg;--x:${Math.round(Math.random() * 120 - 60)}px"></i>`).join('');
+  w.innerHTML = Array.from({ length: n || 20 }, (x, i) => `<i style="left:${Math.round(Math.random() * 100)}%;background:${FX_CF[fxPick('atcoTrainerV2.cf', FX_CF.length)][i % 5]};animation-delay:${(Math.random() * 0.35).toFixed(2)}s;--r:${Math.round(Math.random() * 360)}deg;--x:${Math.round(Math.random() * 120 - 60)}px"></i>`).join('');
   document.body.appendChild(w); setTimeout(() => w.remove(), 2300);
 }
 /* zvuky: krátke tóny cez WebAudio, dajú sa vypnúť v profile (VZHĽAD) */
 const SND = { on: (() => { try { return localStorage.getItem('atcoTrainerV2.snd') !== '0'; } catch (e) { return true; } })(), ctx: null };   // lsGet tu ešte neexistuje (je v neskoršom súbore)
+/* zvuk výhry a farby konfiet si hráč vyberá v profile (odomykajú sa úrovňami); ukladá sa len v tomto prehliadači */
+const SND_WIN = [[[523, 0, 0.1], [659, 0.09, 0.1], [784, 0.18, 0.1], [1047, 0.27, 0.22]], [[392, 0, 0.12], [523, 0.1, 0.12], [659, 0.2, 0.12], [784, 0.3, 0.12], [1047, 0.42, 0.3]], [[784, 0, 0.08], [988, 0.08, 0.08], [1175, 0.16, 0.08], [1568, 0.24, 0.2], [1175, 0.4, 0.08], [1568, 0.48, 0.25]], [[1319, 0, 0.15], [1047, 0.14, 0.15], [1319, 0.28, 0.15], [1568, 0.42, 0.35]]];
+const FX_CF = [['#19d488', '#3a86ff', '#ffbe0b', '#e63946', '#b45cff'], ['#ff595e', '#ff9f1c', '#ffca3a', '#fb5607', '#ffd166'], ['#00f5d4', '#f72585', '#9bf6ff', '#7209b7', '#caffbf'], ['#ffd34d', '#ffbe0b', '#fff3b0', '#e0a800', '#ffffff']];
+function fxPick(key, n) { try { const v = parseInt(localStorage.getItem(key), 10); return v >= 0 && v < n ? v : 0; } catch (e) { return 0; } }
 function sndPlay(kind) {
   if (!SND.on) return;
   try {
     const C = SND.ctx || (SND.ctx = new (window.AudioContext || window.webkitAudioContext)()); if (C.state === 'suspended') C.resume();
-    const N = kind === 'ok' ? [[660, 0, 0.09], [990, 0.08, 0.14]] : kind === 'no' ? [[196, 0, 0.2]] : [[523, 0, 0.1], [659, 0.09, 0.1], [784, 0.18, 0.1], [1047, 0.27, 0.22]];
+    const N = kind === 'ok' ? [[660, 0, 0.09], [990, 0.08, 0.14]] : kind === 'no' ? [[196, 0, 0.2]] : SND_WIN[fxPick('atcoTrainerV2.sndwin', SND_WIN.length)];
     N.forEach(x => { const o = C.createOscillator(), g = C.createGain(), t = C.currentTime + x[1]; o.type = kind === 'no' ? 'triangle' : 'sine'; o.frequency.value = x[0]; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(kind === 'no' ? 0.09 : 0.07, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + x[2]); o.connect(g); g.connect(C.destination); o.start(t); o.stop(t + x[2] + 0.02); });
   } catch (e) {}
 }
@@ -1611,7 +1615,7 @@ function renderAbout(card) {
         <p class="ab-warn">Je to <b>pomôcka na učenie</b>, nie oficiálny zdroj a nie nástroj na prevádzku. Keď sa niečo líši od dokumentácie, platí dokumentácia — a budem rád, keď mi chybu nahlásiš.</p>`)}</div>
       <div id="ab-mods">${sec('🧩', '#3a86ff', 'ČO TU NÁJDEŠ — MODULY A VZORY', `<p>Každý modul má tlačidlo <b>❓ VZOR</b>: krátke okno s obrázkami, ktoré ukáže, čo sa v ňom robí. To isté tlačidlo nájdeš aj priamo v module.</p><div class="ab-mods">${mods}</div>
         <div class="ab-row"><div><b>DENNÁ VÝZVA</b><span>20 otázok dňa, pre všetkých rovnaké. Jeden pokus denne.</span><p><button class="btn ghost" data-hp="exam">❓ VZOR</button><button class="btn" data-go="exam">OTVORIŤ ▶</button></p></div>
-          <div><b>DOBYVATEĽ</b><span>Hra o slovenský vzdušný priestor pre 2 až 6 hráčov.</span><p><button class="btn ghost" data-hp="conquer">❓ VZOR</button><button class="btn" data-go="conquer">OTVORIŤ ▶</button></p></div>
+          <div><b>DOBYVATEĽ</b><span>Hra o slovenský vzdušný priestor pre 2 až 8 hráčov.</span><p><button class="btn ghost" data-hp="conquer">❓ VZOR</button><button class="btn" data-go="conquer">OTVORIŤ ▶</button></p></div>
           <div><b>REBRÍČEK</b><span>Ligy, mapa území, denné aj celkové poradie.</span><p><button class="btn ghost" data-hp="rank">❓ VZOR</button><button class="btn" data-go="rank">OTVORIŤ ▶</button></p></div></div>`)}</div>
       <div id="ab-ucenie">${sec('🧠', '#b45cff', 'AKO SA TU UČIŤ', `<div class="ab-steps"><div><b>1</b><span><strong>Vyber modul</strong> cez MODULY hore v lište a nastav si v tabuľke pod otázkou, čo sa má skúšať.</span></div><div><b>2</b><span><strong>Začni ľahkou obťažnosťou</strong> (výber z možností), potom prejdi na písanie z hlavy — to je to, čo budeš potrebovať.</span></div><div><b>3</b><span><strong>Chyby sa vracajú.</strong> Čo pokazíš, príde znova v tom istom cvičení a zapíše sa do MOJE CHYBY, kde si to pozrieš aj so správnou odpoveďou.</span></div><div><b>4</b><span><strong>Dnešný tréning</strong> ti každý deň namieša to, čo je čas zopakovať — krátko, ale pravidelne.</span></div></div>
         <p>Na úvode je aj vyhľadávanie: napíš kód, volačku, bod alebo frekvenciu a trenažér ukáže, čo o tom vie.</p>
@@ -1624,7 +1628,7 @@ function renderAbout(card) {
         <p><button class="btn ghost" data-hp="rank">❓ AKO SA POČÍTAJÚ BODY</button><button class="btn" data-go="rank">OTVORIŤ REBRÍČEK ▶</button></p>`)}</div>
       <div id="ab-dq">${sec('⚔', '#e63946', 'DOBYVATEĽ', `<p>Vedomostná hra naživo na mape skutočných priestorov. Každý začína na svojom letisku; kto odpovie správne a najrýchlejšie, berie priestor. Potom prídu súboje o priestory susedov. Vyhráva ten, kto má na konci najviac bodov.</p>
         <div class="ab-grid"><div><b>Ako začať</b><span>Jeden vytvorí miestnosť a pošle ostatným kód zo štyroch písmen. Dá sa hrať aj sám proti počítaču.</span></div><div><b>Žolíky</b><span>Raz za hru 50:50, +10 sekúnd a dvojité body za dobytý priestor.</span></div>
-          <div><b>Odmeny za úrovne</b><span>Jednorazové (raz za hru): ${DQ_PERK.filter(x => x[4] !== 'perm').map(x => 'od úrovne ' + x[0] + ' ' + x[2]).join(' · ')}. Stále (v každej hre): ${DQ_PERK.filter(x => x[4] === 'perm').map(x => 'od úrovne ' + x[0] + ' ' + x[2]).join(' · ')}. Hostiteľ ich vie vypnúť.</span></div><div><b>Otázky</b><span>Z modulov a z deviatich okruhov teórie, niektoré s fotkou. Hostiteľ vie nahrať aj vlastné.</span></div></div>
+          <div><b>Odmeny za úrovne</b><span>Každá úroveň niečo odomkne — zoznam nájdeš v okne úrovní (klikni na úroveň v profile). ⚡ Žolíky (+5 s, 50:50, ×2 body, +10 s) sa zbierajú do zásoby za úrovne a v hre sa použije najviac po jednom kuse od každého; štít a zmena odpovede sa dopĺňajú každú hru. ♾ Stále (farby, ikony, emoji, rámčeky, tituly) platia vždy. Hostiteľ vie herné výhody vypnúť.</span></div><div><b>Otázky</b><span>Z modulov a z deviatich okruhov teórie, niektoré s fotkou. Hostiteľ vie nahrať aj vlastné.</span></div></div>
         <p><button class="btn ghost" id="ab-demo">▶ UKÁZAŤ VZOR HRY</button><button class="btn" data-go="conquer">OTVORIŤ DOBYVATEĽA ▶</button></p>`)}</div>
       <div id="ab-ucet">${sec('👤', '#1fd6d6', 'ÚČET, REGISTRÁCIA A PROFIL', `<div class="ab-grid"><div><b>Registrácia</b><span>Stačí <b>prezývka a heslo</b> (aspoň 8 znakov, písmeno aj číslica). E-mail netreba. Prezývka musí byť jedinečná.</span></div>
           <div><b>Čo ti účet dá</b><span>Body a miesto v rebríčku, úrovne a ligy, priateľov a pozvánky do hry, pokrok v učení na každom zariadení.</span></div>
@@ -1662,7 +1666,7 @@ function homeDashHTML() {
     </div>
     <div class="home-dash comp">
       <div class="home-cta gold">
-        <div><strong>DOBYVATEĽ</strong><span>Vedomostný súboj o Slovensko naživo — 2 až 6 hráčov alebo sám proti počítaču.</span></div>
+        <div><strong>DOBYVATEĽ</strong><span>Vedomostný súboj o Slovensko naživo — 2 až 8 hráčov alebo sám proti počítaču.</span></div>
         <button class="btn ghost" data-go="conquer">HRAŤ ▶</button>
       </div>
       <div class="home-cta gold">
