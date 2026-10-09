@@ -2043,8 +2043,11 @@ function dqRender(card) {
     if (pop) {
       ph.className = 'dq-pop-wrap' + (DQ.popK === S.k ? ' still' : '');
       const oldIn = $('dq-numin'), keepV = oldIn ? oldIn.value : '', hadFocus = oldIn && document.activeElement === oldIn;
+      /* okno sa pri každej zmene (niekto iný odpovedal, tvoj výber, fotka) nakreslí nanovo — posun v ňom a pole s číslom si pamätáme, aby sa nič nescrolluje späť hore */
+      const oldPop = ph.querySelector('.dq-pop'), keepTop = oldPop && DQ.popK === S.k ? oldPop.scrollTop : 0;
       ph.innerHTML = pop;
-      const newIn = $('dq-numin'); if (newIn) { newIn.value = keepV; if (hadFocus || DQ.popK !== S.k) newIn.focus(); }
+      const newPop = ph.querySelector('.dq-pop'); if (newPop && keepTop) newPop.scrollTop = keepTop;
+      const newIn = $('dq-numin'); if (newIn) { newIn.value = keepV; if (hadFocus || DQ.popK !== S.k) newIn.focus({ preventScroll: true }); }
       DQ.popK = S.k;
       const ib = ph.querySelector('.dq-pop-img');
       if (ib && !ib.querySelector('img')) dqPhoto(ib.dataset.img).then(src => { if (ib.isConnected && !ib.querySelector('img')) ib.innerHTML = src ? `<img src="${dqEsc(src)}" alt="">` : '<span>Fotku sa nepodarilo načítať — skús tipnúť.</span>'; });
