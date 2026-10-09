@@ -395,14 +395,19 @@ function gqParse(t) { const m = String(t).replace(/\s/g, '').replace(',', '.').r
 const GQ_SETN = { atm: 'ATM', nav: 'NAVIGÁCIA', met: 'METEOROLÓGIA', eqps: 'ZARIADENIA A SYSTÉMY', hum: 'ĽUDSKÉ FAKTORY', acft: 'LIETADLÁ', pen: 'PRACOVNÉ PROSTREDIE', law: 'LETECKÉ PRÁVO', hist: 'HISTÓRIA LETECTVA', gen: 'VŠEOBECNÝ PREHĽAD' };
 function gqTheory(sub, weak) {
   let sets = (sub === 'all' ? Object.keys(GQ_SETN) : [sub]).filter(k => DQ_BANK[k] && DQ_BANK[k].length); if (!sets.length) sets = ['gen'];
-  if (weak && weak.length) { const id = gqR(weak), p = id.split(':'), c = (DQ_BANK[p[1]] || []).find(x => gqHash(x.q) === p[2]); if (c) return gqMk('OKRUH · ' + GQ_SETN[p[1]], c.q, c.a, c.w, { id }); }
+  if (weak && weak.length) {
+    const id = gqR(weak), p = id.split(':'), X = p[2] && p[2][0] === 'x' ? GQ_X.find(x => x.s === p[1] && 'x' + gqHash(x.q) === p[2]) : null;
+    if (X) return gqFromX(X);
+    const c = (DQ_BANK[p[1]] || []).find(x => !x.x && gqHash(x.q) === p[2]); if (c) return gqMk('OKRUH · ' + GQ_SETN[p[1]], c.q, c.a, c.w, Object.assign({ id }, gqAuto(c)));
+  }
   /* veľký okruh padá častejšie než malý */
   const tot = sets.reduce((a, k) => a + DQ_BANK[k].length, 0); let r = Math.random() * tot, k = sets[0]; for (const x of sets) { if ((r -= DQ_BANK[x].length) < 0) { k = x; break; } }
-  const X = GQ_X.filter(x => x.s === k);
-  if (X.length && Math.random() < Math.min(0.45, X.length * 4 / DQ_BANK[k].length + 0.12)) return gqFromX(gqR(X));
+  /* pestré otázky (s vysvetlením) a staré z banky padajú v pomere, v akom ich v okruhu je; pestré sú v banke označené x, aby nepadli dvakrát */
+  const X = GQ_X.filter(x => x.s === k), B = DQ_BANK[k].filter(c => !c.x);
+  if (X.length && (!B.length || Math.random() < Math.max(0.3, X.length / (X.length + B.length)))) return gqFromX(gqR(X));
   const IQ = DQ_IMGQ[k];
   if (IQ && Math.random() < IQ.p) { const g = gqR(IQ.g), it = gqR(g.it); return gqMk('OKRUH · ' + GQ_SETN[k], g.q, it[1], g.it.map(x => x[1]), { img: it[0], id: 'th:' + k + ':i' + gqHash(it[0]) }); }
-  const c = gqR(DQ_BANK[k]);
+  const c = gqR(B);
   return gqMk('OKRUH · ' + GQ_SETN[k], c.q, c.a, c.w, Object.assign({ id: 'th:' + k + ':' + gqHash(c.q) }, gqAuto(c)));
 }
 /* ============================================================
@@ -1321,7 +1326,13 @@ function gqShow(x) { return x.show || GQ_NICE[x.t[0]] || x.t[0]; }
 /* tie isté otázky aj v Dobyvateľovi: číselné ako tipovacie (kto je bližšie), ostatné do okruhov */
 function gqFeedGame() {
   if (GQ.fed) return; GQ.fed = true;
-  GQ_X.forEach(x => { if (x.n != null) DQ_NUM.push([x.s, x.q, x.n, x.u || '']); else if (DQ_BANK[x.s]) DQ_BANK[x.s].push({ q: x.q, a: x.t ? gqShow(x) : x.a, w: x.w }); });
+  /* každá pestrá otázka ide do okruhu ako otázka s výberom (aj číselná — s jednotkou); číselné navyše aj medzi tipovacie */
+  GQ_X.forEach(x => {
+    if (!DQ_BANK[x.s]) return;
+    const f = v => String(v).replace('.', ',') + (x.u ? ' ' + x.u : '');
+    if (x.n != null) { DQ_NUM.push([x.s, x.q, x.n, x.u || '']); DQ_BANK[x.s].push({ q: x.q, a: f(x.n), w: x.w.map(f), x: 1 }); }
+    else DQ_BANK[x.s].push({ q: x.q, a: x.t ? gqShow(x) : x.a, w: x.w, x: 1 });
+  });
 }
 /* ---------- MOD 08 · ROZSTUPY ZA TURBULENCIOU (ICAO Doc 4444) ---------- */
 const GQ_WN = { J: 'SUPER', H: 'HEAVY', M: 'MEDIUM', L: 'LIGHT' };
