@@ -1828,6 +1828,7 @@
   .gq-in input:focus { box-shadow:inset 0 0 0 2.5px var(--green-strong), 0 0 0 5px rgba(10,157,92,0.14); } .gq-in input::placeholder { font-family:var(--ui); font-size:14px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--text-faint); } .gq-in u { text-decoration:none; font-family:var(--mono); font-weight:800; color:var(--text-dim); white-space:nowrap; } .gq-in .btn { height:58px; padding:0 24px; white-space:nowrap; }
   .gq-typed { align-self:center; display:flex; flex-direction:column; gap:2px; padding:12px 26px; border-radius:20px; background:#fff; box-shadow:var(--d-sh); } .gq-typed small { font-family:var(--mono); font-size:10px; font-weight:800; letter-spacing:0.16em; color:var(--text-faint); } .gq-typed b { font-family:var(--mono); font-size:22px; text-transform:uppercase; } .gq-typed.ok b { color:#0a7d4a; } .gq-typed.no b { color:#c2372b; text-decoration:line-through; }
   @media (max-width:640px) { .gq-in { flex-wrap:wrap; } .gq-in input { flex:1 1 60%; } .gq-in .btn { flex:1 1 100%; } }
+  .au-go.busy { opacity:0.7; pointer-events:none; } .au-go.busy::after { content:' …'; }
   /* ===== telefón a úzke okná ===== */
   @media (max-width:1100px) {
     body.fs-on .qcard.split > .map-wrap { width:auto; }

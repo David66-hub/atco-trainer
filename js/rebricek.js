@@ -209,7 +209,7 @@ function helpOpen(key) { if (HELP[key]) hpDraw(key, 0); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hp]'); if (b) { e.preventDefault(); if (b.dataset.hp === 'game') hpGameNow(); else helpOpen(b.dataset.hp === '*' ? hpKeyNow() : b.dataset.hp); } });
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '5.4.1';
+const APP_VERSION = '5.4.3';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -415,7 +415,7 @@ function rkAccountHTML() {
         <ul><li><i>🏆</i><span><b>Rebríček a ligy</b>každá správna odpoveď sa počíta</span></li><li><i>📈</i><span><b>58 úrovní</b>od Uchádzača po Kráľa neba</span></li><li><i>⚔</i><span><b>Priatelia a Dobyvateľ</b>pozvánky, chat, boosty</span></li><li><i>☁</i><span><b>Pokrok všade</b>telefón aj počítač</span></li></ul></div>
       <div class="au-form" data-tab="${nw ? 'new' : 'in'}">
         <div class="au-tabs"><button data-au="in" class="${nw ? '' : 'on'}">PRIHLÁSIŤ SA</button><button data-au="new" class="${nw ? 'on' : ''}">NOVÝ ÚČET</button></div>
-        <label>PREZÝVKA<input type="text" id="rk-nick" placeholder="tvoja prezývka" maxlength="16" autocomplete="username" spellcheck="false"></label>
+        <label>PREZÝVKA<input type="text" id="rk-nick" placeholder="tvoja prezývka" maxlength="16" autocomplete="username" spellcheck="false" value="${dqEsc(RK.authNick || '')}"></label>
         <label>HESLO<span class="au-pw"><input type="password" id="rk-pass" placeholder="heslo" autocomplete="${nw ? 'new-password' : 'current-password'}"><button type="button" id="rk-eye" title="Ukázať heslo">👁</button></span></label>
         <div class="rk-pw au-meter" id="rk-pw"><i></i><span>Aspoň 8 znakov, písmeno aj číslica. Prezývka 3 – 16 znakov, musí byť jedinečná. E-mail netreba.</span></div>
         ${RK.err ? `<div class="rk-err">${dqEsc(RK.err)}</div>` : ''}
@@ -426,8 +426,12 @@ function rkAccountHTML() {
 }
 function rkBindAccount(after) {
   const go = async kind => {
-    const n = document.getElementById('rk-nick').value, p = document.getElementById('rk-pass').value;
-    await rkAuth(kind, n, p);
+    const n = document.getElementById('rk-nick').value, p = document.getElementById('rk-pass').value, bg0 = document.getElementById('rk-go');
+    RK.authNick = n.trim();   // po chybe ostane prezývka vyplnená
+    if (bg0) { if (bg0.disabled) return; bg0.disabled = true; bg0.classList.add('busy'); }
+    const ok = await rkAuth(kind, n, p);
+    if (ok) RK.authNick = '';
+    const card0 = document.getElementById('qcard'); if (card0) card0._outKey = null;
     after();
   };
   const bi = document.getElementById('rk-in'), bn = document.getElementById('rk-new'), bo = document.getElementById('rk-out'), br = document.getElementById('rk-reset');
@@ -690,6 +694,11 @@ function renderProfile(card) {
   rkHeadBtn();
   const again = () => { RK.me = undefined; SOC.known = null; renderProfile(card); rkLoad(); pfLoadMe().then(() => socTick(true)).then(() => { if (state.mode === 'profile') renderProfile(card); }); };
   if (!RK.acct) {
+    /* prihlasovací formulár sa neprekresľuje, kým sa nič nezmenilo — inak by načítanie rebríčka na pozadí zmazalo, čo človek práve píše (v5.4.2) */
+    const outKey = 'out|' + (RK.err || '') + '|' + (RK.loadErr || '');
+    if (card._outKey === outKey && card.querySelector('.au')) return;
+    const fa = document.activeElement; if (fa && card.contains(fa) && (fa.id === 'rk-nick' || fa.id === 'rk-pass') && card.querySelector('.au')) return;   // kým píšeš, formulár sa neprekreslí
+    card._outKey = outKey; card._pfHtml = null;
     card.innerHTML = `<div class="rk pf">
         ${SB_ON ? '' : '<div class="rk-warn"><strong>SKÚŠOBNÝ REŽIM</strong> — účty sú zatiaľ len v tomto prehliadači.</div>'}
         ${rkAccountHTML()}
