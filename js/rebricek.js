@@ -27,8 +27,9 @@ function lvOpen(p) {
   const L = rkLevel(p), w = document.createElement('div'); w.id = 'lv-wrap';
   w.innerHTML = `<div class="hp lv" role="dialog" aria-label="Úrovne">
       <div class="hp-top"><span>ÚROVNE · MÁŠ ${p} BODOV</span><button data-lv="x" title="Zavrieť">✕</button></div>
-      <div class="lv-list">${LV.map((x, i) => { const n = i + 1, done = n < L.n, cur = n === L.n, nx = LV[i + 1];
-        return `${i === 0 || LV[i - 1][2] !== x[2] ? `<div class="lv-grp">${x[2]}</div>` : ''}<div class="lv-row${done ? ' done' : cur ? ' cur' : ' lock'}" style="animation-delay:${(Math.min(i, 10) * 0.03).toFixed(2)}s"><b>${n}</b><div><strong>${x[1]}</strong><span>${x[0] === 0 ? 'od začiatku' : 'od ' + x[0] + ' bodov'}${cur ? (nx ? ' · do ďalšej chýba ' + (nx[0] - p) : ' · najvyššia úroveň') : !done ? ' · chýba ' + (x[0] - p) : ''}</span>${cur && nx ? `<i><em style="width:${L.pct}%"></em></i>` : ''}</div><u>${done ? '✓' : cur ? 'TU SI' : '🔒'}</u></div>`; }).join('')}</div>
+      <div class="lv-leg"><div class="once"><b>⚡ JEDNORAZOVÉ</b><span>použiješ raz za hru, potom sa minú</span></div><div class="perm"><b>♾ STÁLE</b><span>platia v každej hre bez obmedzenia</span></div></div>
+      <div class="lv-list">${LV.map((x, i) => { const n = i + 1, done = n < L.n, cur = n === L.n, nx = LV[i + 1], rw = DQ_PERK.filter(k => k[0] === n);
+        return `${i === 0 || LV[i - 1][2] !== x[2] ? `<div class="lv-grp">${x[2]}</div>` : ''}<div class="lv-row${done ? ' done' : cur ? ' cur' : ' lock'}${rw.length ? ' rw' : ''}" style="animation-delay:${(Math.min(i, 10) * 0.03).toFixed(2)}s"><b>${n}</b><div><strong>${x[1]}</strong><span>${x[0] === 0 ? 'od začiatku' : 'od ' + x[0] + ' bodov'}${cur ? (nx ? ' · do ďalšej chýba ' + (nx[0] - p) : ' · najvyššia úroveň') : !done ? ' · chýba ' + (x[0] - p) : ''}</span>${cur && nx ? `<i><em style="width:${L.pct}%"></em></i>` : ''}${rw.map(k => `<p class="lv-rw ${k[4]}"><b>${k[4] === 'perm' ? '♾ STÁLA ODMENA' : '⚡ JEDNORAZOVÁ ODMENA'}</b>${k[2]}<small>${k[3]}${k[4] === 'perm' ? '' : ' · raz za hru'}</small></p>`).join('')}</div><u>${done ? '✓' : cur ? 'TU SI' : '🔒'}</u></div>`; }).join('')}</div>
       <div class="lv-note">Úrovne sa odomykajú všetkými bodmi, ktoré si kedy získal — z cvičenia, dennej výzvy aj Dobyvateľa. Neklesajú.</div>
       <div class="hp-act"><span></span><button class="btn" data-lv="x">ZAVRIEŤ</button></div>
     </div>`;
@@ -262,7 +263,7 @@ function qrepSend(c, reason, note) {
 document.getElementById('btn-qrep').onclick = qrepOpen;
 setTimeout(() => { try { dqRepFlush(); } catch (e) {} }, 5000);   // čo sa nepodarilo odoslať minule, skúsi sa znova
 
-const APP_VERSION = '5.5.1';
+const APP_VERSION = '5.6.1';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }
@@ -1080,7 +1081,7 @@ function rkRulesHTML(pts) {
           <tr><th>Cvičenie v module (MOD 01 – 06)</th><td>správna odpoveď <b>+1</b>, v HARDCORE (písanie z hlavy) <b>+2</b>; nesprávna a preskočená 0</td></tr>
           <tr><th>Denný tréning</th><td>rovnako ako cvičenie: <b>+1</b>, pri písaní <b>+2</b></td></tr>
           <tr><th>Denná výzva</th><td>20 otázok, každý deň rovnaké pre všetkých; jeden pokus denne<br>správna <b>+3</b> (pri písaní <b>+6</b>), nesprávna alebo preskočená <b>−2</b>; bonus za 80 % = počet otázok, za 90 % dvojnásobok, za 100 % trojnásobok; menej než 0 sa nepripíše; body až po dokončení skúšky</td></tr>
-          <tr><th>Dobyvateľ</th><td><b>500 × miesto × výkon × hráči × dĺžka × okruhy</b>, najmenej 5<br>miesto: 1. = 1 · 2. = 0,5 · 3. = 0,25 · 4. = 0,12 · 5. = 0,06 · 6. = 0,03<br>výkon: 0,5 až 1 podľa bodov oproti víťazovi<br>hráči: len počítače 0,1 · 2 ľudia 0,6 · 3 = 0,8 · 4 = 1 · 5 = 1,15 · 6 = 1,3 (každý počítač +0,03)<br>dĺžka: (kolá obsadzovania + súbojov) / 10, od 0,4 do 1,6<br>okruhy: 0,6 pri jednej sade až 1 pri všetkých</td></tr>
+          <tr><th>Dobyvateľ</th><td><b>350 × miesto × výkon × hráči × dĺžka × okruhy</b>, najmenej 5<br>miesto: 1. = 1 · 2. = 0,5 · 3. = 0,25 · 4. = 0,12 · 5. = 0,06 · 6. = 0,03<br>výkon: 0,5 až 1 podľa bodov oproti víťazovi<br>hráči: len počítače 0,1 · 2 ľudia 0,6 · 3 = 0,8 · 4 = 1 · 5 = 1,15 · 6 = 1,3 (každý počítač +0,03)<br>dĺžka: (kolá obsadzovania + súbojov) / 10, od 0,4 do 1,6<br>okruhy: 0,6 pri jednej sade až 1 pri všetkých</td></tr>
           <tr><th>Hry a výhry</th><td>počítajú sa len hry Dobyvateľa, v ktorých hrali aspoň dvaja ľudia</td></tr>
           <tr><th>Úspešnosť</th><td>správne odpovede ÷ všetky odpovede; v Dobyvateľovi len z hier aspoň dvoch ľudí</td></tr>
           <tr><th>Okruhy teórie</th><td>správne a všetky odpovede na otázky daného okruhu v Dobyvateľovi (aspoň dvaja ľudia); poradie podľa počtu správnych</td></tr>
