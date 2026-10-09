@@ -122,7 +122,7 @@ function hsRender(card) {
     </svg></div>
     <div class="hg-task"><span>ÚLOHA</span><strong>Aký kurz vedie od lietadla na oranžový bod?</strong></div>
     <div class="input-row">
-      <input type="text" id="hg-in" inputmode="numeric" maxlength="3" placeholder="KURZ PO 5° (napr. 245)" autocomplete="off">
+      <input type="text" id="hg-in" inputmode="numeric" maxlength="3" placeholder="KURZ PO 5° (napr. 045)" autocomplete="off">
       <button class="btn" id="hg-go">POTVRDIŤ ▶</button>
     </div>
     <div class="hg-msg" id="hg-msg">${hard ? 'HARDCORE: napíš kurz po 5°. Uzná sa len presný kurz.' : 'Napíš kurz po 5°. Uzná sa aj kurz o 5° vedľa.'}</div>
@@ -144,7 +144,8 @@ function hsAnswer() {
   const F = state.filters, hard = F.hgDiff === 'hard';
   const inp = document.getElementById('hg-in'), raw = inp.value.trim(), n = Number(raw);
   if (!raw) return;
-  if (!/^\d{1,3}$/.test(raw) || n > 360) { hgMsg(`„${raw}“ nie je kurz. Zadaj číslo 001 až 360.`, 'no'); inp.value = ''; return; }
+  if (/^\d{1,2}$/.test(raw)) { hgMsg(`Kurz píš trojciferne: ${raw.padStart(3, '0')}, nie ${Number(raw)}. Doplň nuly vpredu.`, 'no'); return; }
+  if (!/^\d{3}$/.test(raw) || n > 360 || n < 1) { hgMsg(`„${raw}“ nie je kurz. Zadaj trojciferné číslo 001 až 360.`, 'no'); inp.value = ''; return; }
   if (n % 5 !== 0) { hgMsg(`${hgPad(n)} nie je po 5°. Skús ${hgPad(Math.floor(n / 5) * 5)} alebo ${hgPad(Math.ceil(n / 5) * 5)}.`, 'no'); inp.value = ''; return; }
   const you = hgNorm(n), err = Math.abs(hgDiff(you, HS.brg)), ok = err <= HS_TOL[F.hgDiff] + 0.5;
   HS.done = true;
@@ -208,7 +209,7 @@ function renderHeadingGame(card) {
       <div><span>ZADANÝ KURZ</span><b id="hg-set" class="set">090</b></div>
     </div>
     <div class="input-row">
-      <input type="text" id="hg-in" inputmode="numeric" maxlength="3" placeholder="KURZ PO 5° (napr. 245)" autocomplete="off">
+      <input type="text" id="hg-in" inputmode="numeric" maxlength="3" placeholder="KURZ PO 5° (napr. 045)" autocomplete="off">
       <button class="btn" id="hg-go">TOČ ▶</button>
     </div>
     <div class="hg-msg" id="hg-msg">Napíš kurz a stlač Enter — lietadlo vyštartuje.</div>
@@ -249,7 +250,8 @@ function hgCommand() {
   inp.value = '';
   if (!raw) { if (!HG.run) hgRun(); return; }
   const n = Number(raw);
-  if (!/^\d{1,3}$/.test(raw) || n > 360) { hgMsg(`„${raw}“ nie je kurz. Zadaj číslo 005 až 360.`, 'no'); return; }
+  if (/^\d{1,2}$/.test(raw)) { hgMsg(`Kurz píš trojciferne: ${raw.padStart(3, '0')}, nie ${Number(raw)}. Doplň nuly vpredu.`, 'no'); return; }
+  if (!/^\d{3}$/.test(raw) || n > 360 || n < 5) { hgMsg(`„${raw}“ nie je kurz. Zadaj trojciferné číslo 005 až 360.`, 'no'); return; }
   if (n % 5 !== 0) { hgMsg(`${hgPad(n)} nie je po 5°. Skús ${hgPad(Math.floor(n / 5) * 5)} alebo ${hgPad(Math.ceil(n / 5) * 5)}.`, 'no'); return; }
   HG.set = hgNorm(n);
   HG.delay = HG_DELAY;

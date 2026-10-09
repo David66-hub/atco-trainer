@@ -215,7 +215,7 @@ function navSync() {
   const h = document.getElementById('brand-home'); if (h) h.classList.toggle('on', m === 'home');
 }
 function tabsSync(keep) {
-  navSync();
+  navSync(); qrepSync();
   const T = document.querySelector('.tabs'); if (!T) return;
   if (!keep) { const a = T.querySelector('.tab.active'); if (a && T.scrollWidth > T.clientWidth + 4) T.scrollLeft = Math.max(0, a.offsetLeft - T.offsetLeft - (T.clientWidth - a.offsetWidth) / 2); }
   const more = T.scrollWidth > T.clientWidth + 4;

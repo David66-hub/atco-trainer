@@ -136,7 +136,8 @@ function hcAnswer(val) {
   if (HC.kind === 'short') ok = val === HC.ans;
   else {
     const n = Number(val);
-    if (!/^\d{1,3}$/.test(val) || n > 360) { hgMsg(`„${val}“ nie je kurz. Zadaj číslo 001 až 360.`, 'no'); return; }
+    if (/^\d{1,2}$/.test(val)) { hgMsg(`Kurz píš trojciferne: ${val.padStart(3, '0')}, nie ${Number(val)}. Doplň nuly vpredu.`, 'no'); return; }
+    if (!/^\d{3}$/.test(val) || n > 360 || n < 1) { hgMsg(`„${val}“ nie je kurz. Zadaj trojciferné číslo 001 až 360.`, 'no'); return; }
     ok = hgNorm(n) === HC.ans;
   }
   HC.done = true;

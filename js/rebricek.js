@@ -133,7 +133,7 @@ const HELP = {
   exam: ['DENNÁ VÝZVA', [['calendar', 'Každý deň nová', 'Dvadsať otázok, pre všetkých tie isté. Máš jeden pokus denne.'], ['timer', 'Na čas', '12 sekúnd na otázku, pri písaní 20.'], ['eye', 'Bez nápovedí', 'Či si odpovedal správne, uvidíš až na konci.'], ['score', 'Body', 'Správna +3 (pri písaní +6), nesprávna alebo preskočená −2.'], ['podium', 'Od 80 % bonus', 'A ešte väčší za 90 a 100 %.']]],
   rank: ['REBRÍČEK · AKO SA POČÍTA', [['score', 'Cvičenie v module', 'Správna odpoveď 1 bod, v HARDCORE (písanie) 2 body. Nesprávna 0.'], ['calendar', 'Denný tréning', 'Rovnako: 1 bod, pri písaní 2.'], ['timer', 'Denná výzva', 'Správna +3 (pri písaní +6), nesprávna −2. Bonus od 80 %. Počíta sa prvý pokus dňa.'], ['swords', 'Dobyvateľ', '500 × miesto × výkon × hráči × dĺžka × okruhy. Viac ľudí a kôl = viac bodov.'], ['bars', 'Úspešnosť', 'Správne odpovede delené všetkými. Preskočená otázka je nesprávna.'], ['timer', 'Čas tréningu', 'Beží, len keď odpovedáš. Po 45 sekundách bez odpovede sa zastaví.'], ['podium', 'Mesačné ligy', 'Body za mesiac. Prví traja postupujú, poslední traja zostupujú. Päť líg od Bronzu po Diamant.'], ['podium', 'Celkové poradie', 'Podľa všetkých bodov; pri zhode podľa počtu správnych odpovedí.'], ['login', 'Kto je v rebríčku', 'Len prihlásení. Bez účtu sa nič neukladá.']]],
   profile: ['PROFIL', [['login', 'Tvoj účet', 'Prihlásenie, odhlásenie a vynulovanie skóre.'], ['bars', 'Všetky štatistiky', 'Body, úspešnosť a čas podľa modulov.'], ['calendar', 'Pokrok v učení', 'Koľko máš naučené a čo je dnes na opakovanie.'], ['swords', 'Vzhľad v hre', 'Farba a lietadlo pre Dobyvateľa.']]],
-  conquer: ['DOBYVATEĽ · PRAVIDLÁ', [['terr', 'Boj o mapu Slovenska', 'Každý priestor má body: letisko 500, CTR 400, TMA 300, TRA/TSA 200, LZR 150, G 100.'], ['axis', '1 · Štart', 'Tipneš číslo. Kto je najbližšie, vyberá si domovské letisko prvý.'], ['choice', '2 · Obsadzovanie', 'Správna odpoveď = berieš susedný voľný priestor. Najrýchlejší dva.'], ['swords', '3 · Súboje', 'Útočíš na suseda. Odpovedáte obaja; rýchlosť nerozhoduje.'], ['axis', 'Obaja správne? Rozstrel', 'Tipovacia otázka, najviac tri. V tretej rozhodne aj čas.'], ['heart', 'Domovské letisko', 'Má tri životy. Pri treťom zásahu vypadávaš.'], ['joker', 'Žolíky — raz za hru', '50:50, +10 sekúnd a dvojité body pri útoku.'], ['podium', 'Koniec', 'Najviac bodov vyhráva. Do rebríčka ide viac za viac ľudí a kôl.']]],
+  conquer: ['DOBYVATEĽ · PRAVIDLÁ', [['terr', 'Boj o mapu Slovenska', 'Každý priestor má body: letisko 500, CTR 400, TMA 300, TRA/TSA 200, LZR 150, G 100.'], ['axis', '1 · Štart', 'Tipneš číslo. Kto je najbližšie, vyberá si domovské letisko prvý.'], ['choice', '2 · Obsadzovanie', 'Správna odpoveď = berieš susedný voľný priestor. Najrýchlejší dva.'], ['swords', '3 · Súboje', 'Útočíš na suseda. Odpovedáte obaja; rýchlosť nerozhoduje.'], ['axis', 'Obaja správne? Rozstrel', 'Tipovacia otázka, najviac tri. V tretej rozhodne aj čas.'], ['heart', 'Domovské letisko', 'Má tri životy. Útočník ich môže vziať všetky naraz, kým vyhráva. Pri treťom zásahu vypadávaš.'], ['joker', 'Žolíky — raz za hru', '50:50, +10 sekúnd a dvojité body pri útoku.'], ['podium', 'Koniec', 'Najviac bodov vyhráva. Do rebríčka ide viac za viac ľudí a kôl.']]],
 };
 /* počas hry: jedna krátka karta k aktuálnej fáze; mimo otázky sa dá pokračovať na všetky pravidlá */
 Object.assign(HELP, {
@@ -209,7 +209,60 @@ function helpOpen(key) { if (HELP[key]) hpDraw(key, 0); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hp]'); if (b) { e.preventDefault(); if (b.dataset.hp === 'game') hpGameNow(); else helpOpen(b.dataset.hp === '*' ? hpKeyNow() : b.dataset.hp); } });
 function dqEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 /* číslo verzie — zvyšuje sa pri každej úprave, vidno ho v hlavičke, na úvode aj v Dobyvateľovi */
-const APP_VERSION = '5.4.7';
+/* ---------- nahlásenie otázky v každom module (v5.5) ----------
+   Posiela sa tým istým kanálom ako v Dobyvateľovi (dqReportQ → atco_qreport → tabuľka atco_qreports), takže netreba nový SQL doplnok.
+   Dôvod, poznámka a znenie otázky s odpoveďou idú v poli „answer“. */
+const QR_REASONS = [['Nesprávna odpoveď', '❌ Nesprávna odpoveď'], ['Nejasná otázka', '❓ Nejasná otázka'], ['Preklep', '✏️ Preklep'], ['Zlá fotka', '🖼 Zlá fotka'], ['Zastarané', '⌛ Zastarané'], ['Iné', '💬 Iné…']];
+function qrepSync() {
+  const b = document.getElementById('btn-qrep'); if (!b) return;
+  b.style.display = ['home', 'rank', 'profile', 'about', 'conquer', 'heading'].indexOf(state.mode) < 0 ? '' : 'none';
+}
+function qrepCtx() {
+  const m = state.mode, card = document.getElementById('qcard'); if (!card) return null;
+  const txt = card.innerText.replace(/\s+/g, ' ').trim(); if (txt.length < 6) return null;
+  let cur = ''; try { cur = JSON.stringify(GQ.M[m] && GQ.st ? GQ.st.q : state.current) || ''; } catch (e) {}
+  return { mod: m, label: ((document.getElementById('mode-label') || {}).textContent || m).trim(), q: txt.slice(0, 220), cur: cur.slice(0, 160) };
+}
+function qrepClose() { const w = document.getElementById('qr-wrap'); if (w) w.remove(); document.removeEventListener('keydown', qrepKey, true); }
+function qrepKey(e) {
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); return qrepClose(); }
+  if (e.target && e.target.tagName === 'TEXTAREA') return;
+  if (/^[1-6]$/.test(e.key) || e.key === ' ' || e.key === 'Enter') e.stopPropagation();   // klávesy nesmú odpovedať na otázku pod oknom
+}
+function qrepToast(t) {
+  let box = document.getElementById('soc-toasts'); if (!box) { box = document.createElement('div'); box.id = 'soc-toasts'; document.body.appendChild(box); }
+  const el = document.createElement('div'); el.className = 'soc-toast k-level k-ach'; el.innerHTML = `<small>OTÁZKA</small><b>${dqEsc(t)}</b>`;
+  el.onclick = () => el.remove(); box.appendChild(el); setTimeout(() => el.remove(), 4500);
+}
+function qrepOpen() {
+  const c = qrepCtx(); if (!c) return qrepToast('Tu zatiaľ nie je žiadna otázka.');
+  qrepClose();
+  const w = document.createElement('div'); w.id = 'qr-wrap';
+  w.innerHTML = `<div class="qr" role="dialog" aria-label="Nahlásiť otázku">
+      <div class="qr-top"><b>⚑ Čo je s otázkou zlé?</b><button data-qr="x" title="Zavrieť">✕</button></div>
+      <div class="qr-q">${dqEsc(c.label)} · ${dqEsc(c.q.slice(0, 140))}${c.q.length > 140 ? '…' : ''}</div>
+      <div class="qr-chips">${QR_REASONS.map(r => `<button data-qr="${dqEsc(r[0])}">${r[1]}</button>`).join('')}</div>
+      <div class="qr-note"><textarea id="qr-txt" maxlength="200" placeholder="Napíš krátko, čo nesedí (nepovinné)"></textarea><button class="btn" data-qr="send">ODOSLAŤ</button></div>
+    </div>`;
+  w.addEventListener('click', e => {
+    if (e.target === w) return qrepClose();
+    const b = e.target.closest && e.target.closest('[data-qr]'); if (!b) return;
+    const k = b.dataset.qr;
+    if (k === 'x') return qrepClose();
+    if (k === 'Iné') { w.querySelector('.qr-chips').style.display = 'none'; w.querySelector('.qr-note').classList.add('on'); document.getElementById('qr-txt').focus(); return; }
+    qrepSend(c, k === 'send' ? 'Iné' : k, k === 'send' ? document.getElementById('qr-txt').value : '');
+  });
+  document.body.appendChild(w); document.addEventListener('keydown', qrepKey, true);
+}
+function qrepSend(c, reason, note) {
+  const a = reason + (note && note.trim() ? ': ' + note.trim() : '') + ' ⟂ ' + c.cur;
+  dqReportQ({ key: c.mod, mod: c.mod, q: c.label + ' · ' + c.q, a });
+  qrepClose(); qrepToast('Ďakujem, nahlásené ✓'); sndPlay('ok');
+}
+document.getElementById('btn-qrep').onclick = qrepOpen;
+setTimeout(() => { try { dqRepFlush(); } catch (e) {} }, 5000);   // čo sa nepodarilo odoslať minule, skúsi sa znova
+
+const APP_VERSION = '5.5.1';
 document.querySelectorAll('.app-ver').forEach(e => { e.textContent = 'v' + APP_VERSION; });
 RK.acct = lsGet(RK_ACCT, null);
 function rkPendKey() { return RK_PEND + ':' + (RK.acct ? RK.acct.nick.toLowerCase() : '-'); }

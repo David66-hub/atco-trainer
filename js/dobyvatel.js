@@ -847,7 +847,7 @@ function dqCoachInfo(S, me) {
   if (ph === 'claimq') return ['claimq', 'Obsadzovanie', 'Všetci dostanú tú istú otázku so štyrmi možnosťami. Kto odpovie správne, vyberie si voľný priestor; najrýchlejší zo správnych vyberá prvý a berie si dva. Pod otázkou sú ŽOLÍKY — 50:50 skryje dve nesprávne odpovede, +10 s pridá čas. Každý sa dá použiť raz za hru.', true];
   if (ph === 'claimrev') return ['claimrev', 'Kto odpovedal správne', 'Najprv vidno, kto čo zvolil (farebné bodky pri odpovediach), a o chvíľu sa rozsvieti správna odpoveď. Tri správne odpovede za sebou sú séria 🔥 a dávajú +50 bodov.', true];
   if (ph === 'pick') return mine ? ['pick', 'Vyber si priestor', 'Sivé priestory si môžeš zobrať — musia susediť s tým, čo už máš. Žlté číslo je počet bodov: letisko 500, CTR 400, TMA 300, TRA/TSA 200, LZR 150, časť triedy G 100. Radarový lúč ti ukáže, čo je na výber. Na telefóne vyber priestor zo zoznamu dole a potvrď.', true] : ['pick2', 'Vyberá súper', 'Aj súper, ktorý odpovedal správne, si berie priestor.', false];
-  if (ph === 'warpick') return mine ? ['warpick', 'Si na rade — útoč', 'Súperove priestory označené mečmi ⚔ môžeš napadnúť, sivé voľné priestory obsadiť. Čím cennejší priestor, tým ťažšia otázka. Útok na domovské letisko súpera mu pri výhre uberie život; pri treťom vypadáva a jeho priestory berieš ty.', true] : ['wp2', 'Na rade je súper', 'Ak zaútočí na tvoj priestor, budete odpovedať obaja.', false];
+  if (ph === 'warpick') return mine ? ['warpick', 'Si na rade — útoč', 'Súperove priestory označené mečmi ⚔ môžeš napadnúť, sivé voľné priestory obsadiť. Čím cennejší priestor, tým ťažšia otázka. Útok na domovské letisko súpera mu pri výhre uberie život a hneď ide ďalšia otázka; kým vyhrávaš, berieš životy ďalej. Pri treťom vypadáva a jeho priestory berieš ty.', true] : ['wp2', 'Na rade je súper', 'Ak zaútočí na tvoj priestor, budete odpovedať obaja.', false];
   if (ph === 'modpick') return D && D.a === me ? ['modpick', 'Vyber okruh otázky', 'Ako útočník si volíš, z ktorého okruhu otázka padne. Výber môžeš meniť, platí až po POTVRDIŤ. NÁHODNE nechá okruh na žreb. (Túto voľbu zapína hostiteľ v nastavení hry.)', true] : ['mp2', 'Súper vyberá okruh', 'Útočník si volí, z čoho otázka bude.', false];
   if (ph === 'duelintro') return ['duelintro', 'Útok', 'Lietadlo útočníka letí na cieľ a kamera sa presunie na miesto deja. Hore vidíš, kto na koho útočí, o ktorý priestor ide a za koľko bodov.', false];
   if (ph === 'duelq') return D && D.d >= 0
@@ -1209,6 +1209,8 @@ function dqDuelDone(win) {
     if (!D.base) S.own[D.t] = D.a;
     else if (--S.lives[D.d] <= 0) { S.own = S.own.map(o => o === D.d ? D.a : o); S.players[D.d].out = true; S.base[D.d] = -1; S.outs.push(D.d); }
   }
+  /* útok na domovské letisko sa nekončí jedným zásahom: kým útočník vyhráva a súper má ešte život, ide ďalšia otázka (s rozstrelom) v tom istom kole */
+  if (win && D.base && !S.players[D.d].out) { S.chooser = D.a; S.allowed = []; return dqChoose(D.t); }
   S.wq.shift();
   dqWarPick();
 }
@@ -1371,7 +1373,7 @@ function dqGuideHTML() {
         <ul><li><b>zaútočiť</b> na susedný priestor súpera (je označený mečmi), alebo</li><li><b>obsadiť</b> susedný voľný priestor — vtedy odpovedáš sám.</li></ul>
         <p>Pri útoku odpovedá útočník aj obranca na tú istú otázku. <b>Rýchlosť nerozhoduje:</b></p>
         <ul><li>útočník správne, obranca zle → priestor je dobytý,</li><li>obranca správne, útočník zle → ubránené, obranca dostane +100 bodov,</li><li>obaja zle → nič sa nemení,</li><li>obaja správne → <b>rozstrel</b> tipovacou otázkou, vyhráva presnejší tip. Rozstrely sú najviac tri a sú očíslované: ak v prvom alebo druhom tipnete rovnako presne, ide sa na ďalší; v treťom pri rovnakom tipe vyhráva rýchlejší.</li></ul>
-        <p><b>Útok na domovské letisko</b> mu pri výhre uberie jeden život. Pri treťom zásahu hráč vypadáva a všetky jeho priestory berie útočník.</p>`)}
+        <p><b>Útok na domovské letisko</b> mu pri výhre uberie jeden život. Kým útočník vyhráva, útok pokračuje ďalšou otázkou (s rozstrelom) v tom istom kole — tri životy sa dajú vziať naraz. Pri treťom zásahu hráč vypadáva a všetky jeho priestory berie útočník.</p>`)}
       ${sec('5 · Body a víťaz', `<p>Letisko 500 · CTR 400 · TMA 300 · TRA/TSA 200 · LZR 150 · časť triedy G 100 · ubránenie +100 · každá tretia správna odpoveď v rade +50.</p>
         <p>Vyhráva hráč s najviac bodmi po poslednom kole súbojov, alebo ten, kto ostane na mape sám. Na konci hry je tabuľka, z čoho kto body získal.</p>
         <p><b>Body do rebríčka</b> sa počítajú zo šiestich vecí: <b>500 × miesto × výkon × hráči × dĺžka × okruhy</b> (najmenej 5).</p>
@@ -1536,7 +1538,7 @@ function dqRevText(S, nm) {
   if (R.what === 'tie') return `Obaja odpovedali správne — rozhodne tipovacia otázka.`;
   if (R.what === 'again') return `Rovnako presné tipy — nasleduje rozstrel ${D.tn} / 3${D.tn === 3 ? ', v ňom rozhodne aj čas' : ''}.`;
   if (R.what === 'took') return `${a} získava ${tn} (+${Math.round(DQ_MAP.t[D.t].v * (D.x2 === true ? 2 : D.x2 || 1))} b.${D.x2 ? ' · žolík ' + dqMulTxt(D.x2) : ''})`;
-  if (R.what === 'hit') return `${a} zasiahol domovské letisko ${tn} — hráčovi ${d} ostáva ${S.lives[D.d] - 1} ${S.lives[D.d] - 1 === 1 ? 'život' : 'životy'}`;
+  if (R.what === 'hit') return `${a} zasiahol domovské letisko ${tn} — hráčovi ${d} ostáva ${S.lives[D.d] - 1} ${S.lives[D.d] - 1 === 1 ? 'život' : 'životy'} · útočník pokračuje`;
   if (R.what === 'out') return `${a} dobyl domovské letisko ${tn} — ${d} vypadáva a všetky jeho priestory berie ${a}`;
   if (R.what === 'held') return `${d} ubránil ${tn} (+100 b.)`;
   return D.d >= 0 ? `Obaja odpovedali nesprávne — ${tn} ostáva hráčovi ${d}` : `${tn} sa získať nepodarilo`;
@@ -2047,7 +2049,7 @@ function dqRender(card) {
       const oldPop = ph.querySelector('.dq-pop'), keepTop = oldPop && DQ.popK === S.k ? oldPop.scrollTop : 0;
       ph.innerHTML = pop;
       const newPop = ph.querySelector('.dq-pop'); if (newPop && keepTop) newPop.scrollTop = keepTop;
-      const newIn = $('dq-numin'); if (newIn) { newIn.value = keepV; if (hadFocus || DQ.popK !== S.k) newIn.focus({ preventScroll: true }); }
+      const newIn = $('dq-numin'); if (newIn) { newIn.value = keepV; if ((hadFocus || DQ.popK !== S.k) && !document.getElementById('qr-wrap')) newIn.focus({ preventScroll: true }); }
       DQ.popK = S.k;
       const ib = ph.querySelector('.dq-pop-img');
       if (ib && !ib.querySelector('img')) dqPhoto(ib.dataset.img).then(src => { if (ib.isConnected && !ib.querySelector('img')) ib.innerHTML = src ? `<img src="${dqEsc(src)}" alt="">` : '<span>Fotku sa nepodarilo načítať — skús tipnúť.</span>'; });
